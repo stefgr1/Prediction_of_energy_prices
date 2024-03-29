@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/LSTM_wandb.py", line 70, in <module>
+    def hyperparameter_search():
+TypeError: 'module' object is not callable

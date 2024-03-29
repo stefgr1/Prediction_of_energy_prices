@@ -61,7 +61,6 @@ class LSTMModel(nn.Module):
 model = LSTMModel(input_size=1, hidden_layer_size=100, output_size=1)
 
 # Step 3: Prepare the model for training
-# Assuming X_train_reshaped is from your previous code
 X_train_tensor = torch.Tensor(X_train_reshaped)
 # Reshape Y_train to match output dimensions
 Y_train_tensor = torch.Tensor(Y_train.values).view(-1, 1)

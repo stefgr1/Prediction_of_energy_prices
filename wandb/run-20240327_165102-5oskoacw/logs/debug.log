@@ -1,0 +1,16 @@
+2024-03-27 16:51:02,244 INFO    MainThread:95609 [wandb_setup.py:_flush():76] Current SDK version is 0.16.5
+2024-03-27 16:51:02,244 INFO    MainThread:95609 [wandb_setup.py:_flush():76] Configure stats pid to 95609
+2024-03-27 16:51:02,244 INFO    MainThread:95609 [wandb_setup.py:_flush():76] Loading settings from /Users/skyfano/.config/wandb/settings
+2024-03-27 16:51:02,244 INFO    MainThread:95609 [wandb_setup.py:_flush():76] Loading settings from /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/settings
+2024-03-27 16:51:02,244 INFO    MainThread:95609 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2024-03-27 16:51:02,244 INFO    MainThread:95609 [wandb_setup.py:_flush():76] Applying setup settings: {'_disable_service': False}
+2024-03-27 16:51:02,244 INFO    MainThread:95609 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program_relpath': 'predictions/LSTM_wandb.py', 'program_abspath': '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/LSTM_wandb.py', 'program': '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/LSTM_wandb.py'}
+2024-03-27 16:51:02,244 INFO    MainThread:95609 [wandb_setup.py:_flush():76] Applying login settings: {}
+2024-03-27 16:51:02,244 INFO    MainThread:95609 [wandb_init.py:_log_setup():527] Logging user logs to /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240327_165102-5oskoacw/logs/debug.log
+2024-03-27 16:51:02,244 INFO    MainThread:95609 [wandb_init.py:_log_setup():528] Logging internal logs to /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240327_165102-5oskoacw/logs/debug-internal.log
+2024-03-27 16:51:02,244 INFO    MainThread:95609 [wandb_init.py:init():567] calling init triggers
+2024-03-27 16:51:02,244 INFO    MainThread:95609 [wandb_init.py:init():574] wandb.init called with sweep_config: {}
+config: {}
+2024-03-27 16:51:02,244 INFO    MainThread:95609 [wandb_init.py:init():612] wandb.init() called when a run is still active
+2024-03-27 16:51:02,258 INFO    MainThread:95609 [wandb_run.py:_config_callback():1347] config_cb None None {'lr': 0.010000000000000005, 'hidden_dim': 60, 'num_layers': 2, 'num_epochs': 75}
+2024-03-27 16:51:43,829 WARNING MsgRouterThr:95609 [router.py:message_loop():77] message_loop has been closed

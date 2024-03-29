@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/LSTM_wandb.py", line 148, in <module>
+    best_params = search.run(train_and_evaluate, direction="min")
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/pyhopper/search.py", line 839, in run
+    schedule = ScheduledRun(
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/pyhopper/run_context.py", line 41, in __init__
+    raise ValueError(
+ValueError: Must specify either 'max_steps', 'runtime', or 'endless_mode'

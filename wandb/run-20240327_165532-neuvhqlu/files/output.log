@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/LSTM_wandb.py", line 126, in <module>
+    name="Experiment 1", config=search.guess)
+AttributeError: 'Search' object has no attribute 'guess'

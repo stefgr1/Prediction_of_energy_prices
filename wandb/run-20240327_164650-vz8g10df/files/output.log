@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/LSTM_wandb.py", line 148, in <module>
+    best_params = search.run(
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/pyhopper/search.py", line 839, in run
+    schedule = ScheduledRun(
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/pyhopper/run_context.py", line 56, in __init__
+    self._runtime = parse_runtime(runtime)
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/pyhopper/utils.py", line 219, in parse_runtime
+    return int(runtime) * 60 * 60
+ValueError: invalid literal for int() with base 10: '0,5'

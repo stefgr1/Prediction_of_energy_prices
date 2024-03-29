@@ -1,0 +1,32 @@
+  0%|                                                                                                                                                                                         | [00:00<?]Traceback (most recent call last):
+  File "/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/LSTM_wandb.py", line 123, in <module>
+    best_params = search.run(
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/pyhopper/search.py", line 894, in run
+    self._submit_candidate(
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/pyhopper/search.py", line 643, in _submit_candidate
+    self._async_result_ready(candidate, param_info, candidate_result)
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/pyhopper/search.py", line 688, in _async_result_ready
+    raise ValueError("Pyhopper - Error in objective function")
+ValueError: Pyhopper - Error in objective function
+Search is scheduled for 01:00:00 (h:m:s)
+Remote process caught exception in objective function:
+======================================================
+Traceback (most recent call last):
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/pyhopper/parallel.py", line 227, in execute
+    iter_or_result = objective_function(candidate, **kwargs)
+  File "/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/LSTM_wandb.py", line 80, in train_and_evaluate
+    num_layers=params["num_layers"], output_dim=1).cuda()
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/torch/nn/modules/module.py", line 911, in cuda
+    return self._apply(lambda t: t.cuda(device))
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/torch/nn/modules/module.py", line 802, in _apply
+    module._apply(fn)
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/torch/nn/modules/rnn.py", line 216, in _apply
+    ret = super()._apply(fn, recurse)
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/torch/nn/modules/module.py", line 825, in _apply
+    param_applied = fn(param)
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/torch/nn/modules/module.py", line 911, in <lambda>
+    return self._apply(lambda t: t.cuda(device))
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/torch/cuda/__init__.py", line 293, in _lazy_init
+    raise AssertionError("Torch not compiled with CUDA enabled")
+AssertionError: Torch not compiled with CUDA enabled
+======================================================

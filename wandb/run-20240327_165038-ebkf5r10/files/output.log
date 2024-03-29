@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/LSTM_wandb.py", line 150, in <module>
+    WandbCallback(project="LSTM_energy_prices", name="Experiment 1")
+NameError: name 'WandbCallback' is not defined

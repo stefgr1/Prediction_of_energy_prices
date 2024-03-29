@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/LSTM_wandb.py", line 148, in <module>
+    best_params = search.run(train_and_evaluate, direction="min", max_iter=100)
+TypeError: Search.run() got an unexpected keyword argument 'max_iter'

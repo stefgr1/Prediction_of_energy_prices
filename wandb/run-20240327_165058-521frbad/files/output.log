@@ -1,0 +1,31 @@
+  0%|                                                                                                                                                                                         | [00:00<?]/Users/skyfano/mambaforge/lib/python3.10/site-packages/torch/nn/modules/loss.py:535: UserWarning: Using a target size (torch.Size([1445, 1, 1])) that is different to the input size (torch.Size([1445, 1])). This will likely lead to incorrect results due to broadcasting. Please ensure they have the same size.
+  return F.mse_loss(input, target, reduction=self.reduction)
+Search is scheduled for 01:00:00 (h:m:s)
+Remote process caught exception in objective function:
+======================================================
+Traceback (most recent call last):
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/pyhopper/parallel.py", line 227, in execute
+    iter_or_result = objective_function(candidate, **kwargs)
+  File "/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/LSTM_wandb.py", line 66, in train_and_evaluate
+    wandb.config.update(params)
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/wandb/sdk/wandb_config.py", line 184, in update
+    sanitized = self._update(d, allow_val_change)
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/wandb/sdk/wandb_config.py", line 177, in _update
+    sanitized = self._sanitize_dict(
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/wandb/sdk/wandb_config.py", line 264, in _sanitize_dict
+    k, v = self._sanitize(k, v, allow_val_change)
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/wandb/sdk/wandb_config.py", line 285, in _sanitize
+    raise config_util.ConfigError(
+wandb.sdk.lib.config_util.ConfigError: Attempted to change value of key "lr" from 0.010000000000000005 to 0.0012738965477837696
+If you really want to do this, pass allow_val_change=True to config.update()
+======================================================
+Best f: 37.2 (out of 1 params):   1%|█▎                                                                                                                                      | [00:34<59:24, 0.0 param/s]Traceback (most recent call last):
+  File "/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/LSTM_wandb.py", line 149, in <module>
+    best_params = search.run(
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/pyhopper/search.py", line 924, in run
+    if self._submit_candidate(
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/pyhopper/search.py", line 643, in _submit_candidate
+    self._async_result_ready(candidate, param_info, candidate_result)
+  File "/Users/skyfano/mambaforge/lib/python3.10/site-packages/pyhopper/search.py", line 688, in _async_result_ready
+    raise ValueError("Pyhopper - Error in objective function")
+ValueError: Pyhopper - Error in objective function

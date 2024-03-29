@@ -1,0 +1,37 @@
+{
+    "os": "macOS-14.4-arm64-arm-64bit",
+    "python": "3.10.10",
+    "heartbeatAt": "2024-03-27T15:58:42.861971",
+    "startedAt": "2024-03-27T15:58:42.108253",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/LSTM_new_gen.py",
+    "codePathLocal": "predictions/LSTM_new_gen.py",
+    "codePath": "predictions/LSTM_new_gen.py",
+    "git": {
+        "remote": "https://github.com/stefgr1/Prediction_of_energy_prices.git",
+        "commit": "d026e8009aa1e07d3b73391413f60ed638323030"
+    },
+    "email": "stefan.grochowski@gmx.de",
+    "root": "/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices",
+    "host": "AirvonStefan2",
+    "username": "skyfano",
+    "executable": "/Users/skyfano/mambaforge/bin/python",
+    "cpu_count": 8,
+    "cpu_count_logical": 8,
+    "disk": {
+        "/": {
+            "total": 460.4317207336426,
+            "used": 307.8196220397949
+        }
+    },
+    "gpuapple": {
+        "type": "arm",
+        "vendor": "Apple"
+    },
+    "memory": {
+        "total": 16.0
+    }
+}

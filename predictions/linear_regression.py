@@ -90,7 +90,7 @@ def main():
     """
     Main execution function.
     """
-    file_path = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/storage/energy_prices_data/energy_prices_2019_2023.csv'
+    file_path = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/storage/energy_prices__all_years/energy_prices_2019_2023.csv'
     train_df, test_df = load_and_prepare_data(file_path, '2023-01-01')
 
     mse, y_pred, test_df_for_plot = perform_regression(train_df, test_df)
