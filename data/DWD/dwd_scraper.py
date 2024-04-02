@@ -8,7 +8,7 @@ import glob
 import shutil
 from time import sleep
 from random import randint
-from config_loader import load_config
+from data.config_loader import load_config
 
 
 class DWDScraper:

@@ -1,0 +1,104 @@
+# %%
+# Import the yearly files of the wind data from the data folder
+import os
+import pandas as pd
+from pathlib import Path
+import yaml
+from data.EEX_stock.data_utils import merge_data_frames, save_data_frame
+from datetime import datetime, timedelta
+from data.config_loader import load_config
+
+# %%
+# Import the yearly files of the wind data from the data folder from 2006 to 2024
+home_directory = Path(os.path.expanduser('~')) / 'Documents' / \
+    'Masterarbeit' / 'Prediction_of_energy_prices'
+os.chdir(home_directory)
+
+# Load configuration
+config = load_config()
+
+# %%
+
+
+def load_data(year, path):
+    """
+    Load the wind data for a given year and clean it.
+    """
+    # Ensure path is a Path object
+    path = Path(path)
+
+    # Load the data
+    file_path = path / f"wind_data_{year}.csv"
+    df = pd.read_csv(file_path)
+
+    # Implement any cleaning steps here
+
+    return df
+
+
+# %%
+years = range(2006, 2025)
+dataframes = [load_data(
+    year, config["data"]["wind_input"]) for year in years]
+
+# %%
+df_merged = merge_data_frames(dataframes)
+
+# %%
+# Drop NAs
+df_merged.dropna(inplace=True)
+
+# Rename the 'Datum' column to 'Month' and the value column to WindSpeed and the y column to "hour of the day"
+df_merged.rename(columns={
+                 'Datum': 'Month', 'value': 'WindSpeed', 'y': 'hour of the day'}, inplace=True)
+
+# ---------------------------------------------------------------------------------------------------#
+
+# %%
+# Assuming the above is a simplified version of your DataFrame
+df = df_merged.copy()
+
+
+# %%
+# Mapping German month names to English for datetime conversion
+month_mapping = {
+    'Januar': 'January',
+    'Februar': 'February',
+    'März': 'March',
+    'April': 'April',
+    'Mai': 'May',
+    'Juni': 'June',
+    'Juli': 'July',
+    'August': 'August',
+    'September': 'September',
+    'Oktober': 'October',
+    'November': 'November',
+    'Dezember': 'December'
+}
+
+# Apply month mapping to convert German month names to English
+df['Month'] = df['Month'].map(month_mapping)
+
+# Calculate total number of days from the start
+total_days = len(df) // 24
+
+# Generate a datetime index starting from January 1, 2006
+start_date = datetime(2006, 1, 1)
+date_range = pd.date_range(start=start_date, periods=total_days, freq='D')
+
+# Assign each row in the DataFrame to its corresponding date
+df['Date'] = date_range.repeat(24)
+
+# Group by the new 'Date' column and calculate the mean wind speed for each day
+daily_average_wind_speed = df.groupby(
+    'Date')['WindSpeed'].mean().reset_index(name='AverageWindSpeed')
+
+# round all values to 2 decimal places
+daily_average_wind_speed = daily_average_wind_speed.round(2)
+
+print(daily_average_wind_speed)
+
+# %% Save the daily wind data
+output_file_name = f"wind_data_daily_{years[0]}_{years[-1]}.csv"
+output_path = Path(config["data"]["wind_output"]) / output_file_name
+save_data_frame(daily_average_wind_speed, output_path)

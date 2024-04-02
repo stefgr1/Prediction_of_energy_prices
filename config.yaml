@@ -3,5 +3,11 @@ data:
     dwd: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/DWD/storage
     eex_input: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/EEX_stock/storage/prices_per_year
     eex_saving: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/EEX_stock/storage/final_data_eex
+    wind_input: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/wind/storage/wind_data_per_year
+    wind_output: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/wind/storage/final_data_wind
+    temp_input: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/temperature/storage/yearly_data
+    temp_output: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/temperature/storage/final_data_temp
+    solar_input: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/Solar_radiation/storage/yearly_data
+    solar_output: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/Solar_radiation/storage/final_data_solar
 bboxes:
     germany:  [5.98865807458, 47.3024876979, 15.0169958839, 54.983104153]

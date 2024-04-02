@@ -1,0 +1,65 @@
+# %% Import the OIL csv file and processing it
+
+import csv
+import sys
+import os
+import re
+import datetime
+import pandas as pd
+import numpy as np
+from pathlib import Path
+
+# %% Set the path to the file
+home_directory = Path(os.path.expanduser('~')) / 'Documents' / \
+    'Masterarbeit' / 'Prediction_of_energy_prices'
+os.chdir(home_directory)
+file_path = home_directory / 'data' / \
+    'Oil_price_brent' / 'storage' / 'Brent_oil.csv'
+
+# %%
+# Define the function to read the csv file
+df = pd.read_csv(file_path)
+
+# %% Rename the columns to English
+df.columns = ['Date', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']
+
+# %%
+# Drop all columns ecxept for the date and the closing price
+df = df[['Date', 'Close']]
+# %%
+# Convert the 'Datum' column to datetime format
+df["Date"] = pd.to_datetime(df["Date"], format="%d.%m.%Y")
+
+# Sort the DataFrame by date in ascending order
+df = df.sort_values(by="Date")
+
+# Set the 'Datum' column as the index
+df.set_index("Date", inplace=True)
+
+# Reindex the DataFrame to fill in the missing dates
+all_days = pd.date_range(start=df.index.min(), end=df.index.max(), freq='D')
+df_reindexed = df.reindex(all_days)
+
+# Fill missing values with the last available values
+df_filled = df_reindexed.fillna(method='ffill')
+
+# Reset the index to turn the dates back into a regular column
+df_filled.reset_index(inplace=True)
+df_filled.rename(columns={"index": "Date"}, inplace=True)
+
+# Display the head of the filled DataFrame to verify the result
+df_filled.head()
+# %% Drop the frist two rows
+df_filled = df_filled.drop([0, 1])
+
+# %% Drop the last row
+df_filled = df_filled.drop(df_filled.index[-1])
+
+# %% Save the DataFrame to a new csv file
+df_filled.to_csv(home_directory / 'data' / 'Oil_price_brent' /
+                 'Brent_oil_cleaned.csv', index=False)
+
+# %% Rename "close" column to "oil_price"
+df_filled.rename(columns={"Close": "Oil_price"}, inplace=True)
+
+# %%
