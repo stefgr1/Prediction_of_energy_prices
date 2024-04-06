@@ -9,5 +9,7 @@ data:
     temp_output: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/temperature/storage/final_data_temp
     solar_input: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/Solar_radiation/storage/yearly_data
     solar_output: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/Solar_radiation/storage/final_data_solar
+    energy_input: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/Energy_production/storage/Per_year
+    energy_output: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/Energy_production/storage/final_data_energy
 bboxes:
     germany:  [5.98865807458, 47.3024876979, 15.0169958839, 54.983104153]

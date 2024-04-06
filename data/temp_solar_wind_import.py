@@ -16,10 +16,7 @@ from pathlib import Path
 # Add the parent directory of your `data` module to sys.path
 sys.path.append(str(Path(__file__).parent))
 os.chdir('/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices')
-# os.chdir('/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices')
 
-
-# Assuming the data_utils and config_loader modules are in the same directory structure as specified
 
 # Configuration for each data type
 data_config = {
@@ -94,7 +91,7 @@ def process_data(data_type):
     return daily_average
 
 
-# Example usage
+# Application of the function to each data type
 wind = process_data('wind')
 solar = process_data('solar')
 temp = process_data('temp')
