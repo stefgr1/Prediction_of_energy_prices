@@ -1,0 +1,190 @@
+2024-04-06 16:06:15,238 INFO    StreamThr :79986 [internal.py:wandb_internal():86] W&B internal server running at pid: 79986, started at: 2024-04-06 16:06:15.237529
+2024-04-06 16:06:15,239 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: status
+2024-04-06 16:06:15,245 INFO    WriterThread:79986 [datastore.py:open_for_write():87] open: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/run-b9dykwbn.wandb
+2024-04-06 16:06:15,245 DEBUG   SenderThread:79986 [sender.py:send():379] send: header
+2024-04-06 16:06:15,263 DEBUG   SenderThread:79986 [sender.py:send():379] send: run
+2024-04-06 16:06:15,784 INFO    SenderThread:79986 [dir_watcher.py:__init__():211] watching files in: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files
+2024-04-06 16:06:15,784 INFO    SenderThread:79986 [sender.py:_start_run_threads():1124] run started: b9dykwbn with start time 1712412375.237464
+2024-04-06 16:06:15,792 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: check_version
+2024-04-06 16:06:15,792 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: check_version
+2024-04-06 16:06:15,922 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: run_start
+2024-04-06 16:06:15,929 DEBUG   HandlerThread:79986 [system_info.py:__init__():26] System info init
+2024-04-06 16:06:15,929 DEBUG   HandlerThread:79986 [system_info.py:__init__():41] System info init done
+2024-04-06 16:06:15,929 INFO    HandlerThread:79986 [system_monitor.py:start():194] Starting system monitor
+2024-04-06 16:06:15,929 INFO    SystemMonitor:79986 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-04-06 16:06:15,929 INFO    HandlerThread:79986 [system_monitor.py:probe():214] Collecting system info
+2024-04-06 16:06:15,930 INFO    SystemMonitor:79986 [interfaces.py:start():190] Started cpu monitoring
+2024-04-06 16:06:15,930 DEBUG   HandlerThread:79986 [system_info.py:probe():150] Probing system
+2024-04-06 16:06:15,930 INFO    SystemMonitor:79986 [interfaces.py:start():190] Started disk monitoring
+2024-04-06 16:06:15,934 INFO    SystemMonitor:79986 [interfaces.py:start():190] Started gpuapple monitoring
+2024-04-06 16:06:15,935 INFO    SystemMonitor:79986 [interfaces.py:start():190] Started memory monitoring
+2024-04-06 16:06:15,936 INFO    SystemMonitor:79986 [interfaces.py:start():190] Started network monitoring
+2024-04-06 16:06:15,940 DEBUG   HandlerThread:79986 [system_info.py:_probe_git():135] Probing git
+2024-04-06 16:06:15,957 DEBUG   HandlerThread:79986 [system_info.py:_probe_git():143] Probing git done
+2024-04-06 16:06:15,958 DEBUG   HandlerThread:79986 [system_info.py:probe():198] Probing system done
+2024-04-06 16:06:15,958 DEBUG   HandlerThread:79986 [system_monitor.py:probe():223] {'os': 'macOS-14.4.1-arm64-arm-64bit', 'python': '3.10.10', 'heartbeatAt': '2024-04-06T14:06:15.932085', 'startedAt': '2024-04-06T14:06:15.229758', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/LSTM_new_gen.py', 'codePathLocal': 'predictions/LSTM_new_gen.py', 'codePath': 'predictions/LSTM_new_gen.py', 'git': {'remote': 'https://github.com/stefgr1/Prediction_of_energy_prices.git', 'commit': '9ecd4a6d3e1e316f41dabc9aa31a0a2c8f8ae098'}, 'email': 'stefan.grochowski@gmx.de', 'root': '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices', 'host': 'AirvonStefan2.fritz.box', 'username': 'skyfano', 'executable': '/Users/skyfano/mambaforge/bin/python', 'cpu_count': 8, 'cpu_count_logical': 8, 'disk': {'/': {'total': 460.4317207336426, 'used': 311.9302635192871}}, 'gpuapple': {'type': 'arm', 'vendor': 'Apple'}, 'memory': {'total': 16.0}}
+2024-04-06 16:06:15,958 INFO    HandlerThread:79986 [system_monitor.py:probe():224] Finished collecting system info
+2024-04-06 16:06:15,958 INFO    HandlerThread:79986 [system_monitor.py:probe():227] Publishing system info
+2024-04-06 16:06:15,958 DEBUG   HandlerThread:79986 [system_info.py:_save_conda():207] Saving list of conda packages installed into the current environment
+2024-04-06 16:06:16,791 INFO    Thread-12 :79986 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/conda-environment.yaml
+2024-04-06 16:06:18,663 DEBUG   HandlerThread:79986 [system_info.py:_save_conda():222] Saving conda packages done
+2024-04-06 16:06:18,664 INFO    HandlerThread:79986 [system_monitor.py:probe():229] Finished publishing system info
+2024-04-06 16:06:18,666 DEBUG   SenderThread:79986 [sender.py:send():379] send: files
+2024-04-06 16:06:18,666 INFO    SenderThread:79986 [sender.py:_save_file():1390] saving file wandb-metadata.json with policy now
+2024-04-06 16:06:18,790 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: python_packages
+2024-04-06 16:06:18,790 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: python_packages
+2024-04-06 16:06:18,790 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: stop_status
+2024-04-06 16:06:18,791 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: stop_status
+2024-04-06 16:06:18,792 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: internal_messages
+2024-04-06 16:06:18,798 INFO    Thread-12 :79986 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/conda-environment.yaml
+2024-04-06 16:06:18,798 INFO    Thread-12 :79986 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/requirements.txt
+2024-04-06 16:06:18,798 INFO    Thread-12 :79986 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/wandb-metadata.json
+2024-04-06 16:06:19,077 DEBUG   SenderThread:79986 [sender.py:send():379] send: telemetry
+2024-04-06 16:06:19,078 DEBUG   SenderThread:79986 [sender.py:send():379] send: exit
+2024-04-06 16:06:19,078 INFO    SenderThread:79986 [sender.py:send_exit():586] handling exit code: 1
+2024-04-06 16:06:19,078 INFO    SenderThread:79986 [sender.py:send_exit():588] handling runtime: 2
+2024-04-06 16:06:19,079 INFO    SenderThread:79986 [sender.py:_save_file():1390] saving file wandb-summary.json with policy end
+2024-04-06 16:06:19,079 INFO    SenderThread:79986 [sender.py:send_exit():594] send defer
+2024-04-06 16:06:19,079 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:19,079 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 0
+2024-04-06 16:06:19,079 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:19,079 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 0
+2024-04-06 16:06:19,079 INFO    SenderThread:79986 [sender.py:transition_state():614] send defer: 1
+2024-04-06 16:06:19,079 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:19,079 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 1
+2024-04-06 16:06:19,079 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:19,079 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 1
+2024-04-06 16:06:19,079 INFO    SenderThread:79986 [sender.py:transition_state():614] send defer: 2
+2024-04-06 16:06:19,080 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:19,080 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 2
+2024-04-06 16:06:19,080 INFO    HandlerThread:79986 [system_monitor.py:finish():203] Stopping system monitor
+2024-04-06 16:06:19,080 DEBUG   SystemMonitor:79986 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2024-04-06 16:06:19,080 DEBUG   SystemMonitor:79986 [system_monitor.py:_start():179] Finished system metrics aggregation loop
+2024-04-06 16:06:19,080 INFO    HandlerThread:79986 [interfaces.py:finish():202] Joined cpu monitor
+2024-04-06 16:06:19,080 DEBUG   SystemMonitor:79986 [system_monitor.py:_start():183] Publishing last batch of metrics
+2024-04-06 16:06:19,080 INFO    HandlerThread:79986 [interfaces.py:finish():202] Joined disk monitor
+2024-04-06 16:06:19,130 INFO    HandlerThread:79986 [interfaces.py:finish():202] Joined gpuapple monitor
+2024-04-06 16:06:19,131 INFO    HandlerThread:79986 [interfaces.py:finish():202] Joined memory monitor
+2024-04-06 16:06:19,131 INFO    HandlerThread:79986 [interfaces.py:finish():202] Joined network monitor
+2024-04-06 16:06:19,131 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:19,131 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 2
+2024-04-06 16:06:19,131 INFO    SenderThread:79986 [sender.py:transition_state():614] send defer: 3
+2024-04-06 16:06:19,131 DEBUG   SenderThread:79986 [sender.py:send():379] send: telemetry
+2024-04-06 16:06:19,131 DEBUG   SenderThread:79986 [sender.py:send():379] send: stats
+2024-04-06 16:06:19,131 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:19,131 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 3
+2024-04-06 16:06:19,132 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:19,132 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 3
+2024-04-06 16:06:19,132 INFO    SenderThread:79986 [sender.py:transition_state():614] send defer: 4
+2024-04-06 16:06:19,132 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:19,132 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 4
+2024-04-06 16:06:19,132 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:19,132 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 4
+2024-04-06 16:06:19,132 INFO    SenderThread:79986 [sender.py:transition_state():614] send defer: 5
+2024-04-06 16:06:19,132 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:19,132 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 5
+2024-04-06 16:06:19,132 DEBUG   SenderThread:79986 [sender.py:send():379] send: summary
+2024-04-06 16:06:19,132 INFO    SenderThread:79986 [sender.py:_save_file():1390] saving file wandb-summary.json with policy end
+2024-04-06 16:06:19,133 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:19,133 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 5
+2024-04-06 16:06:19,133 INFO    SenderThread:79986 [sender.py:transition_state():614] send defer: 6
+2024-04-06 16:06:19,133 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:19,133 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 6
+2024-04-06 16:06:19,133 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:19,133 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 6
+2024-04-06 16:06:19,135 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: status_report
+2024-04-06 16:06:19,325 INFO    SenderThread:79986 [sender.py:transition_state():614] send defer: 7
+2024-04-06 16:06:19,325 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:19,325 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 7
+2024-04-06 16:06:19,326 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:19,326 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 7
+2024-04-06 16:06:19,339 INFO    wandb-upload_0:79986 [upload_job.py:push():131] Uploaded file /var/folders/8w/b_0gc01d70g6h4k62sb7ytyw0000gn/T/tmpl40hmy6lwandb/9cune0fg-wandb-metadata.json
+2024-04-06 16:06:19,805 INFO    Thread-12 :79986 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/config.yaml
+2024-04-06 16:06:19,806 INFO    Thread-12 :79986 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/wandb-summary.json
+2024-04-06 16:06:19,806 INFO    Thread-12 :79986 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/output.log
+2024-04-06 16:06:19,822 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: poll_exit
+2024-04-06 16:06:21,088 INFO    SenderThread:79986 [sender.py:transition_state():614] send defer: 8
+2024-04-06 16:06:21,088 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: poll_exit
+2024-04-06 16:06:21,088 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:21,088 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 8
+2024-04-06 16:06:21,089 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:21,089 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 8
+2024-04-06 16:06:21,089 INFO    SenderThread:79986 [job_builder.py:build():318] Attempting to build job artifact
+2024-04-06 16:06:21,090 INFO    SenderThread:79986 [job_builder.py:_get_source_type():455] is repo sourced job
+2024-04-06 16:06:21,122 INFO    SenderThread:79986 [job_builder.py:build():431] adding wandb-job metadata file
+2024-04-06 16:06:21,124 INFO    SenderThread:79986 [sender.py:transition_state():614] send defer: 9
+2024-04-06 16:06:21,124 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:21,124 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 9
+2024-04-06 16:06:21,124 DEBUG   SenderThread:79986 [sender.py:send():379] send: artifact
+2024-04-06 16:06:21,811 INFO    Thread-12 :79986 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/output.log
+2024-04-06 16:06:21,837 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: poll_exit
+2024-04-06 16:06:21,973 INFO    SenderThread:79986 [sender.py:send_artifact():1468] sent artifact job-https___github.com_stefgr1_Prediction_of_energy_prices.git_predictions_LSTM_new_gen.py - {'id': 'QXJ0aWZhY3Q6Nzg1ODQxMjE1', 'state': 'COMMITTED', 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjE1MzIxOTE0NQ==', 'latestArtifact': {'id': 'QXJ0aWZhY3Q6Nzg1ODQxMjE1', 'versionIndex': 1}}}
+2024-04-06 16:06:21,974 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:21,974 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 9
+2024-04-06 16:06:21,974 INFO    SenderThread:79986 [dir_watcher.py:finish():358] shutting down directory watcher
+2024-04-06 16:06:22,818 INFO    SenderThread:79986 [dir_watcher.py:finish():388] scan: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files
+2024-04-06 16:06:22,819 INFO    SenderThread:79986 [dir_watcher.py:finish():402] scan save: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/requirements.txt requirements.txt
+2024-04-06 16:06:22,819 INFO    SenderThread:79986 [dir_watcher.py:finish():402] scan save: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/output.log output.log
+2024-04-06 16:06:22,823 INFO    SenderThread:79986 [dir_watcher.py:finish():402] scan save: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/config.yaml config.yaml
+2024-04-06 16:06:22,826 INFO    SenderThread:79986 [dir_watcher.py:finish():402] scan save: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/wandb-summary.json wandb-summary.json
+2024-04-06 16:06:22,829 INFO    SenderThread:79986 [dir_watcher.py:finish():402] scan save: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/conda-environment.yaml conda-environment.yaml
+2024-04-06 16:06:22,830 INFO    SenderThread:79986 [dir_watcher.py:finish():402] scan save: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/wandb-metadata.json wandb-metadata.json
+2024-04-06 16:06:22,833 INFO    SenderThread:79986 [sender.py:transition_state():614] send defer: 10
+2024-04-06 16:06:22,835 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: poll_exit
+2024-04-06 16:06:22,835 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:22,836 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 10
+2024-04-06 16:06:22,837 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:22,837 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 10
+2024-04-06 16:06:22,837 INFO    SenderThread:79986 [file_pusher.py:finish():172] shutting down file pusher
+2024-04-06 16:06:22,840 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: poll_exit
+2024-04-06 16:06:22,841 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: poll_exit
+2024-04-06 16:06:23,242 INFO    wandb-upload_0:79986 [upload_job.py:push():131] Uploaded file /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/requirements.txt
+2024-04-06 16:06:23,352 INFO    wandb-upload_1:79986 [upload_job.py:push():131] Uploaded file /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/output.log
+2024-04-06 16:06:23,491 INFO    wandb-upload_2:79986 [upload_job.py:push():131] Uploaded file /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/config.yaml
+2024-04-06 16:06:23,492 INFO    wandb-upload_4:79986 [upload_job.py:push():131] Uploaded file /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/conda-environment.yaml
+2024-04-06 16:06:23,564 INFO    wandb-upload_3:79986 [upload_job.py:push():131] Uploaded file /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/files/wandb-summary.json
+2024-04-06 16:06:23,770 INFO    Thread-11 (_thread_body):79986 [sender.py:transition_state():614] send defer: 11
+2024-04-06 16:06:23,770 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:23,770 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 11
+2024-04-06 16:06:23,770 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:23,770 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 11
+2024-04-06 16:06:23,770 INFO    SenderThread:79986 [file_pusher.py:join():178] waiting for file pusher
+2024-04-06 16:06:23,771 INFO    SenderThread:79986 [sender.py:transition_state():614] send defer: 12
+2024-04-06 16:06:23,771 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:23,771 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 12
+2024-04-06 16:06:23,771 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:23,771 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 12
+2024-04-06 16:06:23,771 INFO    SenderThread:79986 [file_stream.py:finish():614] file stream finish called
+2024-04-06 16:06:23,846 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: poll_exit
+2024-04-06 16:06:23,925 INFO    SenderThread:79986 [file_stream.py:finish():618] file stream finish is done
+2024-04-06 16:06:23,925 INFO    SenderThread:79986 [sender.py:transition_state():614] send defer: 13
+2024-04-06 16:06:23,925 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: poll_exit
+2024-04-06 16:06:23,925 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:23,925 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 13
+2024-04-06 16:06:23,925 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:23,925 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 13
+2024-04-06 16:06:23,925 INFO    SenderThread:79986 [sender.py:transition_state():614] send defer: 14
+2024-04-06 16:06:23,925 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: defer
+2024-04-06 16:06:23,926 INFO    HandlerThread:79986 [handler.py:handle_request_defer():172] handle defer: 14
+2024-04-06 16:06:23,926 DEBUG   SenderThread:79986 [sender.py:send():379] send: final
+2024-04-06 16:06:23,926 DEBUG   SenderThread:79986 [sender.py:send():379] send: footer
+2024-04-06 16:06:23,926 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: defer
+2024-04-06 16:06:23,926 INFO    SenderThread:79986 [sender.py:send_request_defer():610] handle sender defer: 14
+2024-04-06 16:06:23,926 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: poll_exit
+2024-04-06 16:06:23,926 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: poll_exit
+2024-04-06 16:06:23,926 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: poll_exit
+2024-04-06 16:06:23,927 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: poll_exit
+2024-04-06 16:06:23,927 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: server_info
+2024-04-06 16:06:23,927 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: get_summary
+2024-04-06 16:06:23,927 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: sampled_history
+2024-04-06 16:06:23,927 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: internal_messages
+2024-04-06 16:06:23,927 DEBUG   SenderThread:79986 [sender.py:send_request():406] send_request: server_info
+2024-04-06 16:06:24,079 INFO    MainThread:79986 [wandb_run.py:_footer_history_summary_info():3920] rendering history
+2024-04-06 16:06:24,080 INFO    MainThread:79986 [wandb_run.py:_footer_history_summary_info():3952] rendering summary
+2024-04-06 16:06:24,080 INFO    MainThread:79986 [wandb_run.py:_footer_sync_info():3879] logging synced files
+2024-04-06 16:06:24,080 DEBUG   HandlerThread:79986 [handler.py:handle_request():146] handle_request: shutdown
+2024-04-06 16:06:24,081 INFO    HandlerThread:79986 [handler.py:finish():866] shutting down handler
+2024-04-06 16:06:24,932 INFO    WriterThread:79986 [datastore.py:close():296] close: /Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/wandb/run-20240406_160615-b9dykwbn/run-b9dykwbn.wandb
+2024-04-06 16:06:25,084 INFO    SenderThread:79986 [sender.py:finish():1546] shutting down sender
+2024-04-06 16:06:25,084 INFO    SenderThread:79986 [file_pusher.py:finish():172] shutting down file pusher
+2024-04-06 16:06:25,085 INFO    SenderThread:79986 [file_pusher.py:join():178] waiting for file pusher

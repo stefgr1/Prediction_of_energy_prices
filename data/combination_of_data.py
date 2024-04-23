@@ -7,11 +7,9 @@ import numpy as np
 import pandas as pd
 
 # %%
-
 print("Current Working Directory:", os.getcwd())
 
 # %%
-
 # Assuming 'data' directory is at the same level as your notebook
 data_path = './EEX_stock/storage/final_data_eex/'
 file_name = 'eex_stock_prices_2006_2024.csv'
@@ -26,7 +24,7 @@ def import_data(file_path, index_col):
 
 
 # Import the data
-stock_data = import_data(file_path)
+stock_data = import_data(file_path, 0)
 
 # %%
 # Import wind data
@@ -35,7 +33,7 @@ file_name = 'wind_data_daily_2006_2024.csv'
 file_path = os.path.join(data_path, file_name)
 
 # Import the data
-wind_data = import_data(file_path)
+wind_data = import_data(file_path, 0)
 # %%
 # Import solar data
 data_path = './Solar_radiation/storage/final_data_solar/'
@@ -43,7 +41,7 @@ file_name = 'solar_data_daily_2006_2024.csv'
 file_path = os.path.join(data_path, file_name)
 
 # Import the data
-solar_data = import_data(file_path)
+solar_data = import_data(file_path, 0)
 # %%
 # Import the weather data
 data_path = './Temperature/storage/final_data_temp'
@@ -51,7 +49,7 @@ file_name = 'temp_data_daily_2006_2024.csv'
 file_path = os.path.join(data_path, file_name)
 
 # Import the data
-temp_data = import_data(file_path)
+temp_data = import_data(file_path, 0)
 
 # %%
 # Import the oil prices data
@@ -88,7 +86,6 @@ else:
     print("The following dates are missing from the dataset:")
     print(missing_dates)
 
-
 # %%
 # rename the column "close" to oil_price and the Day Ahead Auktion just Day Ahead price
 data.rename(columns={'Close': 'Oil_price',
@@ -111,8 +108,7 @@ bev_data['Date'] = pd.to_datetime(bev_data['Date'])
 bev_data.set_index('Date', inplace=True)
 
 # %%
-# Your df2 is already indexed by 'Date', so we can proceed to merge
-# Merge df1 and df2 on their index ('Date')
+# Merge the data
 result = data.join(bev_data, how='left')
 
 # %%
@@ -125,7 +121,8 @@ result['DailyVehicles'] = result['DailyVehicles'].astype(int)
 # rename column to BEV_vehicles
 result.rename(columns={'DailyVehicles': 'BEV_vehicles'}, inplace=True)
 
-# %% import power_gen_2012_2024.csv
+## ---------------------------------------- Importing the power production data ----------------------------------------##
+# %%
 data_path = '.Energy_production/storage/final_data_energy/'
 file_name = 'power_gen_2012_2024.csv'
 file_path = os.path.join(data_path, file_name)
@@ -134,7 +131,58 @@ file_path = os.path.join(data_path, file_name)
 power_data = import_data(
     '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/Energy_production/storage/final_data_energy/power_gen_2012_2024_cleaned.csv', index_col="date")
 
-# %% set date as index
+# %% Set date as index
 power_data.set_index('date', inplace=True)
+
+
+# %%# ---------------------------------------- Importing the power import/export data ----------------------------------------##
+data_path = './Power_import_export/storage/'
+file_name = 'power_import_export_cleaned.csv'
+file_path = os.path.join(data_path, file_name)
+power_import_export = pd.read_csv(file_path)
+
+# set date as index
+power_import_export.set_index('date', inplace=True)
+
+# Check for any missing values in the data
+power_import_export.isnull().sum()
+
+# change the index to datetime
+power_import_export.index = pd.to_datetime(power_import_export.index)
+
+# %% Ensure that the index is in datetime format
+power_data.index = pd.to_datetime(power_data.index)
+result.index = pd.to_datetime(result.index)
+
+# %%# ---------------------------------------- Merging all data ----------------------------------------##
+final_data = power_data.join(result, how='left')
+final_data = final_data.join(power_import_export, how='left')
+# %% Drop all rows that contain missing values
+final_data.dropna(inplace=True)
+
+# %% Reorder the data frame by alphabetical order
+final_data = final_data.reindex(sorted(final_data.columns), axis=1)
+
+# %% Drop the total column from the data
+final_data.drop(columns=['Total Prod (GWh)'], inplace=True)
+
+# %% convert BEV_vehicles to integer
+final_data['BEV_vehicles'] = final_data['BEV_vehicles'].astype(int)
+
+# %%
+# move the Day_ahead_price column to the first position of all columns
+if 'Day_ahead_price' in final_data.columns:
+    # Create a new list of columns with 'Day_ahead_price' first
+    cols = ['Day_ahead_price'] + \
+        [col for col in final_data.columns if col != 'Day_ahead_price']
+
+    # Reorder the DataFrame's columns
+    final_data = final_data[cols]
+
+# %%
+final_data
+
+# %% Save final data to a csv file
+final_data.to_csv('final_data.csv')
 
 # %%

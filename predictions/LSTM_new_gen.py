@@ -9,6 +9,7 @@ import time
 import math
 import torch.nn as nn
 import torch.optim as optim
+import wandb
 
 # Initialize a new WandB run
 wandb.init(project="LSTM_energy_prices", entity="skyfano1")
@@ -21,8 +22,8 @@ def load_and_prepare_data(file_path):
     Load energy prices data from a CSV file, ensure chronological order, and convert 'Date' to datetime.
     """
     df = pd.read_csv(file_path)
-    df['Date'] = pd.to_datetime(df['Date'])
-    df.sort_values('Date', inplace=True)
+    df['date'] = pd.to_datetime(df['date'])
+    df.sort_values('date', inplace=True)
     df.reset_index(drop=True, inplace=True)
     return df
 
@@ -137,7 +138,7 @@ def plot_loss(hist, title='Training Loss Over Epochs'):
 # Main execution flow
 if __name__ == "__main__":
     # File path for the dataset
-    file_path = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/storage/energy_prices_all_years/energy_prices_2019_2023.csv'
+    file_path = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/final_data.csv'
 
     # Load and prepare data
     data = load_and_prepare_data(file_path)
@@ -155,7 +156,7 @@ if __name__ == "__main__":
         x_test).float(), torch.tensor(y_test).float()
 
     # Model initialization
-    input_dim = 1  # Input dimension: 1 feature (price)
+    input_dim = 17  # Input dimension: 1 feature (price)
     hidden_dim = 32  # Number of hidden layers
     num_layers = 2  # Number of LSTM layers
     output_dim = 1  # Output dimension: 1 feature (predicted price)
