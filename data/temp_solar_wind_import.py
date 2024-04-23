@@ -44,8 +44,6 @@ data_config = {
 }
 
 # Main function to load, process, and save data based on type
-
-
 def process_data(data_type):
     home_directory = Path(os.path.expanduser('~')) / 'Documents' / \
         'Masterarbeit' / 'Prediction_of_energy_prices'
