@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 # %%
-data_path = './storage/'
+data_path = '../data/Power_import_export/storage/'
 file_name = 'power_import_export.csv'
 file_path = os.path.join(data_path, file_name)
 data = pd.read_csv(file_path)
