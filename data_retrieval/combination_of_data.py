@@ -199,7 +199,10 @@ if 'Day_ahead_price' in final_data.columns:
 final_data
 
 # %% Save final data to a csv file
-final_data.to_csv('final_data.csv')
+data_path_final = '../data/Final_data/'
+file_name_final = 'final_data.csv'
+file_path_final = os.path.join(data_path, file_name)
+final_data.to_csv(file_path_final)
 
 # %%
 # Search for any missing days in the data
