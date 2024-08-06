@@ -79,7 +79,7 @@ for index, row in df_melted.iterrows():
 final_df.reset_index(drop=True, inplace=True)
 
 # %% Drop the data after the 331 of march 2024
-final_df = final_df[final_df['Date'] <= '2024-03-31']
+# final_df = final_df[final_df['Date'] <= '2024-03-31']
 
 # Changing type of DailyVehicles to integer
 final_df['DailyVehicles'] = final_df['DailyVehicles'].astype(int)
@@ -92,3 +92,5 @@ final_df['DailyVehicles'].sum()
 # Save resulting data from as csv file in the same folder
 final_df.to_csv(
     '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/BEV_vehicles/storage/BEV_vehicles_per_day.csv', index=False)
+
+# %%
