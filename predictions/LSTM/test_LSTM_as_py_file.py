@@ -5,6 +5,7 @@ import torch.nn as nn
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
+import os
 
 # Function to load and preprocess data
 
@@ -27,8 +28,17 @@ def select_device():
         return torch.device("cpu")
 
 
-# Preparing data
-df = load_and_prepare_data('./data/Final_data/final_data.csv')
+# Get the current working directory
+current_dir = os.getcwd()
+
+# Move two steps up and combine with the target file path
+target_file_path = os.path.abspath(os.path.join(
+    current_dir, "..", "..", "./data/Final_data/final_data.csv"))
+
+# Now target_file_path holds the absolute path to the desired file
+print("Target File Path:", target_file_path)
+
+df = load_and_prepare_data(target_file_path)
 X = df.drop(columns=['Day_ahead_price']).values
 y = df['Day_ahead_price'].values.reshape(-1, 1)
 

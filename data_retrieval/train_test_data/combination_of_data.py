@@ -10,8 +10,8 @@ import pandas as pd
 print("Current Working Directory:", os.getcwd())
 
 # %%
-data_path = '../data/EEX_stock/storage/final_data_eex/'
-file_name = 'eex_stock_prices_2006_2024.csv'
+data_path = './../../data/EEX_stock/storage/final_data_eex/'
+file_name = 'day_ahead_prices.csv'
 file_path = os.path.join(data_path, file_name)
 
 # Function to import data
@@ -27,7 +27,7 @@ stock_data = import_data(file_path, 0)
 
 # %%
 # Import wind data
-data_path = '../data/Wind/storage/final_data_wind/'
+data_path = './../../data/Wind/storage/final_data_wind/'
 file_name = 'wind_data_daily_2006_2024.csv'
 file_path = os.path.join(data_path, file_name)
 
@@ -35,7 +35,7 @@ file_path = os.path.join(data_path, file_name)
 wind_data = import_data(file_path, 0)
 # %%
 # Import solar data
-data_path = '../data/Solar_radiation/storage/final_data_solar/'
+data_path = './../../data/Solar_radiation/storage/final_data_solar/'
 file_name = 'solar_data_daily_2006_2024.csv'
 file_path = os.path.join(data_path, file_name)
 
@@ -43,7 +43,7 @@ file_path = os.path.join(data_path, file_name)
 solar_data = import_data(file_path, 0)
 # %%
 # Import the weather data
-data_path = '../data/Temperature/storage/final_data_temp'
+data_path = './../../data/Temperature/storage/final_data_temp'
 file_name = 'temp_data_daily_2006_2024.csv'
 file_path = os.path.join(data_path, file_name)
 
@@ -52,12 +52,12 @@ temp_data = import_data(file_path, 0)
 
 # %%
 # Import the oil prices data
-data_path = '../data/Oil_price_brent/Brent_oil_cleaned.csv'
+data_path = './../../data/Oil_price_brent/Brent_oil_cleaned.csv'
 oil_prices = pd.read_csv(data_path)
 
 # %%
 # Import the gas prices data
-data_path = '../data/Gas_price/storage/TTF/'
+data_path = './../../data/Gas_price/storage/TTF/'
 file_name = 'TTF_final.csv'
 file_path = os.path.join(data_path, file_name)
 
@@ -113,7 +113,7 @@ data.set_index('Date', inplace=True)
 # %%
 data
 # %% Import the BEV_vehicle data and merge it with the existing data
-data_path = '../data/BEV_vehicles/storage/BEV_vehicles_per_day.csv'
+data_path = './../../data/BEV_vehicles/storage/BEV_vehicles_per_day.csv'
 bev_data = pd.read_csv(data_path)
 
 # %% Now merge the data but make sure to keep the years before 2010 and insert a "0" for missing values in the DailyVehicles column
@@ -152,7 +152,7 @@ power_data.set_index('date', inplace=True)
 
 
 # %%# ---------------------------------------- Importing the power import/export data ----------------------------------------##
-data_path = '../data/Power_import_export/storage/'
+data_path = './../../data/Power_import_export/storage/'
 file_name = 'power_import_export_cleaned.csv'
 file_path = os.path.join(data_path, file_name)
 power_import_export = pd.read_csv(file_path)
@@ -195,13 +195,60 @@ if 'Day_ahead_price' in final_data.columns:
     # Reorder the DataFrame's columns
     final_data = final_data[cols]
 
+
+# %%
+# Rename column "Hard Coal" to "Hard_coal"
+final_data.rename(columns={'Hard Coal (GWh)': 'Hard_coal (GWh)'}, inplace=True)
+# Rename column Natural Gas to Natural_gas
+final_data.rename(
+    columns={'Natural Gas (GWh)': 'Natural_gas (GWh)'}, inplace=True)
+# Rename column "Nuclear" to "Nuclear_energy"
+final_data.rename(
+    columns={'Nuclear (GWh)': 'Nuclear_energy (GWh)'}, inplace=True)
+# Rename column "Pumped Storage generation" to "Pumped_storage_generation"
+final_data.rename(columns={
+                  'Pumped storage generation (GWh)': 'Pumped_storage_generation (GWh)'}, inplace=True)
+# Rename column "Solar" to "Solar_energy"
+final_data.rename(columns={'Solar (GWh)': 'Solar_energy (GWh)'}, inplace=True)
+# Rename column "Wind offshore (GWh)" to "Wind_offshore (GWh)"
+final_data.rename(
+    columns={'Wind offshore (GWh)': 'Wind_offshore (GWh)'}, inplace=True)
+# Rename column "Wind onshore (GWh)" to "Wind_onshore (GWh)"
+final_data.rename(
+    columns={'Wind onshore (GWh)': 'Wind_onshore (GWh)'}, inplace=True)
+# Rename column "net_total_export_import (GWh)" to "Net_total_export_import (GWh)"
+final_data.rename(columns={
+                  'net_total_export_import (GWh)': 'Net_total_export_import (GWh)'}, inplace=True)
+# Rename column "Temperature" to "Temperature (°C)"
+final_data.rename(columns={'Temperature': 'Temperature (°C)'}, inplace=True)
+# Rename column "Wind_speed" to "Wind_speed (m/s)"
+final_data.rename(columns={'Wind_speed': 'Wind_speed (m/s)'}, inplace=True)
+# Rename column "Solar_radiation" to "Solar_radiation (W/m2)"
+final_data.rename(
+    columns={'Solar_radiation': 'Solar_radiation (W/m2)'}, inplace=True)
+# rename column "Day_ahead_price" to "Day_ahead_price (EUR/MWh)"
+final_data.rename(
+    columns={'Day_ahead_price': 'Day_ahead_price (€/MWh)'}, inplace=True)
+# rename column "TTF_gas_price (EUR/MWh)" to "TTF_gas_price (€/MWh)"
+final_data.rename(
+    columns={'TTF_gas_price (EUR/MWh)': 'TTF_gas_price (€/MWh)'}, inplace=True)
+
+# Reset the index
+final_data.reset_index(inplace=True)
+final_data.rename(columns={'date': 'Date'}, inplace=True)
+
+# Set Date column as index
+final_data.set_index('Date', inplace=True)
+
+
 # %%
 final_data
 
+
 # %% Save final data to a csv file
-data_path_final = '../data/Final_data/'
+data_path_final = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/Final_data/'
 file_name_final = 'final_data.csv'
-file_path_final = os.path.join(data_path, file_name)
+file_path_final = os.path.join(data_path_final, file_name_final)
 final_data.to_csv(file_path_final)
 
 # %%

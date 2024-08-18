@@ -1,0 +1,81 @@
+import pandas as pd
+from prophet import Prophet
+from prophet.plot import plot_plotly, plot_components_plotly
+import plotly.graph_objs as go
+from plotly.subplots import make_subplots
+import utils
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+from prophet.serialize import model_to_json, model_from_json
+from prophet.utilities import regressor_coefficients
+
+
+# Load the trained model
+with open('prophet_model.json', 'r') as fin:
+    model = model_from_json(fin.read())  # Load model
+
+
+def load_and_prepare_data(file_path):
+    """
+    Load energy prices data from a CSV file, ensure chronological order, and convert 'Date' to datetime.
+    """
+    valid_data = pd.read_csv(file_path, parse_dates=['Date'])
+    valid_data['Date'] = pd.to_datetime(valid_data['Date'])
+    valid_data.sort_values('Date', inplace=True)
+    valid_data.set_index('Date', inplace=True)
+    valid_data = pd.DataFrame(valid_data)
+    return valid_data
+
+
+# Load the validation data
+valid_data = load_and_prepare_data(
+    './../../data/Application_data/Final_application_data/final_application_data.csv')
+valid_data = valid_data.reset_index()
+valid_data = valid_data.rename(
+    columns={'Date': 'ds', 'Day_ahead_price (€/MWh)': 'y'})
+
+# Check for NaNs and fill them if needed
+valid_data.isnull().sum()
+
+# Create a future dataframe using the number of periods equal to the length of the validation data
+future_dates = model.make_future_dataframe(
+    periods=valid_data.shape[0], freq='1D')
+
+# Add the necessary regressors from valid_data to the future_dates
+for column in valid_data.columns:
+    if column != 'ds':  # We do not need to add the 'ds' column as it is already in future_dates
+        future_dates[column] = valid_data[column]
+
+# Fill any missing values in future_dates
+future_dates.fillna(method='ffill', inplace=True)  # Forward fill
+# Backward fill as a fallback
+future_dates.fillna(method='bfill', inplace=True)
+
+# Make predictions
+forecast = model.predict(future_dates)
+
+# Plotting
+plt.figure(figsize=(10, 6))
+plt.plot(valid_data['ds'], valid_data['y'], 'k.',
+         label='Historical Data')  # Historical data
+plt.plot(forecast['ds'], forecast['yhat'], 'b-',
+         label='Forecast')  # Forecasted data
+plt.fill_between(forecast['ds'], forecast['yhat_lower'],
+                 forecast['yhat_upper'], color='blue', alpha=0.2)  # Confidence intervals
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.title('Historical Data and Forecast')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Calculate error metrics for the validation period
+mse = mean_squared_error(valid_data['y'], forecast['yhat'])
+mae = mean_absolute_error(valid_data['y'], forecast['yhat'])
+rmse = np.sqrt(mse)
+mape = np.mean(
+    np.abs((forecast['yhat'] - valid_data['y']) / valid_data['y'])) * 100
+
+# Print the metrics
+print(f"MSE: {mse:.2f}, MAE: {mae:.2f}, RMSE: {rmse:.2f}, MAPE: {mape:.2f}%")

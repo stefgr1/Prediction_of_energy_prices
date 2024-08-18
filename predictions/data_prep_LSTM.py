@@ -3,7 +3,7 @@ from typing import Tuple
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-from linear_regression import load_and_prepare_data
+from Linear_regression import load_and_prepare_data
 
 sys.path.append(
     '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions')
