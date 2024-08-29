@@ -20,7 +20,9 @@ down_three_steps = up_three_steps / 'data' / 'Application_data' / 'Import_export
 print("Final path:", down_three_steps)
 # %%
 # Load the data
-data = pd.read_csv(down_three_steps / 'stromsaldo.csv')
+data = pd.read_csv(down_three_steps /
+                   'electricity_balance_agora_march_july.csv')
+
 # %%
 
 # %% Change the date_id column just to normal date column
@@ -43,7 +45,7 @@ data.rename(
 
 # %% save the data to a new csv file with different name
 # Save the DataFrame to a new CSV file
-new_file_name = 'power_import_export_März_Juni.csv'
+new_file_name = 'power_import_export_march_july.csv'
 
 # %% save file under new name in the same directory
 new_file_path = down_three_steps / new_file_name

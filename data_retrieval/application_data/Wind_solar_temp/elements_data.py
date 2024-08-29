@@ -141,17 +141,33 @@ def combine_data(solar_data, wind_data, temp_data):
     - DataFrame containing combined data with solar radiation, wind speed, and temperature.
     """
     # Ensure all data frames are aligned on the same date index
+    if solar_data.empty or wind_data.empty or temp_data.empty:
+        print("Warning: One or more data frames are empty. Check data loading process.")
+        # Return an empty DataFrame if any of the input DataFrames are empty.
+        return pd.DataFrame()
+
     resulting_df = pd.concat([solar_data, wind_data, temp_data], axis=1)
-    resulting_df.columns = [
-        'Solar Radiation (W/m²)', 'Wind Speed (m/s)', 'Temperature (°C)']
+
+    if resulting_df.empty:
+        print("Warning: Combined data is empty. Check individual data sources.")
+        return resulting_df
+
+    # Check if resulting_df has the expected number of columns before setting column names
+    if resulting_df.shape[1] == 3:
+        resulting_df.columns = [
+            'Solar Radiation (W/m²)', 'Wind Speed (m/s)', 'Temperature (°C)']
+    else:
+        print(
+            f"Unexpected number of columns in the resulting DataFrame: {resulting_df.shape[1]}")
+
     return resulting_df
 
 
 # Assuming you have already loaded and processed the data as shown in previous examples
 directory = down_three_steps
-solar_data = load_and_process_data(directory, 'Solar', 3, 6, 2024)
-wind_data = load_and_process_data(directory, 'Wind', 3, 6, 2024)
-temp_data = load_and_process_data(directory, 'Temp', 3, 6, 2024)
+solar_data = load_and_process_data(directory, 'Solar', 3, 7, 2024)
+wind_data = load_and_process_data(directory, 'Wind', 3, 7, 2024)
+temp_data = load_and_process_data(directory, 'Temp', 3, 7, 2024)
 
 aggregated_solar_data = aggregate_data(
     solar_data, 'date', 'Globalstrahlung (W/m²)')
