@@ -1,14 +1,12 @@
 # Data Import and Preparation
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import os
+
 
 # Load the data
 
 
-def load_and_prepare_data(file_path, start_test_date_str):
+def load_and_prepare_data(file_path):
     """
     Load data, convert dates, and ensure chronological order.
     """
@@ -17,8 +15,4 @@ def load_and_prepare_data(file_path, start_test_date_str):
     df.sort_values('Date', inplace=True)
     df.reset_index(drop=True, inplace=True)
 
-    start_test_date = pd.to_datetime(start_test_date_str)
-    train_df = df.loc[df['Date'] < start_test_date]
-    test_df = df.loc[df['Date'] >= start_test_date]
-
-    return train_df, test_df
+    return df
