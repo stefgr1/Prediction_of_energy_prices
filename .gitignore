@@ -1,2 +1,6 @@
 *.csv
 *.h
+*.yaml
+*.yml
+*.ckpt
+*.tar
