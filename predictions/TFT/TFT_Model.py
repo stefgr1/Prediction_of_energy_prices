@@ -1,9 +1,13 @@
-from datetime import datetime  # For creating a timestamp
+import shutil
 import os
+import random
+import numpy as np
 import traceback
 import torch
 import pandas as pd
 import optuna
+from pytorch_lightning.callbacks import EarlyStopping
+from datetime import datetime
 from sklearn.preprocessing import MaxAbsScaler
 from darts import TimeSeries
 from darts.models import TFTModel
@@ -13,11 +17,22 @@ from darts.utils.callbacks import TFMProgressBar
 import plotly.graph_objects as go
 from pytorch_lightning import loggers as pl_loggers
 
-from pytorch_lightning.callbacks import EarlyStopping
+
+def set_random_seed(seed=42):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+
+
+set_random_seed(42)
+
 early_stop_callback = EarlyStopping(
     monitor='train_loss', patience=10, verbose=True
 )
 
+# Create scaler objects
 scaler_series = Scaler(MaxAbsScaler())
 scaler_covariates = Scaler(MaxAbsScaler())
 
@@ -43,7 +58,7 @@ def prepare_time_series(df_train, df_test, covariates_columns):
     future_covariates_train = TimeSeries.from_dataframe(
         df_train, 'Date', covariates_columns).astype('float32')
 
-    max_input_chunk_length = 200  # Adjust based on hyperparameter tuning
+    max_input_chunk_length = 200
     required_covariate_start = series_test.start_time(
     ) - pd.DateOffset(days=(max_input_chunk_length - 1))
     required_covariate_end = series_test.end_time()

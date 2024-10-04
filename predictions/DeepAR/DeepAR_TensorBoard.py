@@ -1,9 +1,12 @@
-from datetime import datetime  # For creating a timestamp
+from datetime import datetime
 import os
 import traceback
 import torch
 import pandas as pd
 import optuna
+import random
+import numpy as np
+
 from sklearn.preprocessing import MaxAbsScaler
 from darts import TimeSeries
 from darts.models import RNNModel
@@ -13,11 +16,21 @@ from darts.utils.likelihood_models import GaussianLikelihood
 from darts.utils.callbacks import TFMProgressBar
 import plotly.graph_objects as go
 from pytorch_lightning import loggers as pl_loggers
-
 from pytorch_lightning.callbacks import EarlyStopping
 early_stop_callback = EarlyStopping(
     monitor='train_loss', patience=10, verbose=True
 )
+
+
+def set_random_seed(seed=42):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+
+
+set_random_seed(42)
 
 scaler_series = Scaler(MaxAbsScaler())
 scaler_covariates = Scaler(MaxAbsScaler())
@@ -146,7 +159,7 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     dropout = trial.suggest_float('dropout', 0.0, 0.5) if n_layers > 1 else 0.0
     learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-1, log=True)
     batch_size = trial.suggest_categorical('batch_size', [16, 32, 64])
-    input_chunk_length = trial.suggest_int('input_chunk_length', 30, 100)
+    input_chunk_length = trial.suggest_int('input_chunk_length', 30, 200)
 
     training_length = max(200, input_chunk_length)
 
@@ -163,7 +176,7 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
         dropout=dropout,
         likelihood=GaussianLikelihood(),
         batch_size=batch_size,
-        n_epochs=optuna_epochs,  # Use optuna_epochs from the main part
+        n_epochs=optuna_epochs,
         optimizer_kwargs={'lr': learning_rate},
         random_state=42,
         save_checkpoints=False,
@@ -173,7 +186,7 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
             'accelerator': 'gpu',
             'devices': 1,
             'enable_progress_bar': True,
-            'logger': tb_logger,  # Pass the logger here
+            'logger': tb_logger,
             'enable_model_summary': False,
             'callbacks': [early_stop_callback, TFMProgressBar(enable_train_bar_only=True)],
         }
@@ -184,18 +197,29 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
         model.fit(series_train_scaled,
                   future_covariates=future_covariates_train_scaled, verbose=False)
 
-        # Predict and calculate RMSE
+        # Predict and calculate metrics
         n = len(series_test_scaled)
         forecast_val = model.predict(
             n=n, future_covariates=future_covariates_for_prediction_scaled)
-        error = rmse(series_test_scaled, forecast_val)
+
+        # Calculate error metrics
+        rmse_val = rmse(series_test_scaled, forecast_val)
+        mape_val = mape(series_test_scaled, forecast_val)
+        mae_val = mae(series_test_scaled, forecast_val)
+        mse_val = mse(series_test_scaled, forecast_val)
+
+        # Log the error metrics in the trial object
+        trial.set_user_attr('rmse', rmse_val)
+        trial.set_user_attr('mape', mape_val)
+        trial.set_user_attr('mae', mae_val)
+        trial.set_user_attr('mse', mse_val)
 
     except Exception as e:
         print(f'Exception during model training: {e}')
         traceback.print_exc()
         return float('inf')
 
-    return error
+    return rmse_val
 
 
 def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs):
@@ -281,6 +305,37 @@ def save_results(forecast, test_series, scaler_series, fig, base_path):
     error_metrics.to_csv(metrics_csv_path, index=False)
 
 
+def inspect_optuna_trials(study):
+    """
+    Inspect and print the error metrics from each trial in the Optuna study.
+    """
+    print("Trial results with error metrics:")
+    for trial in study.trials:
+        trial_number = trial.number
+        rmse_val = trial.user_attrs.get('rmse', 'N/A')
+        mape_val = trial.user_attrs.get('mape', 'N/A')
+        mae_val = trial.user_attrs.get('mae', 'N/A')
+        mse_val = trial.user_attrs.get('mse', 'N/A')
+
+        print(f"Trial {trial_number}:")
+        print(f"  RMSE: {rmse_val}")
+        print(f"  MAPE: {mape_val}%")
+        print(f"  MAE: {mae_val}")
+        print(f"  MSE: {mse_val}")
+
+
+def inspect_best_trial(study):
+    """
+    Inspect and print the error metrics from the best trial in the Optuna study.
+    """
+    best_trial = study.best_trial
+    print(f"Best Trial {best_trial.number}:")
+    print(f"  RMSE: {best_trial.user_attrs.get('rmse', 'N/A')}")
+    print(f"  MAPE: {best_trial.user_attrs.get('mape', 'N/A')}%")
+    print(f"  MAE: {best_trial.user_attrs.get('mae', 'N/A')}")
+    print(f"  MSE: {best_trial.user_attrs.get('mse', 'N/A')}")
+
+
 # Main execution block
 if __name__ == "__main__":
 
@@ -329,6 +384,10 @@ if __name__ == "__main__":
     forecast = best_model.predict(
         n=n, future_covariates=future_covariates_for_prediction_scaled)
     forecast = scaler_series.inverse_transform(forecast)
+
+    # Inspect the error metrics from each trial in the Optuna study
+    inspect_optuna_trials(study)
+    inspect_best_trial(study)
 
     # Plot and save results
     fig = plot_forecast(series_test, forecast)

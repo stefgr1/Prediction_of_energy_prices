@@ -1,0 +1,246 @@
+import shutil
+import os
+import random
+import numpy as np
+import traceback
+import torch
+import pandas as pd
+import optuna
+from pytorch_lightning.callbacks import EarlyStopping
+from datetime import datetime
+from sklearn.preprocessing import MaxAbsScaler
+from darts import TimeSeries
+from darts.models import TFTModel
+from darts.metrics import mape, mae, rmse, mse
+from darts.dataprocessing.transformers import Scaler
+from darts.utils.callbacks import TFMProgressBar
+import plotly.graph_objects as go
+from pytorch_lightning import loggers as pl_loggers
+
+# Set the random seed
+
+
+def set_random_seed(seed=42):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+
+
+set_random_seed(42)
+
+# Early stopping callback
+early_stop_callback = EarlyStopping(
+    monitor='train_loss', patience=10, verbose=True)
+
+# Create scaler object for series
+scaler_series = Scaler(MaxAbsScaler())
+
+
+def load_and_prepare_data(file_path):
+    """
+    Load energy prices data from a CSV file, ensure chronological order, and convert 'Date' to datetime.
+    """
+    df = pd.read_csv(file_path)
+    df.sort_values('Date', inplace=True)
+    df['Date'] = pd.to_datetime(df['Date'])
+    return df
+
+
+def prepare_time_series(df, target_column):
+    """
+    Prepare time series object for training.
+    """
+    series = TimeSeries.from_dataframe(
+        df, 'Date', target_column).astype('float32')
+    return series
+
+
+def scale_data(series):
+    """
+    Scale the time series data.
+    """
+    scaler_series = Scaler(MaxAbsScaler())
+    series_scaled = scaler_series.fit_transform(series)
+    return series_scaled, scaler_series
+
+
+def create_logger():
+    """
+    Create a TensorBoard logger with a unique log folder for each run.
+    """
+    timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
+    log_dir = f'./TFT/logs/{timestamp}'
+    os.makedirs(log_dir, exist_ok=True)
+    return pl_loggers.TensorBoardLogger(save_dir=log_dir, name='TFT', default_hp_metric=False)
+
+
+def train_model(best_params, series_scaled, best_model_epochs):
+    """
+    Train the TFT model with the best hyperparameters found by Optuna.
+    """
+    tb_logger = create_logger()
+
+    best_model = TFTModel(
+        input_chunk_length=best_params['input_chunk_length'],
+        output_chunk_length=1,
+        hidden_size=best_params['hidden_dim'],
+        lstm_layers=best_params['n_layers'],
+        dropout=best_params.get('dropout', 0.0),
+        batch_size=best_params['batch_size'],
+        n_epochs=best_model_epochs,  # Use best model epochs from main
+        optimizer_kwargs={'lr': best_params['learning_rate']},
+        random_state=42,
+        add_relative_index=True,
+        pl_trainer_kwargs={
+            'accelerator': 'cpu',
+            'devices': 1,
+            'enable_progress_bar': True,
+            'logger': tb_logger,
+            'enable_model_summary': False,
+        }
+    )
+
+    # Train the model
+    best_model.fit(series_scaled, verbose=True)
+
+    return best_model
+
+
+def objective(trial, series_scaled, optuna_epochs):
+    """
+    Optuna objective function for TFT model hyperparameter tuning.
+    """
+    hidden_dim = trial.suggest_int('hidden_dim', 16, 64)
+    n_layers = trial.suggest_int('n_layers', 1, 6)
+    dropout = trial.suggest_float('dropout', 0.0, 0.5)
+    learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-1, log=True)
+    batch_size = trial.suggest_categorical('batch_size', [16, 32, 64])
+    input_chunk_length = trial.suggest_int('input_chunk_length', 30, 200)
+
+    # Check for NaN in data
+    if series_scaled.pd_dataframe().isnull().values.any():
+        print(
+            f"NaN values detected in the input data during trial {trial.number}")
+        return float('inf')
+
+    # Create logger for the trial
+    tb_logger = create_logger()
+
+    # Initialize TFT Model
+    model = TFTModel(
+        input_chunk_length=input_chunk_length,
+        output_chunk_length=1,
+        hidden_size=hidden_dim,
+        lstm_layers=n_layers,
+        dropout=dropout,
+        batch_size=batch_size,
+        n_epochs=optuna_epochs,
+        optimizer_kwargs={'lr': learning_rate},
+        random_state=42,
+        add_relative_index=True,
+        pl_trainer_kwargs={
+            'accelerator': 'cpu',
+            'devices': 1,
+            'enable_progress_bar': True,
+            'logger': tb_logger,
+            'gradient_clip_val': 0.5,
+            'enable_model_summary': False,
+            'callbacks': [early_stop_callback, TFMProgressBar(enable_train_bar_only=True)],
+        }
+    )
+
+    try:
+        # Train the model
+        model.fit(series_scaled, verbose=False)
+
+        # Predict the next two years (730 days)
+        forecast_val = model.predict(n=730)
+
+    except Exception as e:
+        print(f'Exception during model training: {e}')
+        traceback.print_exc()
+        return float('inf')
+
+    return forecast_val
+
+
+def run_optuna_optimization(series_scaled, optuna_trials, optuna_epochs):
+    """
+    Run Optuna optimization to find the best hyperparameters for TFT.
+    """
+    study = optuna.create_study(direction='minimize')
+    study.optimize(lambda trial: objective(
+        trial, series_scaled, optuna_epochs), n_trials=optuna_trials)
+
+    best_params = study.best_params
+    print('Best hyperparameters:')
+    for key, value in best_params.items():
+        print(f'  {key}: {value}')
+
+    return best_params, study
+
+
+def plot_forecast(forecast):
+    """
+    Plot the forecast for the next two years using Plotly.
+    """
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=forecast.time_index,
+        y=forecast.values().squeeze(),
+        mode='lines',
+        name='Forecast',
+        line=dict(color='red')
+    ))
+
+    fig.update_layout(
+        title='TFT Forecast for Solar Radiation',
+        xaxis_title='Date',
+        yaxis_title='Solar Radiation (W/m2)',
+        template='plotly'
+    )
+
+    fig.show()
+
+    return fig
+
+
+# Main execution block
+if __name__ == "__main__":
+
+    # Load the data and change the target column to Solar_radiation
+    base_path = './'
+    df = load_and_prepare_data(os.path.join(
+        base_path, 'data/Final_data/final_data_july.csv'))
+
+    # Use Solar_radiation (W/m2) as the target
+    target_column = 'Solar_radiation (W/m2)'
+
+    # Prepare and scale the time series
+    series_train = prepare_time_series(df, target_column)
+    series_train_scaled, scaler_series = scale_data(series_train)
+
+    # Optuna settings
+    optuna_epochs = 5  # Define the number of epochs for Optuna trials
+    optuna_trials = 10  # Define the number of trials for Optuna
+
+    # Run Optuna optimization
+    best_params, study = run_optuna_optimization(
+        series_train_scaled, optuna_trials, optuna_epochs)
+
+    # Train the best model
+    best_model_epochs = 10  # Define the number of epochs for the best model
+    best_model = train_model(
+        best_params, series_train_scaled, best_model_epochs)
+
+    # Make predictions for the next two years (730 days)
+    forecast = best_model.predict(n=730)
+
+    # Inverse transform the forecasted values
+    forecast = scaler_series.inverse_transform(forecast)
+
+    # Plot the forecast
+    fig = plot_forecast(forecast)
