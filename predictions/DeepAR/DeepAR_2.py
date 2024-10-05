@@ -62,7 +62,7 @@ def prepare_time_series(df_train, df_test, covariates_columns):
     future_covariates_train = TimeSeries.from_dataframe(
         df_train, 'Date', covariates_columns).astype('float32')
 
-    max_input_chunk_length = 200  # Adjust based on hyperparameter tuning
+    max_input_chunk_length = 300  # Adjust based on hyperparameter tuning
     required_covariate_start = series_test.start_time(
     ) - pd.DateOffset(days=(max_input_chunk_length - 1))
     required_covariate_end = series_test.end_time()
@@ -126,7 +126,7 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
     Train the RNN model with the best hyperparameters found by Optuna.
     A separate TensorBoard logger is created for this training.
     """
-    best_training_length = max(200, best_params['input_chunk_length'])
+    best_training_length = max(300, best_params['input_chunk_length'])
 
     # Create a new logger specifically for the best model training
     tb_logger = create_logger(best_model=True)
@@ -146,7 +146,7 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
         optimizer_kwargs={'lr': best_params['learning_rate']},
         random_state=42,
         pl_trainer_kwargs={
-            'accelerator': 'gpu',
+            'accelerator': 'gpu' if torch.cuda.is_available() else 'cpu', 
             'devices': 1,
             'enable_progress_bar': True,
             'logger': tb_logger,
@@ -383,24 +383,24 @@ if __name__ == "__main__":
         series_train, series_test, future_covariates_train, future_covariates_for_prediction)
 
     # Parameters for epochs and trials
-    optuna_trials = 2  # Define the number of Optuna trials
-    optuna_epochs = 1  # Define the number of epochs per Optuna trial
-    best_model_epochs = 1  # Define the number of epochs for the best model
+    OPTUNA_TRIALS = 250  # Define the number of Optuna trials
+    OPTUNA_EPOCHS = 50  # Define the number of epochs per Optuna trial
+    BEST_MODEL_EPOCHS = 50  # Define the number of epochs for the best model
 
     # Run Optuna optimization and get the study and best parameters
     best_params, study = run_optuna_optimization(
-        series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs)
+        series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, OPTUNA_TRIALS, OPTUNA_EPOCHS)
 
     # Train the best model, passing the trial number and best_model_epochs
     best_model = train_best_model(
-        best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs)
+        best_params, series_train_scaled, future_covariates_train_scaled, BEST_MODEL_EPOCHS)
 
     # Ensure the models directory exists
     models_dir = os.path.join(base_path, 'predictions/DeepAR/')
     os.makedirs(models_dir, exist_ok=True)
 
     # Save the best model
-    model_save_path = os.path.join(models_dir, f'best_deep_ar_model_epochs_{optuna_epochs}.pth')
+    model_save_path = os.path.join(models_dir, f'best_deep_ar_model_epochs_{OPTUNA_EPOCHS}.pth')
     best_model.save(model_save_path)
     print(f"Best model saved at: {model_save_path}")
 
@@ -417,4 +417,4 @@ if __name__ == "__main__":
 
     # Plot and save results
     fig = plot_forecast(series_test, forecast)
-    save_results(forecast, series_test_scaled, scaler_series, fig, base_path, optuna_epochs)
+    save_results(forecast, series_test_scaled, scaler_series, fig, base_path, OPTUNA_EPOCHS)

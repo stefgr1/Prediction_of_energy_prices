@@ -29,7 +29,7 @@ def sanitize_filename(covariate):
 
 # Define the parameter grid
 param_dist = {  
-    'changepoint_prior_scale': [0.001, 0.005, 0.01, 0.05, 0.1, 0.25, 0.5],
+    'changepoint_prior_scale': [0.001, 0.005, 0.01, 0.1, 0.25, 0.5],
     'seasonality_prior_scale': [0.01, 0.05, 1, 5, 7, 10],
     'holidays_prior_scale': [0.01, 0.05, 1, 5, 7, 10],
     'seasonality_mode': ['additive', 'multiplicative'],
