@@ -17,6 +17,7 @@ from darts.utils.callbacks import TFMProgressBar
 import plotly.graph_objects as go
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import EarlyStopping
+
 early_stop_callback = EarlyStopping(
     monitor='train_loss', patience=10, verbose=True
 )
@@ -28,13 +29,6 @@ def set_random_seed(seed=42):
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
-
-
-set_random_seed(42)
-
-scaler_series = Scaler(MaxAbsScaler())
-scaler_covariates = Scaler(MaxAbsScaler())
-
 
 def load_and_prepare_data(file_path):
     """
@@ -341,6 +335,11 @@ if __name__ == "__main__":
 
     # Define base path
     base_path = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/'
+
+    set_random_seed(42)
+
+    scaler_series = Scaler(MaxAbsScaler())
+    scaler_covariates = Scaler(MaxAbsScaler())
 
     # Load in the train and test data
     train_df = load_and_prepare_data(

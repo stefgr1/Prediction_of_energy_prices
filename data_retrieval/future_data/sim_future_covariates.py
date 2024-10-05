@@ -101,7 +101,7 @@ for covariate in covariates:
         changepoint_prior_scale=best_params['changepoint_prior_scale'],
         holidays_prior_scale=best_params['holidays_prior_scale'], 
         seasonality_prior_scale=best_params['seasonality_prior_scale'], 
-        yearly_seasonality=20,
+        yearly_seasonality="auto",
         weekly_seasonality=weekly_seasonality,  
         daily_seasonality=False
     )
@@ -127,6 +127,6 @@ for covariate in covariates:
     forecast_final.rename(columns={'ds': 'Date', 'yhat': covariate}, inplace=True)
     forecast_final = forecast_final.round(2)
     forecast_final.set_index('Date', inplace=True)
-    forecast_final.loc['2024-07-29':].to_csv(f'{save_dir}forecasted_{covariate}.csv')
+    forecast_final.to_csv(f'{save_dir}forecasted_{covariate}.csv')
 
 print("All covariates processed.")

@@ -11,5 +11,8 @@
 #SBATCH --mail-user=zxoul27@student.uni-tuebingen.de
 #SBATCH --mail-type=BEGIN,END,FAIL
 
-/pfs/work7/workspace/scratch/tu_zxoul27-master_thesis/miniconda3/envs/master_thesis/bin/python sim_future_covariates.py
+# Set up the correct library paths
+export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
+
+srun /pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/energy/bin/python sim_future_covariates.py
 

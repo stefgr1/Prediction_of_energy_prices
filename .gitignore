@@ -4,3 +4,5 @@
 *.yml
 *.ckpt
 *.tar
+*.out
+*.localdomain

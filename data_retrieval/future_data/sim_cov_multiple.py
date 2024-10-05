@@ -8,6 +8,8 @@ from prophet import Prophet
 from prophet.diagnostics import cross_validation, performance_metrics
 from concurrent.futures import ProcessPoolExecutor
 import logging
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 logging.basicConfig(filename='error.log', level=logging.ERROR)
 
@@ -19,6 +21,11 @@ def load_and_prepare_data(file_path):
     df.set_index('Date', inplace=True)
     df = df.asfreq('D')  # Ensure daily frequency
     return df
+
+# Sanitize filenames to avoid issues with special characters in paths
+def sanitize_filename(covariate):
+    # Replace special characters with underscores or remove them
+    return covariate.replace(' ', '_').replace('/', '_').replace('(', '').replace(')', '')
 
 # Define the parameter grid
 param_dist = {  
@@ -64,8 +71,22 @@ def evaluate_params(params_df):
         logging.error(f"Error with params {params}: {e}")
         return params, float('inf')
 
+# Corporate identity settings for plots
+SIZE_DEFAULT = 14
+SIZE_LARGE = 16
+plt.rc("font", family="Roboto")  # controls default font
+plt.rc("font", weight="normal")  # controls default font weight
+plt.rc("font", size=SIZE_DEFAULT)  # controls default text sizes
+plt.rc("axes", titlesize=SIZE_LARGE)  # fontsize of the axes title
+plt.rc("axes", labelsize=SIZE_LARGE)  # fontsize of the x and y labels
+plt.rc("xtick", labelsize=SIZE_DEFAULT)  # fontsize of the tick labels
+plt.rc("ytick", labelsize=SIZE_DEFAULT)  # fontsize of the tick labels
+
+# Custom color palette to use for plots
+corporate_colors = ["#2B2F42", "#8D99AE", "#EF233C"]
+
 # Run the process for each covariate assigned to this task
-for covariate in assigned_covariates:
+for covariate in covariates:
     print(f"Task {slurm_task_id} processing covariate: {covariate}")
     
     # Load and prepare data
@@ -94,10 +115,11 @@ for covariate in assigned_covariates:
     best_params = all_params[np.argmin(rmses)]
     print(f"Best params for {covariate}: {best_params}")
 
-    # Save tuning results
+    # Save tuning results using sanitized filenames
+    sanitized_covariate = sanitize_filename(covariate)
     tuning_results = pd.DataFrame([result[0] for result in results])
     tuning_results['average_rmse'] = rmses
-    tuning_results.to_csv(f'{save_dir}{covariate}_tuning_results.csv', index=False)
+    tuning_results.to_csv(f'{save_dir}{sanitized_covariate}_tuning_results.csv', index=False)
     
     # Apply the best parameter configuration to the model
     weekly_seasonality = True if "GWh" in covariate else False  # Set weekly_seasonality based on covariate name
@@ -109,7 +131,7 @@ for covariate in assigned_covariates:
         seasonality_prior_scale=best_params['seasonality_prior_scale'], 
         yearly_seasonality=True,
         weekly_seasonality=weekly_seasonality,  
-        daily_seasonality=False
+        daily_seasonality=False, 
     )
     m.add_country_holidays(country_name='DE')
     m.fit(df_prophet)
@@ -123,4 +145,36 @@ for covariate in assigned_covariates:
     forecast_final.rename(columns={'ds': 'Date', 'yhat': covariate}, inplace=True)
     forecast_final = forecast_final.round(2)
     forecast_final.set_index('Date', inplace=True)
-    forecast_final.loc['2024-07-29':].to_csv(f'{save_dir}forecasted_{covariate}.csv')
+    forecast_final.to_csv(f'{save_dir}forecasted_{sanitized_covariate}.csv')
+
+    # Plot the original data and forecast with improved aesthetics
+    fig, ax = plt.subplots(figsize=(12, 8))  # Increased figure size
+
+    # Plot the original data and forecast
+    ax.plot(df.index, df[covariate], label="Original Data", color=corporate_colors[0], linewidth=2)
+    ax.plot(forecast_final.index, forecast_final[covariate], label="Forecast", color=corporate_colors[2], linewidth=2)
+
+    # Customize the plot
+    ax.set_title(f'{covariate} - Forecast for the next two years', fontsize=SIZE_LARGE, fontweight='bold')
+    ax.set_xlabel("Date", fontsize=SIZE_LARGE)
+    ax.set_ylabel(covariate, fontsize=SIZE_LARGE)
+    ax.legend(loc="best")
+
+    # Rotate x-axis labels for better readability
+    plt.xticks(rotation=45)
+
+    # Format the date axis
+    ax.xaxis.set_major_locator(mdates.AutoDateLocator())
+    ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
+
+    # Use tight layout to prevent cutoffs
+    plt.tight_layout()
+
+    # Save the plot with sanitized filenames
+    plot_filename = f'{save_dir}{sanitized_covariate}_forecast_plot.png'
+    plt.savefig(plot_filename, dpi=300, bbox_inches='tight')  # Use bbox_inches to include all elements
+    plt.close()
+
+    print(f"Plot saved: {plot_filename}")
+
+print("All covariates processed.")
