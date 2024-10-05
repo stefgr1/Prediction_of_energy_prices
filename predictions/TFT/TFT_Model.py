@@ -58,7 +58,7 @@ def prepare_time_series(df_train, df_test, covariates_columns):
     future_covariates_train = TimeSeries.from_dataframe(
         df_train, 'Date', covariates_columns).astype('float32')
 
-    max_input_chunk_length = 300
+    max_input_chunk_length = 200
     required_covariate_start = series_test.start_time(
     ) - pd.DateOffset(days=(max_input_chunk_length - 1))
     required_covariate_end = series_test.end_time()
