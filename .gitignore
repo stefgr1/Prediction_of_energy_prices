@@ -6,3 +6,4 @@
 *.tar
 *.out
 *.localdomain
+*.log
