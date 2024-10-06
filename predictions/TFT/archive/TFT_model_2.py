@@ -105,6 +105,7 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
             'enable_progress_bar': True,
             'logger': tb_logger,
             'enable_model_summary': False,
+            'log_every_n_steps': 20,
         },
     )
 
@@ -145,6 +146,7 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
             'logger': tb_logger,
             'enable_model_summary': False,
             'callbacks': [early_stop_callback, TFMProgressBar(enable_train_bar_only=True)],
+            'log_every_n_steps': 20,
         }
     )
 
@@ -173,10 +175,6 @@ def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled,
                                            series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices), n_trials=optuna_trials)
 
     best_params = study.best_params
-    print('Best hyperparameters:')
-    for key, value in best_params.items():
-        print(f'  {key}: {value}')
-
     return best_params, study
 
 
@@ -235,11 +233,19 @@ def save_results(forecast, test_series, scaler_series, fig, optuna_epochs):
     os.makedirs(os.path.dirname(forecast_plot_path), exist_ok=True)
 
     # Save forecast results and metrics
-    pd.DataFrame(forecast.values().squeeze()).to_csv(forecast_csv_path, index=False)
+    pd.DataFrame({
+        'Date': forecast.time_index,  # Add time index (dates)
+        'Forecast': forecast.values().squeeze()  # Add forecasted values
+    }).to_csv(forecast_csv_path, index=False)  # Save both date and forecast to CSV
+
     fig.write_image(forecast_plot_path)
 
-    error_metrics = pd.DataFrame({'MAE': [mae(test_series, forecast)], 'MAPE': [mape(test_series, forecast)],
-                                  'MSE': [mse(test_series, forecast)], 'RMSE': [rmse(test_series, forecast)]})
+    error_metrics = pd.DataFrame({
+        'MAE': [mae(test_series, forecast)],
+        'MAPE': [mape(test_series, forecast)],
+        'MSE': [mse(test_series, forecast)],
+        'RMSE': [rmse(test_series, forecast)]
+    })
     error_metrics.to_csv(metrics_csv_path, index=False)
 
 def inspect_best_trial(study):
@@ -279,7 +285,7 @@ if __name__ == "__main__":
        'Lag_7_days', 'Day_of_week', 'Month', 'Rolling_mean_7']
 
     MAX_INPUT_CHUNK_LENGTH = 500
-    DEVICES = 4
+    DEVICES = 1
 
     # Prepare time series
     series_train, series_test, future_covariates_train, future_covariates_for_prediction = prepare_time_series(
@@ -290,9 +296,9 @@ if __name__ == "__main__":
         series_train, series_test, future_covariates_train, future_covariates_for_prediction)
 
     # Customizable parameters
-    optuna_epochs = 100  # Define the number of epochs for Optuna trials
-    optuna_trials = 500  # Define the number of trials for Optuna
-    best_model_epochs = 100  # Define the number of epochs for the best model
+    optuna_epochs = 1  # Define the number of epochs for Optuna trials
+    optuna_trials = 1  # Define the number of trials for Optuna
+    best_model_epochs = 1  # Define the number of epochs for the best model
 
     # Run Optuna optimization and get the study and best parameters
     best_params, study = run_optuna_optimization(
@@ -327,3 +333,8 @@ if __name__ == "__main__":
     home_results_dir = os.path.join(base_path, 'predictions/TFT/')
     shutil.copytree(os.path.join(os.getenv('TMPDIR'), 'predictions/TFT/'), home_results_dir, dirs_exist_ok=True)
     print(f"Results copied to {home_results_dir}")
+
+    # ** Print best hyperparameters at the end **
+    print('Best hyperparameters:')
+    for key, value in best_params.items():
+        print(f'  {key}: {value}')

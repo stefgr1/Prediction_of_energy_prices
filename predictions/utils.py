@@ -147,7 +147,12 @@ def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, model
                                   'MSE': [mse(test_series, forecast)], 'RMSE': [rmse(test_series, forecast)]})
     error_metrics.to_csv(metrics_csv_path, index=False)
 
-    forecast.to_csv(forecast_csv_path, index=False)
+    # Save forecast results and metrics
+    forecast_df = pd.DataFrame({
+        'Date': forecast.time_index,  # Add time index (dates)
+        'Forecast': forecast.values().squeeze()  # Add forecasted values
+    })
+    forecast_df.to_csv(forecast_csv_path, index=False)  # Save both date and forecast to CSV
 
     return forecast_plot_path, forecast_csv_path, metrics_csv_path  # Return paths for copying
 

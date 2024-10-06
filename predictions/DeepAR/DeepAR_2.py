@@ -62,6 +62,7 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
             'enable_progress_bar': True,
             'logger': tb_logger,
             'enable_model_summary': False,
+            'log_every_n_steps': 20,
         }
     )
 
@@ -75,14 +76,15 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     """
     Optuna objective function for RNN model hyperparameter tuning.
     """
-    n_layers = trial.suggest_int('n_layers', 1, 5)
+    n_layers = trial.suggest_int('n_layers', 1, 2)
     dropout = trial.suggest_float('dropout', 0.0, 0.5) if n_layers > 1 else 0.0
-    input_chunk_length = trial.suggest_int('input_chunk_length', 30, 150)
+    input_chunk_length = trial.suggest_int('input_chunk_length', 10, 100)
     hidden_dim = trial.suggest_int('hidden_dim', 50, 200)
-    learning_rate = trial.suggest_float('learning_rate', 1e-6, 1e-2, log=True)
-    batch_size = trial.suggest_categorical('batch_size', [16, 32, 64, 128, 256])
+    learning_rate = trial.suggest_float('learning_rate', 1e-7, 1e-3, log=True)
+    batch_size = trial.suggest_categorical('batch_size', [16, 32])
 
-    training_length = max(500, input_chunk_length)
+    # Ensure training_length is larger than input_chunk_length but never larger than 500
+    training_length = trial.suggest_int('training_length', input_chunk_length + 1, 500)
 
     # Create a new logger for each trial
     tb_logger = create_logger(trial.number, model_name='DeepAR')
@@ -91,7 +93,7 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     model = RNNModel(
         model='LSTM',
         input_chunk_length=input_chunk_length,
-        training_length=training_length,
+        training_length=training_length,  # Use the hyperparameter for training_length
         hidden_dim=hidden_dim,
         n_rnn_layers=n_layers,
         dropout=dropout,
@@ -110,6 +112,8 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
             'logger': tb_logger,
             'enable_model_summary': False,
             'callbacks': [early_stop_callback, TFMProgressBar(enable_train_bar_only=True)],
+            'gradient_clip_val': 0.5,  # Clip gradients if they exceed 0.5
+            'log_every_n_steps': 20,
         }
     )
 
@@ -139,6 +143,8 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
         print(f'Exception during model training: {e}')
         traceback.print_exc()
         return float('inf')
+
+    return rmse_val
 
     return rmse_val
 
@@ -184,7 +190,7 @@ if __name__ == "__main__":
     set_random_seed(42)
 
     # Create early stopping callback
-    early_stop_callback = create_early_stopping_callback()
+    early_stop_callback = create_early_stopping_callback(patience = 25)
 
     # Load in the train and test data
     train_df = load_and_prepare_data(os.path.join(base_path, 'data/Final_data/train_df.csv'))
@@ -201,11 +207,11 @@ if __name__ == "__main__":
        'Lag_2_days', 'Lag_3_days', 'Lag_4_days', 'Lag_5_days', 'Lag_6_days',
        'Lag_7_days', 'Day_of_week', 'Month', 'Rolling_mean_7']
 
-    MAX_INPUT_CHUNK_LENGTH = 200
+    MAX_INPUT_CHUNK_LENGTH = 100
     # Parameters for epochs and trials
-    OPTUNA_TRIALS = 500  # Define the number of Optuna trials
-    OPTUNA_EPOCHS = 100  # Define the number of epochs per Optuna trial
-    BEST_MODEL_EPOCHS = 100  # Define the number of epochs for the best model
+    OPTUNA_TRIALS = 1000  # Define the number of Optuna trials
+    OPTUNA_EPOCHS = 49  # Define the number of epochs per Optuna trial
+    BEST_MODEL_EPOCHS = 49  # Define the number of epochs for the best model
     DEVICES = 4
 
     # Prepare time series
@@ -225,7 +231,7 @@ if __name__ == "__main__":
         best_params, series_train_scaled, future_covariates_train_scaled, BEST_MODEL_EPOCHS, DEVICES)
 
     # Use TMPDIR for model saving
-    models_dir = os.getenv('TMPDIR', '/tmp') + '/models/DeepAR/'
+    models_dir = os.getenv('TMPDIR', '/tmp') + '/predictions/DeepAR/'
     os.makedirs(models_dir, exist_ok=True)
 
     # Save best model to TMPDIR
@@ -254,7 +260,12 @@ if __name__ == "__main__":
     print(f"Results copied to {home_results_dir}")
 
     # Copy the model from TMPDIR to the home directory
-    home_model_dir = os.path.join(base_path, 'models/DeepAR/')
+    home_model_dir = os.path.join(base_path, 'predictions/DeepAR/')
     os.makedirs(home_model_dir, exist_ok=True)
     shutil.copy(model_save_path, home_model_dir)
     print(f"Model copied to {home_model_dir}")
+
+    # ** Print best hyperparameters at the end **
+    print('Best hyperparameters:')
+    for key, value in best_params.items():
+        print(f'  {key}: {value}')

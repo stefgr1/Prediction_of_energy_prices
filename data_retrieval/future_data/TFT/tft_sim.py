@@ -87,7 +87,7 @@ def train_model(best_params, series_scaled, best_model_epochs):
         add_relative_index=True,
         pl_trainer_kwargs={
             'accelerator': 'gpu' if torch.cuda.is_available() else 'cpu',
-            'devices': 1 if torch.cuda.is_available() else 0,
+            'devices': 1,
             'enable_progress_bar': True,
             'logger': tb_logger,
             'enable_model_summary': False,
@@ -195,6 +195,10 @@ def plot_forecast(forecast, output_path):
         template='plotly'
     )
 
+    # Ensure the directory exists before saving the plot
+    output_dir = os.path.dirname(output_path)
+    os.makedirs(output_dir, exist_ok=True)  # This creates the directory if it doesn't exist
+
     # Save the figure to the temporary directory
     fig.write_image(output_path)
 
@@ -204,10 +208,10 @@ def plot_forecast(forecast, output_path):
 if __name__ == "__main__":
 
     # Detect if on Mac or Linux and adjust base path accordingly
-    if platform.system() == "Darwin":  # Check if it's macOS
-        base_path = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/'
+    if platform.system() == "Darwin":  # macOS
+        base_path = os.path.expanduser("~/Documents/Masterarbeit/Prediction_of_energy_prices/")
     else:  # Assuming Linux for the cluster
-        base_path = '/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/'
+        base_path = os.getenv('HOME') + '/Prediction_of_energy_prices/'
 
     set_random_seed(42)
 
@@ -228,17 +232,46 @@ if __name__ == "__main__":
     # Run Optuna optimization
     best_params, study = run_optuna_optimization(series_train_scaled, optuna_trials, optuna_epochs)
 
-    # Train the best model
-    best_model_epochs = 1  # Define the number of epochs for the best model
-    best_model = train_model(best_params, series_train_scaled, best_model_epochs)
+    # Ensure the TMPDIR path for storing the model and results
+    tmpdir_path = os.path.join(os.getenv('TMPDIR'), 'predictions/TFT/')
+    os.makedirs(tmpdir_path, exist_ok=True)
 
-    # Make predictions for the next two years (730 days)
-    forecast = best_model.predict(n=730)
+    # Save the best model
+    model_save_path = os.path.join(tmpdir_path, f'best_tft_model_epochs_{optuna_epochs}.pth')
+    best_model = train_model(best_params, series_train_scaled, optuna_epochs)
+    best_model.save(model_save_path)
+    print(f"Best model saved at: {model_save_path}")
 
-    # Inverse transform the forecasted values
+    # Make predictions
+    n = len(series_train_scaled)  # Adjust depending on your test data length
+    forecast = best_model.predict(n=n)
+
     forecast = scaler_series.inverse_transform(forecast)
 
-    # Save the forecast plot in the temporary directory
-    output_path = os.path.join(os.getenv('TMPDIR', '/tmp'), f'tft_forecast_plot_{target_column}.png')
-    plot_forecast(forecast, output_path)
+    # Define output path for the forecast plot
+    output_path = os.path.join(tmpdir_path, f'tft_forecast_plot_{target_column}.png')
+
+    # Plot and save the forecast
+    fig = plot_forecast(forecast, output_path)
     print(f"Forecast plot saved at: {output_path}")
+
+    # Define the home directory where results should be copied
+    home_results_dir = os.path.join(base_path, '/data_retrieval/future_data/TFT')
+    os.makedirs(home_results_dir, exist_ok=True)
+
+    # Copy the results from TMPDIR to the home directory
+    try:
+        if os.path.exists(tmpdir_path):
+            shutil.copytree(tmpdir_path, home_results_dir, dirs_exist_ok=True)
+            print(f"Results copied to {home_results_dir}")
+        else:
+            print(f"Directory {tmpdir_path} does not exist. Skipping copy operation.")
+    except Exception as e:
+        print(f"Error copying results: {e}")
+
+    # ** Print best hyperparameters at the end **
+    print('Best hyperparameters:')
+    for key, value in best_params.items():
+        print(f'  {key}: {value}')
+
+
