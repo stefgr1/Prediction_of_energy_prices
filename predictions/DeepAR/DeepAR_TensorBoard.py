@@ -19,7 +19,7 @@ from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import EarlyStopping
 
 early_stop_callback = EarlyStopping(
-    monitor='train_loss', patience=10, verbose=True
+    monitor='train_loss', patience=20, verbose=True
 )
 
 
@@ -29,6 +29,7 @@ def set_random_seed(seed=42):
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
+
 
 def load_and_prepare_data(file_path):
     """
@@ -363,9 +364,9 @@ if __name__ == "__main__":
         series_train, series_test, future_covariates_train, future_covariates_for_prediction)
 
     # Parameters for epochs and trials
-    optuna_trials = 5  # Define the number of Optuna trials
-    optuna_epochs = 5  # Define the number of epochs per Optuna trial
-    best_model_epochs = 5  # Define the number of epochs for the best model
+    optuna_trials = 1  # Define the number of Optuna trials
+    optuna_epochs = 1  # Define the number of epochs per Optuna trial
+    best_model_epochs = 1  # Define the number of epochs for the best model
 
     # Run Optuna optimization and get the study and best parameters
     best_params, study = run_optuna_optimization(
