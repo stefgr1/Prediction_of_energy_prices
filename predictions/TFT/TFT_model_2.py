@@ -32,9 +32,7 @@ def load_and_prepare_data(file_path):
     df['Date'] = pd.to_datetime(df['Date'])
     return df
 
-
 def prepare_time_series(df_train, df_test, covariates_columns, max_input_chunk_length):
-
     series_train = TimeSeries.from_dataframe(
         df_train, 'Date', 'Day_ahead_price (€/MWh)').astype('float32')
     series_test = TimeSeries.from_dataframe(
@@ -42,8 +40,7 @@ def prepare_time_series(df_train, df_test, covariates_columns, max_input_chunk_l
     future_covariates_train = TimeSeries.from_dataframe(
         df_train, 'Date', covariates_columns).astype('float32')
 
-    required_covariate_start = series_test.start_time(
-    ) - pd.DateOffset(days=(max_input_chunk_length - 1))
+    required_covariate_start = series_test.start_time() - pd.DateOffset(days=(max_input_chunk_length - 1))
     required_covariate_end = series_test.end_time()
 
     future_covariates_full = TimeSeries.from_dataframe(
@@ -86,7 +83,7 @@ def create_logger(trial_number=None, best_model=False):
     return pl_loggers.TensorBoardLogger(save_dir=log_dir, name='TFT', default_hp_metric=False)
 
 
-def train_best_model(best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs):
+def train_best_model(best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs, devices):
     best_training_length = max(500, best_params['input_chunk_length'])
 
     tb_logger = create_logger(best_model=True)
@@ -104,7 +101,7 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
         random_state=42,
         pl_trainer_kwargs={
             'accelerator': 'gpu' if torch.cuda.is_available() else 'cpu',
-            'devices': 2,
+            'devices': devices,
             'enable_progress_bar': True,
             'logger': tb_logger,
             'enable_model_summary': False,
@@ -117,7 +114,7 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
     return best_model
 
 
-def objective(trial, series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs):
+def objective(trial, series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices):
     hidden_dim = trial.suggest_int('hidden_dim', 64, 256)
     n_layers = trial.suggest_int('n_layers', 1, 6)
     dropout = trial.suggest_float('dropout', 0.0, 0.5)
@@ -143,7 +140,7 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
         random_state=42,
         pl_trainer_kwargs={
             'accelerator': 'gpu' if torch.cuda.is_available() else 'cpu',
-            'devices': 1,
+            'devices': devices,
             'enable_progress_bar': True,
             'logger': tb_logger,
             'enable_model_summary': False,
@@ -170,10 +167,10 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     return error
 
 
-def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs):
+def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, devices):
     study = optuna.create_study(direction='minimize')
     study.optimize(lambda trial: objective(trial, series_train_scaled, future_covariates_train_scaled,
-                                           series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs), n_trials=optuna_trials)
+                                           series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices), n_trials=optuna_trials)
 
     best_params = study.best_params
     print('Best hyperparameters:')
@@ -207,12 +204,7 @@ def plot_forecast(test_series, forecast):
         xaxis_title='Date',
         yaxis_title='Day Ahead Price (€/MWh)',
         legend=dict(
-            x=1,
-            y=1,
-            xanchor='right',
-            yanchor='top',
-            bordercolor='black',
-            borderwidth=1
+            x=1, y=1, xanchor='right', yanchor='top', bordercolor='black', borderwidth=1
         ),
         template='plotly'
     )
@@ -243,7 +235,7 @@ def save_results(forecast, test_series, scaler_series, fig, optuna_epochs):
     os.makedirs(os.path.dirname(forecast_plot_path), exist_ok=True)
 
     # Save forecast results and metrics
-    forecast.to_csv(forecast_csv_path, index=False)
+    pd.DataFrame(forecast.values().squeeze()).to_csv(forecast_csv_path, index=False)
     fig.write_image(forecast_plot_path)
 
     error_metrics = pd.DataFrame({'MAE': [mae(test_series, forecast)], 'MAPE': [mape(test_series, forecast)],
@@ -251,9 +243,6 @@ def save_results(forecast, test_series, scaler_series, fig, optuna_epochs):
     error_metrics.to_csv(metrics_csv_path, index=False)
 
 def inspect_best_trial(study):
-    """
-    Inspect and print the error metrics from the best trial in the Optuna study.
-    """
     best_trial = study.best_trial
     print(f"Best Trial {best_trial.number}:")
     print(f"  RMSE: {best_trial.user_attrs.get('rmse', 'N/A')}")
@@ -264,24 +253,19 @@ def inspect_best_trial(study):
 
 # Main execution block
 if __name__ == "__main__":
-
     # Detect if on Mac or Linux and adjust base path accordingly
     if platform.system() == "Darwin":  # Check if it's macOS
         base_path = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/'
     else:  # Assuming Linux for the cluster
-        base_path = '/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/'
+        base_path = os.getenv('HOME') + '/Prediction_of_energy_prices/'
 
     set_random_seed(42)
 
-    early_stop_callback = EarlyStopping(
-        monitor='train_loss', patience=20, verbose=True
-    )
+    early_stop_callback = EarlyStopping(monitor='train_loss', patience=20, verbose=True)
 
     # Load in the train and test data
-    train_df = load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/train_df.csv'))
-    test_df = load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/test_df.csv'))
+    train_df = load_and_prepare_data(os.path.join(base_path, 'data/Final_data/train_df.csv'))
+    test_df = load_and_prepare_data(os.path.join(base_path, 'data/Final_data/test_df.csv'))
 
     # Define future covariates
     future_covariates_columns = ['Solar_radiation (W/m2)', 'Wind_speed (m/s)',
@@ -295,6 +279,7 @@ if __name__ == "__main__":
        'Lag_7_days', 'Day_of_week', 'Month', 'Rolling_mean_7']
 
     MAX_INPUT_CHUNK_LENGTH = 500
+    DEVICES = 4
 
     # Prepare time series
     series_train, series_test, future_covariates_train, future_covariates_for_prediction = prepare_time_series(
@@ -311,11 +296,11 @@ if __name__ == "__main__":
 
     # Run Optuna optimization and get the study and best parameters
     best_params, study = run_optuna_optimization(
-        series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs)
+        series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, DEVICES)
 
     # Train the best model
     best_model = train_best_model(
-        best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs)
+        best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs, DEVICES)
 
     # Use TMPDIR for model saving
     models_dir = os.getenv('TMPDIR', '/tmp') + '/models/TFT/'
@@ -328,8 +313,7 @@ if __name__ == "__main__":
 
     # Make predictions
     n = len(series_test_scaled)
-    forecast = best_model.predict(
-        n=n, future_covariates=future_covariates_for_prediction_scaled)
+    forecast = best_model.predict(n=n, future_covariates=future_covariates_for_prediction_scaled)
 
     forecast = scaler_series.inverse_transform(forecast)
 
@@ -338,3 +322,8 @@ if __name__ == "__main__":
     # Plot and save results
     fig = plot_forecast(series_test, forecast)
     save_results(forecast, series_test_scaled, scaler_series, fig, optuna_epochs)
+
+    # Copy results from TMPDIR to the home directory
+    home_results_dir = os.path.join(base_path, 'predictions/TFT/')
+    shutil.copytree(os.path.join(os.getenv('TMPDIR'), 'predictions/TFT/'), home_results_dir, dirs_exist_ok=True)
+    print(f"Results copied to {home_results_dir}")

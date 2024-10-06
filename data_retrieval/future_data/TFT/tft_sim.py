@@ -4,6 +4,7 @@ import random
 import numpy as np
 import traceback
 import torch
+import platform
 import pandas as pd
 import optuna
 from pytorch_lightning.callbacks import EarlyStopping
@@ -98,7 +99,7 @@ def train_model(best_params, series_scaled, best_model_epochs):
 
     return best_model
 
-def objective(trial, series_scaled, series_test_scaled, optuna_epochs):
+def objective(trial, series_scaled, optuna_epochs):
     """
     Optuna objective function for TFT model hyperparameter tuning.
     """
@@ -131,7 +132,7 @@ def objective(trial, series_scaled, series_test_scaled, optuna_epochs):
         add_relative_index=True,
         pl_trainer_kwargs={
             'accelerator': 'gpu' if torch.cuda.is_available() else 'cpu',
-            'devices': 1 if torch.cuda.is_available() else 0,
+            'devices': 1,
             'enable_progress_bar': True,
             'logger': tb_logger,
             'enable_model_summary': False,
@@ -146,8 +147,8 @@ def objective(trial, series_scaled, series_test_scaled, optuna_epochs):
         # Predict the next two years (730 days)
         forecast_val = model.predict(n=730)
 
-        # Calculate metrics on the test set
-        rmse_value = rmse(series_test_scaled, forecast_val)
+        # Calculate metrics on the test set (we won't have a test set, so skip this step)
+        rmse_value = rmse(series_scaled[-730:], forecast_val)  # Evaluate on last 730 days
 
     except Exception as e:
         print(f'Exception during model training: {e}')
@@ -157,12 +158,12 @@ def objective(trial, series_scaled, series_test_scaled, optuna_epochs):
     # Return RMSE (or another metric) to minimize
     return rmse_value
 
-def run_optuna_optimization(series_scaled, series_test_scaled, optuna_trials, optuna_epochs):
+def run_optuna_optimization(series_scaled, optuna_trials, optuna_epochs):
     """
     Run Optuna optimization to find the best hyperparameters for TFT.
     """
     study = optuna.create_study(direction='minimize')
-    study.optimize(lambda trial: objective(trial, series_scaled, series_test_scaled, optuna_epochs), n_trials=optuna_trials)
+    study.optimize(lambda trial: objective(trial, series_scaled, optuna_epochs), n_trials=optuna_trials)
 
     best_params = study.best_params
     print('Best hyperparameters:')
@@ -186,9 +187,9 @@ def plot_forecast(forecast, output_path):
     ))
 
     fig.update_layout(
-        title='TFT Forecast for Solar Radiation',
+        title='TFT Forecast',
         xaxis_title='Date',
-        yaxis_title='Solar Radiation (W/m2)',
+        yaxis_title='Value',
         template='plotly'
     )
 
@@ -208,33 +209,25 @@ if __name__ == "__main__":
 
     set_random_seed(42)
 
-    early_stop_callback = EarlyStopping(
-        monitor='train_loss', patience=20, verbose=True
-    )
+    # Load in the training data (no test data)
+    df = load_and_prepare_data(os.path.join(base_path, 'data/Final_data/final_data_july.csv'))
 
-    # Load in the train and test data
-    df = load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/final_data_july.csv'))
-
-    # Use Solar_radiation (W/m2) as the target
+    # Use Solar_radiation (W/m2) as the target (or another column)
     target_column = 'Solar_radiation (W/m2)'
 
     # Prepare and scale the time series
     series_train = prepare_time_series(df, target_column)
     series_train_scaled, scaler_series = scale_data(series_train)
 
-    # Create a test set for evaluation (e.g., the last 2 years of the data)
-    series_test_scaled = series_train_scaled[-730:]
-
     # Optuna settings
     optuna_epochs = 1  # Define the number of epochs for Optuna trials
     optuna_trials = 1  # Define the number of trials for Optuna
 
     # Run Optuna optimization
-    best_params, study = run_optuna_optimization(series_train_scaled, series_test_scaled, optuna_trials, optuna_epochs)
+    best_params, study = run_optuna_optimization(series_train_scaled, optuna_trials, optuna_epochs)
 
     # Train the best model
-    best_model_epochs = 3  # Define the number of epochs for the best model
+    best_model_epochs = 1  # Define the number of epochs for the best model
     best_model = train_model(best_params, series_train_scaled, best_model_epochs)
 
     # Make predictions for the next two years (730 days)
