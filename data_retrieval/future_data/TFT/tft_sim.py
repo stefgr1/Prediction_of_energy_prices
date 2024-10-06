@@ -200,9 +200,21 @@ def plot_forecast(forecast, output_path):
 # Main execution block
 if __name__ == "__main__":
 
-    # Load the data and change the target column to Solar_radiation
-    base_path = './'
-    df = load_and_prepare_data(os.path.join(base_path, 'data/Final_data/final_data_july.csv'))
+    # Detect if on Mac or Linux and adjust base path accordingly
+    if platform.system() == "Darwin":  # Check if it's macOS
+        base_path = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/'
+    else:  # Assuming Linux for the cluster
+        base_path = '/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/'
+
+    set_random_seed(42)
+
+    early_stop_callback = EarlyStopping(
+        monitor='train_loss', patience=20, verbose=True
+    )
+
+    # Load in the train and test data
+    df = load_and_prepare_data(
+        os.path.join(base_path, 'data/Final_data/final_data_july.csv'))
 
     # Use Solar_radiation (W/m2) as the target
     target_column = 'Solar_radiation (W/m2)'
