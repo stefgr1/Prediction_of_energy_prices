@@ -5,21 +5,33 @@ import traceback
 import platform
 import plotly.graph_objects as go
 import shutil
+import sys
+import importlib
 from darts import TimeSeries
 from darts.models import RNNModel
 from darts.metrics import mape, mae, rmse, mse
 from darts.utils.likelihood_models import GaussianLikelihood
 from darts.utils.callbacks import TFMProgressBar
 
+# Add the parent directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Import utilities from the utils.py file, located one folder up
-import sys
-sys.path.append('..')  # Add the parent directory to the Python path
-from utils import (
-    check_cuda_availability, set_random_seed, create_early_stopping_callback,
-    create_scalers, load_and_prepare_data, prepare_time_series, scale_data,
-    create_logger, save_results, copy_results_to_home, plot_forecast
-)
+# Dynamically import utils
+utils = importlib.import_module('utils')
+
+# Now you can access functions from utils like this:
+check_cuda_availability = utils.check_cuda_availability
+set_random_seed = utils.set_random_seed
+create_early_stopping_callback = utils.create_early_stopping_callback
+create_scalers = utils.create_scalers
+load_and_prepare_data = utils.load_and_prepare_data
+prepare_time_series = utils.prepare_time_series
+scale_data = utils.scale_data
+create_logger = utils.create_logger
+save_results = utils.save_results
+copy_results_to_home = utils.copy_results_to_home
+plot_forecast = utils.plot_forecast
+
 
 def train_best_model(best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs, devices):
     """
@@ -59,13 +71,13 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
 
     return best_model
 
-def objective(trial, series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices):
+def objective(trial, series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices, early_stop_callback):
     """
     Optuna objective function for RNN model hyperparameter tuning.
     """
     n_layers = trial.suggest_int('n_layers', 1, 5)
     dropout = trial.suggest_float('dropout', 0.0, 0.5) if n_layers > 1 else 0.0
-    input_chunk_length = trial.suggest_int('input_chunk_length', 30, 300)
+    input_chunk_length = trial.suggest_int('input_chunk_length', 30, 150)
     hidden_dim = trial.suggest_int('hidden_dim', 50, 200)
     learning_rate = trial.suggest_float('learning_rate', 1e-6, 1e-2, log=True)
     batch_size = trial.suggest_categorical('batch_size', [16, 32, 64, 128, 256])
@@ -130,13 +142,13 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
 
     return rmse_val
 
-def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, devices):
+def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, devices, early_stop_callback):
     """
     Run Optuna optimization to find the best hyperparameters.
     """
     study = optuna.create_study(direction='minimize')
     study.optimize(lambda trial: objective(trial, series_train_scaled, future_covariates_train_scaled,
-                                           series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices), n_trials=optuna_trials)
+                                           series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices, early_stop_callback), n_trials=optuna_trials)
 
     best_params = study.best_params
     print('Best hyperparameters:')
@@ -189,7 +201,7 @@ if __name__ == "__main__":
        'Lag_2_days', 'Lag_3_days', 'Lag_4_days', 'Lag_5_days', 'Lag_6_days',
        'Lag_7_days', 'Day_of_week', 'Month', 'Rolling_mean_7']
 
-    MAX_INPUT_CHUNK_LENGTH = 300
+    MAX_INPUT_CHUNK_LENGTH = 200
     # Parameters for epochs and trials
     OPTUNA_TRIALS = 500  # Define the number of Optuna trials
     OPTUNA_EPOCHS = 100  # Define the number of epochs per Optuna trial
@@ -206,7 +218,7 @@ if __name__ == "__main__":
 
     # Run Optuna optimization and get the study and best parameters
     best_params, study = run_optuna_optimization(
-        series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, OPTUNA_TRIALS, OPTUNA_EPOCHS, DEVICES)
+        series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, OPTUNA_TRIALS, OPTUNA_EPOCHS, DEVICES, early_stop_callback)
 
     # Train the best model
     best_model = train_best_model(

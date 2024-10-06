@@ -100,17 +100,14 @@ def train_model(best_params, series_scaled, best_model_epochs):
     return best_model
 
 def objective(trial, series_scaled, optuna_epochs):
-    """
-    Optuna objective function for TFT model hyperparameter tuning.
-    """
     hidden_dim = trial.suggest_int('hidden_dim', 16, 64)
     n_layers = trial.suggest_int('n_layers', 1, 6)
     dropout = trial.suggest_float('dropout', 0.0, 0.5)
-    learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-1, log=True)
+    learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-3, log=True)
     batch_size = trial.suggest_categorical('batch_size', [16, 32, 64])
     input_chunk_length = trial.suggest_int('input_chunk_length', 30, 200)
 
-    # Check for NaN in data
+    # Check for NaN in data before training
     if series_scaled.pd_dataframe().isnull().values.any():
         print(f"NaN values detected in the input data during trial {trial.number}")
         return float('inf')
@@ -150,13 +147,18 @@ def objective(trial, series_scaled, optuna_epochs):
         # Calculate metrics on the test set (we won't have a test set, so skip this step)
         rmse_value = rmse(series_scaled[-730:], forecast_val)  # Evaluate on last 730 days
 
+        # Check if RMSE is NaN or Inf
+        if np.isnan(rmse_value) or np.isinf(rmse_value):
+            print(f"NaN or Inf detected in RMSE during trial {trial.number}")
+            return float('inf')
+
     except Exception as e:
         print(f'Exception during model training: {e}')
         traceback.print_exc()
         return float('inf')
 
-    # Return RMSE (or another metric) to minimize
     return rmse_value
+
 
 def run_optuna_optimization(series_scaled, optuna_trials, optuna_epochs):
     """

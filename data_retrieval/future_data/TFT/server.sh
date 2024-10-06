@@ -7,7 +7,7 @@
 #SBATCH --mem=8000mb
 #SBATCH --time=00:15:00
 #SBATCH --output=job_output_%j.log
-
+#SBATCH --job-name=TFT_future_sim 
 #SBATCH --mail-user=zxoul27@student.uni-tuebingen.de
 #SBATCH --mail-type=BEGIN,END,FAIL
 

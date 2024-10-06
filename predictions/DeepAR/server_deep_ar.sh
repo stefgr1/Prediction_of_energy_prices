@@ -5,7 +5,8 @@
 #SBATCH --nodes=1                     # Request 1 node
 #SBATCH --cpus-per-task=6             # 6 CPU cores per task
 #SBATCH --mem=12000mb                  # 12 GB of memory
-#SBATCH --time=10:00:00                 
+#SBATCH --time=01:00:00                 
+#SBATCH --job-name=Deep_AR  # Set the job name
 #SBATCH --mail-user=zxoul27@student.uni-tuebingen.de  # Email notifications
 #SBATCH --mail-type=BEGIN,END,FAIL    # Email on job start, end, and fail
 

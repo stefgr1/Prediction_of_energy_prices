@@ -6,7 +6,7 @@
 #SBATCH --mem=16000mb                 # 32 GB of memory
 #SBATCH --time=10:00:00               # Set the maximum runtime to 6 hours
 #SBATCH --gres=gpu:4                 # Request 1 GPU
-
+#SBATCH --job-name=TFT_Model
 #SBATCH --mail-user=zxoul27@student.uni-tuebingen.de  # Email notifications
 #SBATCH --mail-type=BEGIN,END,FAIL    # Email on job start, end, and fail
 
