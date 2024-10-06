@@ -12,6 +12,8 @@ import plotly.graph_objs as go
 import time
 import logging
 
+print(f"Data will be stored in: {os.getenv('TMPDIR', '/tmp')}")
+
 logging.basicConfig(filename='error.log', level=logging.ERROR)
 
 # Covariates to be used for prediction
@@ -31,7 +33,7 @@ def load_and_prepare_data(file_path):
 
 # Define the parameter grid
 param_dist = {  
-    'changepoint_prior_scale': [0.001, 0.005, 0.01, 0.05, 0.1, 0.25, 0.5],
+    'changepoint_prior_scale': [0.001, 0.005, 0.01, 0.1, 0.25, 0.5],
     'seasonality_prior_scale': [0.01, 0.05, 1, 5, 7, 10],
     'holidays_prior_scale': [0.01, 0.05, 1, 5, 7, 10],
     'seasonality_mode': ['additive', 'multiplicative'],
@@ -53,18 +55,19 @@ def evaluate_params(params_df):
         logging.error(f"Error with params {params}: {e}")
         return params, float('inf')
 
-save_dir = "/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/data/Future_data/"
+save_dir = os.getenv('TMPDIR', '/tmp')  # Use TMPDIR if available, else default to /tmp
+save_dir = os.path.join(save_dir, 'Future_data')
 
 if not os.path.exists(save_dir):
     os.makedirs(save_dir, exist_ok=True)
 
+# Load and prepare data
+df = load_and_prepare_data('../../data/Final_data/final_data_july.csv')
+
 # Loop through each covariate
 for covariate in covariates:
     print(f"Processing: {covariate}")
-    
-    # Load and prepare data
-    df = load_and_prepare_data('../../data/Final_data/final_data_july.csv')
-    
+
     # Prepare data for Prophet
     df_prophet = pd.DataFrame({
         'ds': df.index, 

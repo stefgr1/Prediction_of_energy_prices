@@ -4,9 +4,9 @@
 #SBATCH --nodes=2                      # Request 2 nodes
 #SBATCH --ntasks=12                    # 12 tasks in total, evenly distributed across the nodes
 #SBATCH --ntasks-per-node=6            # Distribute tasks across nodes
-#SBATCH --cpus-per-task=8              # 4 CPU cores per task
-#SBATCH --mem=50000mb                  # 32GB of memory per node
-#SBATCH --time=06:00:00                # Set the maximum run time
+#SBATCH --cpus-per-task=6              # 4 CPU cores per task
+#SBATCH --mem=90000mb                  # 32GB of memory per node
+#SBATCH --time=15:00:00                # Set the maximum run time
 #SBATCH --output=job_output_%j.log     # Output log file for each job
 
 #SBATCH --mail-user=zxoul27@student.uni-tuebingen.de
