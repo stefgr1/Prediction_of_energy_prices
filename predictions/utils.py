@@ -158,12 +158,23 @@ def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, model
 
 def copy_results_to_home(tmp_file_paths, home_dir_path):
     """
-    Copy files from TMPDIR to the home directory.
+    Copy files and directories from TMPDIR to the home directory.
     """
     for tmp_file_path in tmp_file_paths:
         home_file_path = os.path.join(home_dir_path, os.path.basename(tmp_file_path))
-        shutil.copy(tmp_file_path, home_file_path)
-        print(f"Copied {tmp_file_path} to {home_file_path}")
+
+        # Check if it is a file or a directory
+        if os.path.isfile(tmp_file_path):
+            shutil.copy(tmp_file_path, home_file_path)
+            print(f"Copied {tmp_file_path} to {home_file_path}")
+        elif os.path.isdir(tmp_file_path):
+            # Use copytree for directories
+            shutil.copytree(tmp_file_path, home_file_path, dirs_exist_ok=True)
+            print(f"Copied directory {tmp_file_path} to {home_file_path}")
+        else:
+            print(f"{tmp_file_path} is neither a file nor a directory. Skipping.")
+
+
 
 def plot_forecast(test_series, forecast, title):
     """
@@ -203,3 +214,14 @@ def plot_forecast(test_series, forecast, title):
     )
 
     return fig
+
+# Define future covariates
+future_covariates_columns = ['Solar_radiation (W/m2)', 'Wind_speed (m/s)',
+       'Temperature (°C)', 'Biomass (GWh)', 'Hard_coal (GWh)', 'Hydro (GWh)',
+       'Lignite (GWh)', 'Natural_gas (GWh)', 'Other (GWh)',
+       'Pumped_storage_generation (GWh)', 'Solar_energy (GWh)',
+       'Wind_offshore (GWh)', 'Wind_onshore (GWh)',
+       'Net_total_export_import (GWh)', 'BEV_vehicles', 'Oil_price (EUR)',
+       'TTF_gas_price (€/MWh)', 'Nuclear_energy (GWh)', 'Lag_1_day',
+       'Lag_2_days', 'Lag_3_days', 'Lag_4_days', 'Lag_5_days', 'Lag_6_days',
+       'Lag_7_days', 'Day_of_week', 'Month', 'Rolling_mean_7']
