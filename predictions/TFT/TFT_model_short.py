@@ -9,6 +9,7 @@ import optuna
 import platform  
 import sys
 import importlib
+import yaml
 from datetime import datetime
 from pytorch_lightning.callbacks import EarlyStopping
 from sklearn.preprocessing import MaxAbsScaler
@@ -19,6 +20,7 @@ from darts.dataprocessing.transformers import Scaler
 from darts.utils.callbacks import TFMProgressBar
 import plotly.graph_objects as go
 from pytorch_lightning import loggers as pl_loggers
+import yaml
 
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -26,8 +28,19 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # Dynamically import utils
 utils = importlib.import_module('utils')
 
-# get future_covariates_columns 
+# Load functions from utils file
 future_covariates_columns=utils.future_covariates_columns
+check_cuda_availability = utils.check_cuda_availability
+set_random_seed = utils.set_random_seed
+create_early_stopping_callback = utils.create_early_stopping_callback
+create_scalers = utils.create_scalers
+load_and_prepare_data = utils.load_and_prepare_data
+prepare_time_series = utils.prepare_time_series
+scale_data = utils.scale_data
+create_logger = utils.create_logger
+save_results = utils.save_results
+copy_results_to_home = utils.copy_results_to_home
+plot_forecast = utils.plot_forecast
 
 def load_config(config_path=None):
     # Default to using config.yaml in the current script's directory

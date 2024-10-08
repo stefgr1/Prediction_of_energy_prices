@@ -4,11 +4,11 @@ import pandas as pd
 import optuna
 import shutil
 import platform
-import torch 
+import torch
 from darts import TimeSeries
 from darts.models import XGBModel
 from darts.metrics import mape, rmse, mse, mae
-from pytorch_lightning import loggers as pl_loggers 
+from pytorch_lightning import loggers as pl_loggers
 import plotly.graph_objs as go
 import sys
 import importlib
@@ -17,10 +17,10 @@ import importlib
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Dynamically import utils from the parent directory
-utils = importlib.import_module('utils')  
+utils = importlib.import_module('utils')
 
 # Load functions from utils file
-future_covariates_columns=utils.future_covariates_columns
+future_covariates_columns = utils.future_covariates_columns
 check_cuda_availability = utils.check_cuda_availability
 set_random_seed = utils.set_random_seed
 create_early_stopping_callback = utils.create_early_stopping_callback
@@ -75,22 +75,27 @@ def main():
     series_train_scaled, series_test_scaled, future_covariates_train_scaled, future_covariates_test_scaled, scaler_series = utils.scale_data(
         series_train, series_test, future_covariates_train, future_covariates_test)
 
-    # Define Optuna objective function
+    if torch.cuda.is_available():
+        series_train_scaled = series_train_scaled.to_device("cuda")
+        future_covariates_train_scaled = future_covariates_train_scaled.to_device("cuda")
+        series_test_scaled = series_test_scaled.to_device("cuda")
+        future_covariates_test_scaled = future_covariates_test_scaled.to_device("cuda")
+
+    # Adjust Objective Function with Early Stopping and Consistent GPU Usage
     def objective(trial):
-        # Set up TensorBoard logging for the current trial
         tb_logger = pl_loggers.TensorBoardLogger(
             save_dir=os.path.join(tmp_dir, f"XGBoost_Optuna_{trial.number}")
         )
 
-        # Suggest hyperparameters
-        max_depth = trial.suggest_int('max_depth', 3, 15)
-        learning_rate = trial.suggest_float('learning_rate', 0.001, 0.3, log=True)
-        n_estimators = trial.suggest_int('n_estimators', 50, 500)
-        input_chunk_length = trial.suggest_int('input_chunk_length', 10, 300)
-        min_child_weight = trial.suggest_float('min_child_weight', 0.1, 10.0)
-        subsample = trial.suggest_float('subsample', 0.5, 1.0)
-        colsample_bytree = trial.suggest_float('colsample_bytree', 0.5, 1.0)
-        gamma = trial.suggest_float('gamma', 0, 5)
+        # Suggest hyperparameters with refined ranges
+        max_depth = trial.suggest_int('max_depth', 2, 8)
+        learning_rate = trial.suggest_float('learning_rate', 0.01, 0.1)
+        n_estimators = trial.suggest_int('n_estimators', 100, 500)
+        input_chunk_length = trial.suggest_int('input_chunk_length', 7, 30)
+        min_child_weight = trial.suggest_float('min_child_weight', 1, 10)
+        subsample = trial.suggest_float('subsample', 0.7, 1.0)
+        colsample_bytree = trial.suggest_float('colsample_bytree', 0.7, 1.0)
+        gamma = trial.suggest_float('gamma', 0, 2)
 
         model = XGBModel(
             lags=input_chunk_length,
@@ -104,19 +109,18 @@ def main():
             colsample_bytree=colsample_bytree,
             gamma=gamma,
             random_state=42,
-            tree_method="hist", 
+            tree_method="hist",
             device="cuda" if torch.cuda.is_available() else "cpu"
         )
 
-        # Fit and predict
-        model.fit(series_train_scaled, future_covariates=future_covariates_train_scaled, verbose=False)
+        # Early stopping callback
+        early_stop = EarlyStopping(monitor="train_loss", patience=20, mode="min")
+        model.fit(series_train_scaled, future_covariates=future_covariates_train_scaled, verbose=False, callbacks=[early_stop])
         forecast_scaled = model.predict(n=len(series_test_scaled), future_covariates=future_covariates_test_scaled)
         forecast = scaler_series.inverse_transform(forecast_scaled)
         error = rmse(series_test, forecast)
 
-        # Log metrics to TensorBoard
         tb_logger.log_metrics({"rmse": float(error)}, step=trial.number)
-
         return error
 
     # Run Optuna optimization
@@ -148,6 +152,11 @@ def main():
     best_model.fit(series_train_scaled, future_covariates=future_covariates_train_scaled)
     forecast_scaled = best_model.predict(n=len(series_test_scaled), future_covariates=future_covariates_test_scaled)
     forecast = scaler_series.inverse_transform(forecast_scaled)
+
+    # Debugging: Print forecast values after scaling
+    print("First few values of forecast_scaled:", forecast_scaled.values()[:5].squeeze())
+    print("First few values of forecast after inverse transform:", forecast.values()[:5].squeeze())
+    print("First few values of test series for comparison:", series_test.values()[:5].squeeze())
 
     # Plot forecast using the utility function
     fig = utils.plot_forecast(series_test, forecast, title="XGBoost Model Forecast")

@@ -1,11 +1,10 @@
 #!/bin/bash
 
-#SBATCH --partition=gpu_8      # Request the dev_gpu_4 partition
+#SBATCH --partition=single      # Request the dev_gpu_4 partition
 #SBATCH --nodes=1                     # Request 1 node
-#SBATCH --cpus-per-task=8             # 8 CPU cores per task
-#SBATCH --mem=5000mb                 # 32 GB of memory
-#SBATCH --time=12:00:00               # Set the maximum runtime to 6 hours
-#SBATCH --gres=gpu:4                 # Request 1 GPU
+#SBATCH --cpus-per-task=12             # 8 CPU cores per task
+#SBATCH --mem=8000mb                 # 32 GB of memory
+#SBATCH --time=18:00:00               # Set the maximum runtime to 6 hours             # Request 1 GPU
 #SBATCH --job-name=TFT_Model
 #SBATCH --mail-user=zxoul27@student.uni-tuebingen.de  # Email notifications
 #SBATCH --mail-type=BEGIN,END,FAIL    # Email on job start, end, and fail

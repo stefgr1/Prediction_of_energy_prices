@@ -97,24 +97,22 @@ def scale_data(series_train, series_test, future_covariates_train, future_covari
     return series_train_scaled, series_test_scaled, future_covariates_train_scaled, future_covariates_for_prediction_scaled, scaler_series
 
 def create_logger(trial_number=None, best_model=False, model_name='Model'):
-    """
-    Create a TensorBoard logger with a unique log folder for each run.
-    """
     timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
 
     # Use TMPDIR if available, else fallback to a default temporary directory
     base_log_dir = os.getenv('TMPDIR', '/tmp')
-    
+
     # If training the best model, create a separate directory
     if best_model:
-        log_dir = f'{base_log_dir}/best_model/{timestamp}_best_model'
+        log_dir = f'{base_log_dir}/best_model/{timestamp}_best_model_{random.randint(0, 1000)}'
     else:
-        log_dir = f'{base_log_dir}/{timestamp}_trial_{trial_number}'
+        log_dir = f'{base_log_dir}/{timestamp}_trial_{trial_number}_{random.randint(0, 1000)}'
 
     # Ensure the directory is created
     os.makedirs(log_dir, exist_ok=True)
 
     return pl_loggers.TensorBoardLogger(save_dir=log_dir, name=model_name, default_hp_metric=False)
+
 
 def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, model_name="Model"):
     """

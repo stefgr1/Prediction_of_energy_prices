@@ -1,24 +1,38 @@
-import shutil
 import os
+import shutil
 import random
 import numpy as np
-import traceback
 import torch
+import traceback
 import platform
 import pandas as pd
+import yaml
 import optuna
 from pytorch_lightning.callbacks import EarlyStopping
 from datetime import datetime
 from sklearn.preprocessing import MaxAbsScaler
 from darts import TimeSeries
 from darts.models import TFTModel
-from darts.metrics import mape, mae, rmse, mse
 from darts.dataprocessing.transformers import Scaler
+from darts.metrics import mape, rmse, mse, mae
 from darts.utils.callbacks import TFMProgressBar
 import plotly.graph_objects as go
 from pytorch_lightning import loggers as pl_loggers
 
-# Set the random seed
+# Function to load configuration from a YAML file
+def load_config(config_path=None):
+    if config_path is None:
+        config_path = os.path.join(os.path.dirname(__file__), "config.yaml")
+        
+    try:
+        with open(config_path, "r") as file:
+            config = yaml.safe_load(file)
+        return config
+    except Exception as e:
+        print(f"Error loading config file: {e}")
+        return None
+
+# Set the random seed for reproducibility
 def set_random_seed(seed=42):
     random.seed(seed)
     np.random.seed(seed)
@@ -29,51 +43,41 @@ def set_random_seed(seed=42):
 set_random_seed(42)
 
 # Early stopping callback
-early_stop_callback = EarlyStopping(monitor='train_loss', patience=10, verbose=True)
+early_stop_callback = EarlyStopping(monitor='train_loss', patience=20, verbose=True)
 
 # Create scaler object for series
 scaler_series = Scaler(MaxAbsScaler())
 
 def load_and_prepare_data(file_path):
-    """
-    Load energy prices data from a CSV file, ensure chronological order, and convert 'Date' to datetime.
-    """
+    """Load energy prices data from a CSV file, ensure chronological order, and convert 'Date' to datetime."""
     df = pd.read_csv(file_path)
     df.sort_values('Date', inplace=True)
     df['Date'] = pd.to_datetime(df['Date'])
     return df
 
 def prepare_time_series(df, target_column):
-    """
-    Prepare time series object for training.
-    """
+    """Prepare time series object for training."""
+    if target_column not in df.columns:
+        raise ValueError(f"Target column '{target_column}' not found in the DataFrame.")
     series = TimeSeries.from_dataframe(df, 'Date', target_column).astype('float32')
     return series
 
 def scale_data(series):
-    """
-    Scale the time series data.
-    """
+    """Scale the time series data."""
     scaler_series = Scaler(MaxAbsScaler())
     series_scaled = scaler_series.fit_transform(series)
     return series_scaled, scaler_series
 
 def create_logger():
-    """
-    Create a TensorBoard logger with a unique log folder for each run.
-    Save logs in the temporary directory.
-    """
+    """Create a TensorBoard logger with a unique log folder for each run. Save logs in the temporary directory."""
     timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
     log_dir = os.path.join(os.getenv('TMPDIR', '/tmp'), f'TFT/logs/{timestamp}')
     os.makedirs(log_dir, exist_ok=True)
     return pl_loggers.TensorBoardLogger(save_dir=log_dir, name='TFT', default_hp_metric=False)
 
-def train_model(best_params, series_scaled, best_model_epochs):
-    """
-    Train the TFT model with the best hyperparameters found by Optuna.
-    """
+def train_model(best_params, series_scaled, best_model_epochs, devices):
+    """Train the TFT model with the best hyperparameters found by Optuna."""
     tb_logger = create_logger()
-
     best_model = TFTModel(
         input_chunk_length=best_params['input_chunk_length'],
         output_chunk_length=1,
@@ -87,19 +91,16 @@ def train_model(best_params, series_scaled, best_model_epochs):
         add_relative_index=True,
         pl_trainer_kwargs={
             'accelerator': 'gpu' if torch.cuda.is_available() else 'cpu',
-            'devices': 1,
+            'devices': devices,
             'enable_progress_bar': True,
             'logger': tb_logger,
             'enable_model_summary': False,
         }
     )
-
-    # Train the model
     best_model.fit(series_scaled, verbose=True)
-
     return best_model
 
-def objective(trial, series_scaled, optuna_epochs):
+def objective(trial, series_scaled, optuna_epochs, devices):
     hidden_dim = trial.suggest_int('hidden_dim', 16, 64)
     n_layers = trial.suggest_int('n_layers', 1, 6)
     dropout = trial.suggest_float('dropout', 0.0, 0.5)
@@ -107,15 +108,7 @@ def objective(trial, series_scaled, optuna_epochs):
     batch_size = trial.suggest_categorical('batch_size', [16, 32, 64])
     input_chunk_length = trial.suggest_int('input_chunk_length', 30, 200)
 
-    # Check for NaN in data before training
-    if series_scaled.pd_dataframe().isnull().values.any():
-        print(f"NaN values detected in the input data during trial {trial.number}")
-        return float('inf')
-
-    # Create logger for the trial
     tb_logger = create_logger()
-
-    # Initialize TFT Model
     model = TFTModel(
         input_chunk_length=input_chunk_length,
         output_chunk_length=1,
@@ -129,57 +122,53 @@ def objective(trial, series_scaled, optuna_epochs):
         add_relative_index=True,
         pl_trainer_kwargs={
             'accelerator': 'gpu' if torch.cuda.is_available() else 'cpu',
-            'devices': 1,
+            'devices': devices,
             'enable_progress_bar': True,
             'logger': tb_logger,
             'enable_model_summary': False,
             'callbacks': [early_stop_callback, TFMProgressBar(enable_train_bar_only=True)],
         }
     )
-
     try:
-        # Train the model
         model.fit(series_scaled, verbose=False)
-
-        # Predict the next two years (730 days)
-        forecast_val = model.predict(n=730)
-
-        # Calculate metrics on the test set (we won't have a test set, so skip this step)
-        rmse_value = rmse(series_scaled[-730:], forecast_val)  # Evaluate on last 730 days
-
-        # Check if RMSE is NaN or Inf
-        if np.isnan(rmse_value) or np.isinf(rmse_value):
-            print(f"NaN or Inf detected in RMSE during trial {trial.number}")
-            return float('inf')
-
+        forecast_train = model.predict(n=len(series_scaled))
+        train_loss = rmse(series_scaled, forecast_train)
+        return train_loss
     except Exception as e:
         print(f'Exception during model training: {e}')
         traceback.print_exc()
         return float('inf')
 
-    return rmse_value
-
-
-def run_optuna_optimization(series_scaled, optuna_trials, optuna_epochs):
-    """
-    Run Optuna optimization to find the best hyperparameters for TFT.
-    """
+def run_optuna_optimization(series_scaled, optuna_trials, optuna_epochs, devices):
+    """Run Optuna optimization to find the best hyperparameters for TFT."""
     study = optuna.create_study(direction='minimize')
-    study.optimize(lambda trial: objective(trial, series_scaled, optuna_epochs), n_trials=optuna_trials)
-
+    study.optimize(lambda trial: objective(trial, series_scaled, optuna_epochs, devices), n_trials=optuna_trials)
     best_params = study.best_params
     print('Best hyperparameters:')
     for key, value in best_params.items():
         print(f'  {key}: {value}')
-
     return best_params, study
 
-def plot_forecast(forecast, output_path):
-    """
-    Plot the forecast for the next two years using Plotly and save it to a file.
-    """
-    fig = go.Figure()
+# Function to copy files from tmpdir_path to the specified home directory
+def copy_to_home_dir(src_dir, dest_dir):
+    try:
+        os.makedirs(dest_dir, exist_ok=True)
+        for item in os.listdir(src_dir):
+            s = os.path.join(src_dir, item)
+            d = os.path.join(dest_dir, item)
+            if os.path.isdir(s):
+                shutil.copytree(s, d, dirs_exist_ok=True)
+            else:
+                shutil.copy2(s, d)
+        print(f"All files from {src_dir} copied to {dest_dir}")
+    except Exception as e:
+        print(f"Error copying files to home directory: {e}")
+        traceback.print_exc()
 
+# Update the function to plot and save the forecast as a plot and CSV file
+def plot_forecast(forecast, output_path):
+    """Plot the forecast and save it to an image file."""
+    fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=forecast.time_index,
         y=forecast.values().squeeze(),
@@ -187,91 +176,74 @@ def plot_forecast(forecast, output_path):
         name='Forecast',
         line=dict(color='red')
     ))
-
     fig.update_layout(
         title='TFT Forecast',
         xaxis_title='Date',
         yaxis_title='Value',
         template='plotly'
     )
-
-    # Ensure the directory exists before saving the plot
     output_dir = os.path.dirname(output_path)
-    os.makedirs(output_dir, exist_ok=True)  # This creates the directory if it doesn't exist
-
-    # Save the figure to the temporary directory
+    os.makedirs(output_dir, exist_ok=True)
     fig.write_image(output_path)
-
     return fig
+
+def save_forecast_to_csv(forecast, output_path):
+    """Save the forecast values and dates to a CSV file."""
+    forecast_df = pd.DataFrame({
+        'Date': forecast.time_index,
+        'Forecast': forecast.values().squeeze()
+    })
+    forecast_df.to_csv(output_path, index=False)
+    print(f"Forecast data saved at: {output_path}")
+
+def sanitize_filename(filename):
+    """Replace or remove special characters for safe file handling."""
+    return "".join(c if c.isalnum() or c in ['_', '-'] else "_" for c in filename)
 
 # Main execution block
 if __name__ == "__main__":
+    config = load_config()
+    if config is None:
+        print("Failed to load config file.")
+        exit(1)
 
-    # Detect if on Mac or Linux and adjust base path accordingly
-    if platform.system() == "Darwin":  # macOS
-        base_path = os.path.expanduser("~/Documents/Masterarbeit/Prediction_of_energy_prices/")
-    else:  # Assuming Linux for the cluster
-        base_path = os.getenv('HOME') + '/Prediction_of_energy_prices/'
+    base_path = os.path.expanduser("~/Documents/Masterarbeit/Prediction_of_energy_prices/") \
+                if platform.system() == "Darwin" \
+                else os.getenv('HOME') + '/Prediction_of_energy_prices/'
 
     set_random_seed(42)
-
-    # Load in the training data (no test data)
-    df = load_and_prepare_data(os.path.join(base_path, 'data/Final_data/final_data_july.csv'))
-
-    # Use Solar_radiation (W/m2) as the target (or another column)
-    target_column = 'Solar_radiation (W/m2)'
-
-    # Prepare and scale the time series
-    series_train = prepare_time_series(df, target_column)
+    df = load_and_prepare_data(os.path.join(base_path, config["data_file"]))
+    series_train = prepare_time_series(df, config["target_column"])
     series_train_scaled, scaler_series = scale_data(series_train)
 
-    # Optuna settings
-    optuna_epochs = 1  # Define the number of epochs for Optuna trials
-    optuna_trials = 1  # Define the number of trials for Optuna
+    best_params, study = run_optuna_optimization(series_train_scaled, config["optuna_trials"], config["optuna_epochs"], config["devices"])
 
-    # Run Optuna optimization
-    best_params, study = run_optuna_optimization(series_train_scaled, optuna_trials, optuna_epochs)
-
-    # Ensure the TMPDIR path for storing the model and results
-    tmpdir_path = os.path.join(os.getenv('TMPDIR'), 'predictions/TFT/')
+    # Define the path with a subdirectory under TFT
+    tmpdir_path = os.path.join(os.getenv('TMPDIR'), 'predictions/TFT/best_model/')
     os.makedirs(tmpdir_path, exist_ok=True)
 
-    # Save the best model
-    model_save_path = os.path.join(tmpdir_path, f'best_tft_model_epochs_{optuna_epochs}.pth')
-    best_model = train_model(best_params, series_train_scaled, optuna_epochs)
+    # Sanitize the target column for file naming
+    sanitized_target_column = sanitize_filename(config["target_column"])
+
+    # Save the best model in the subdirectory
+    model_save_path = os.path.join(tmpdir_path, f'best_tft_model_epochs_{config["optuna_epochs"]}.pth')
+    best_model = train_model(best_params, series_train_scaled, config["optuna_epochs"])
     best_model.save(model_save_path)
     print(f"Best model saved at: {model_save_path}")
 
-    # Make predictions
-    n = len(series_train_scaled)  # Adjust depending on your test data length
-    forecast = best_model.predict(n=n)
-
+    # Forecast into the future (e.g., 730 days)
+    forecast = best_model.predict(n=730)
     forecast = scaler_series.inverse_transform(forecast)
 
-    # Define output path for the forecast plot
-    output_path = os.path.join(tmpdir_path, f'tft_forecast_plot_{target_column}.png')
+    # Save the forecast plot in the subdirectory
+    forecast_plot_path = os.path.join(tmpdir_path, f'tft_forecast_plot_{sanitized_target_column}.png')
+    plot_forecast(forecast, forecast_plot_path)
+    print(f"Forecast plot saved at: {forecast_plot_path}")
 
-    # Plot and save the forecast
-    fig = plot_forecast(forecast, output_path)
-    print(f"Forecast plot saved at: {output_path}")
+    # Save the forecast values to CSV in the subdirectory
+    forecast_csv_path = os.path.join(tmpdir_path, f'tft_forecast_values_{sanitized_target_column}.csv')
+    save_forecast_to_csv(forecast, forecast_csv_path)
 
-    # Define the home directory where results should be copied
-    home_results_dir = os.path.join(base_path, '/data_retrieval/future_data/TFT')
-    os.makedirs(home_results_dir, exist_ok=True)
-
-    # Copy the results from TMPDIR to the home directory
-    try:
-        if os.path.exists(tmpdir_path):
-            shutil.copytree(tmpdir_path, home_results_dir, dirs_exist_ok=True)
-            print(f"Results copied to {home_results_dir}")
-        else:
-            print(f"Directory {tmpdir_path} does not exist. Skipping copy operation.")
-    except Exception as e:
-        print(f"Error copying results: {e}")
-
-    # ** Print best hyperparameters at the end **
-    print('Best hyperparameters:')
-    for key, value in best_params.items():
-        print(f'  {key}: {value}')
-
-
+    # Copy all files to the home directory
+    home_dir_path = '/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/data_retrieval/future_data/TFT/best_model/'
+    copy_to_home_dir(tmpdir_path, home_dir_path)
