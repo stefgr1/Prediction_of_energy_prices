@@ -75,12 +75,6 @@ def main():
     series_train_scaled, series_test_scaled, future_covariates_train_scaled, future_covariates_test_scaled, scaler_series = utils.scale_data(
         series_train, series_test, future_covariates_train, future_covariates_test)
 
-    if torch.cuda.is_available():
-        series_train_scaled = series_train_scaled.to_device("cuda")
-        future_covariates_train_scaled = future_covariates_train_scaled.to_device("cuda")
-        series_test_scaled = series_test_scaled.to_device("cuda")
-        future_covariates_test_scaled = future_covariates_test_scaled.to_device("cuda")
-
     # Adjust Objective Function with Early Stopping and Consistent GPU Usage
     def objective(trial):
         tb_logger = pl_loggers.TensorBoardLogger(

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --partition=dev_gpu_4        # Ensure this partition is valid
+#SBATCH --partition=gpu_8        # Ensure this partition is valid
 #SBATCH --nodes=1                   # Request a single node
 #SBATCH --cpus-per-task=6          # Specify the number of CPU cores for the task
 #SBATCH --mem=8000mb               # Set memory for the job
