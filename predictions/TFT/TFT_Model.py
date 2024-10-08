@@ -6,6 +6,7 @@ import traceback
 import torch
 import pandas as pd
 import optuna
+import platform
 from pytorch_lightning.callbacks import EarlyStopping
 from datetime import datetime
 from sklearn.preprocessing import MaxAbsScaler
@@ -276,7 +277,7 @@ def plot_forecast(test_series, forecast):
     return fig
 
 
-def save_results(forecast, test_series, scaler_series, fig, base_path):
+def save_results(forecast, test_series, scaler_series, fig, base_path, epochs):
     """
     Inverse transform forecast, calculate error metrics, and save the results.
     """
@@ -291,9 +292,9 @@ def save_results(forecast, test_series, scaler_series, fig, base_path):
 
     # Save the forecast plot and error metrics
     forecast_plot_path = os.path.join(
-        base_path, 'predictions/TFT/TFT_forecast.png')
+        base_path, f'predictions/TFT/TFT_forecast_{epochs}_local.png')
     metrics_csv_path = os.path.join(
-        base_path, 'predictions/TFT/TFT_metrics.csv')
+        base_path, f'predictions/TFT/TFT_metrics_{epochs}_local.csv')
 
     fig.write_image(forecast_plot_path)
     error_metrics = pd.DataFrame({'MAE': [mae(test_series, forecast)], 'MAPE': [mape(test_series, forecast)],
@@ -304,8 +305,12 @@ def save_results(forecast, test_series, scaler_series, fig, base_path):
 # Main execution block
 if __name__ == "__main__":
 
-    # Define base path
-    base_path = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/'
+    # Detect if on Mac or Linux and adjust base path accordingly
+    if platform.system() == "Darwin":  # macOS
+        base_path = os.path.expanduser(
+            "~/Documents/Masterarbeit/Prediction_of_energy_prices/")
+    else:  # Assuming Linux for the cluster
+        base_path = os.getenv('HOME') + '/Prediction_of_energy_prices/'
 
     # Load in the train and test data
     train_df = load_and_prepare_data(
@@ -314,11 +319,15 @@ if __name__ == "__main__":
         os.path.join(base_path, 'data/Final_data/test_df.csv'))
 
     # Define future covariates
-    future_covariates_columns = ['Solar_radiation (W/m2)', 'Wind_speed (m/s)', 'Temperature (°C)', 'Biomass (GWh)',
-                                 'Hard_coal (GWh)', 'Hydro (GWh)', 'Lignite (GWh)', 'Natural_gas (GWh)', 'Other (GWh)',
-                                 'Pumped_storage_generation (GWh)', 'Solar_energy (GWh)', 'Wind_offshore (GWh)',
-                                 'Wind_onshore (GWh)', 'Net_total_export_import (GWh)', 'BEV_vehicles', 'Oil_price (EUR)',
-                                 'TTF_gas_price (€/MWh)', 'Nuclear_energy (GWh)']
+    future_covariates_columns = ['Solar_radiation (W/m2)', 'Wind_speed (m/s)',
+                                 'Temperature (°C)', 'Biomass (GWh)', 'Hard_coal (GWh)', 'Hydro (GWh)',
+                                 'Lignite (GWh)', 'Natural_gas (GWh)', 'Other (GWh)',
+                                 'Pumped_storage_generation (GWh)', 'Solar_energy (GWh)',
+                                 'Wind_offshore (GWh)', 'Wind_onshore (GWh)',
+                                 'Net_total_export_import (GWh)', 'BEV_vehicles', 'Oil_price (EUR)',
+                                 'TTF_gas_price (€/MWh)', 'Nuclear_energy (GWh)', 'Lag_1_day',
+                                 'Lag_2_days', 'Lag_3_days', 'Lag_4_days', 'Lag_5_days', 'Lag_6_days',
+                                 'Lag_7_days', 'Day_of_week', 'Month', 'Rolling_mean_7']
 
     # Prepare time series
     series_train, series_test, future_covariates_train, future_covariates_for_prediction = prepare_time_series(
@@ -330,7 +339,7 @@ if __name__ == "__main__":
 
     # Customizable parameters
     optuna_epochs = 5  # Define the number of epochs for Optuna trials
-    optuna_trials = 10  # Define the number of trials for Optuna
+    optuna_trials = 5  # Define the number of trials for Optuna
     best_model_epochs = 5  # Define the number of epochs for the best model
 
     # Run Optuna optimization and get the study and best parameters
@@ -353,4 +362,5 @@ if __name__ == "__main__":
 
     # Plot and save results
     fig = plot_forecast(series_test, forecast)
-    save_results(forecast, series_test_scaled, scaler_series, fig, base_path)
+    save_results(forecast, series_test_scaled, scaler_series,
+                 fig, base_path, optuna_epochs)
