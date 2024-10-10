@@ -27,6 +27,8 @@ from pytorch_lightning.callbacks import EarlyStopping
 from darts.dataprocessing.transformers import Scaler
 
 # Function to create and load config file
+
+
 def load_config(config_path=None):
     # Default to using config.yaml in the current script's directory
     if config_path is None:
@@ -36,6 +38,8 @@ def load_config(config_path=None):
     return config
 
 # Function to load and prepare data
+
+
 def load_and_prepare_data(file_path):
     df = pd.read_csv(file_path)
     df.reset_index(drop=True, inplace=True)
@@ -45,33 +49,41 @@ def load_and_prepare_data(file_path):
     return df
 
 # Early stopping callback function
+
+
 def create_early_stopping_callback(patience):
     return EarlyStopping(
         monitor='train_loss', patience=patience, verbose=True
     )
 
 # Logger creation function
+
+
 def create_logger(tmpdir, trial_number=None, model_name='DeepAR_Model'):
     if platform.system() == 'Darwin':  # macOS
         final_base_log_dir = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data_retrieval/future_data/DeepAR/logs'
     else:  # Assuming Linux for the cluster
         current_dir = os.path.abspath(os.getcwd())
-        final_base_log_dir = os.path.join(current_dir, 'Prediction_of_energy_prices/data_retrieval/future_data/DeepAR/logs')
-    
+        final_base_log_dir = os.path.join(
+            current_dir, 'Prediction_of_energy_prices/data_retrieval/future_data/DeepAR/logs')
+
     # Ensure base log directory exists in the temp dir first
     os.makedirs(tmpdir, exist_ok=True)
 
     timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
-    log_dir = os.path.join(tmpdir, f'{timestamp}_trial_{trial_number}') if trial_number is not None else os.path.join(tmpdir, f'{timestamp}_best_model')
+    log_dir = os.path.join(tmpdir, f'{timestamp}_trial_{trial_number}') if trial_number is not None else os.path.join(
+        tmpdir, f'{timestamp}_best_model')
     os.makedirs(log_dir, exist_ok=True)
 
-    logger = pl_loggers.TensorBoardLogger(save_dir=log_dir, name=model_name, default_hp_metric=False)
+    logger = pl_loggers.TensorBoardLogger(
+        save_dir=log_dir, name=model_name, default_hp_metric=False)
 
     # After training, move the logs to the final destination
     final_log_dir = os.path.join(final_base_log_dir, os.path.basename(log_dir))
     shutil.move(log_dir, final_log_dir)
 
     return logger
+
 
 def main():
 
@@ -83,7 +95,8 @@ def main():
 
         # Determine the platform and available GPU type
         if platform.system() == 'Darwin' and torch.backends.mps.is_available():
-            accelerator = 'mps'  # Use Apple's Metal Performance Shaders (MPS) on macOS
+            # Use Apple's Metal Performance Shaders (MPS) on macOS
+            accelerator = 'mps'
         elif torch.cuda.is_available():
             accelerator = 'gpu'  # Use CUDA on Linux if available
         else:
@@ -109,9 +122,9 @@ def main():
 
         # Create TimeSeries objects
         train_series = TimeSeries.from_dataframe(
-            train_df, value_cols='Temperature (°C)').astype('float32')
+            train_df, value_cols=config["target_column"]).astype('float32')
         test_series = TimeSeries.from_dataframe(
-            test_df, value_cols='Temperature (°C)').astype('float32')
+            test_df, value_cols=config["target_column"]).astype('float32')
 
         # Concatenate train and test data for plotting
         total_series = train_series.append(test_series)
@@ -137,7 +150,8 @@ def main():
             n_layers = trial.suggest_int('n_layers', 1, 2)
             dropout = trial.suggest_float(
                 'dropout', 0.0, 0.5) if n_layers > 1 else 0.0
-            input_chunk_length = trial.suggest_int('input_chunk_length', 10, 100)
+            input_chunk_length = trial.suggest_int(
+                'input_chunk_length', 10, 100)
             hidden_dim = trial.suggest_int('hidden_dim', 50, 200)
             learning_rate = trial.suggest_float(
                 'learning_rate', 1e-7, 1e-3, log=True)
@@ -151,7 +165,8 @@ def main():
                 'training_length', input_chunk_length + 1, 500)
 
             # Create a new logger for each trial
-            tb_logger = create_logger(tmpdir, trial_number=trial.number, model_name='DeepAR')
+            tb_logger = create_logger(
+                tmpdir, trial_number=trial.number, model_name='DeepAR')
 
             # Create model
             model = RNNModel(
@@ -229,7 +244,8 @@ def main():
         best_training_length = best_params['training_length']
         dropout = best_params.get('dropout', 0.0)
         best_trial = study.best_trial
-        tb_logger = create_logger(tmpdir, trial_number=best_trial.number, model_name='DeepAR_best_model')
+        tb_logger = create_logger(
+            tmpdir, trial_number=best_trial.number, model_name='DeepAR_best_model')
 
         # Retrain the model on the entire dataset with best hyperparameters
         best_model = RNNModel(
@@ -322,27 +338,30 @@ def main():
 
         # Update layout
         fig.update_layout(
-            title='Temperature Forecast',
+            title=f'{config["target_column"]} Forecast',
             xaxis_title='Date',
             yaxis_title='Temperature (°C)'
         )
 
         # Paths for temporary storage in tmpdir
-        temp_forecast_csv_path = os.path.join(tmpdir, f'forecast_{config["optuna_epochs"]}.csv')
-        temp_plot_file_path = os.path.join(tmpdir, f'forecast_plot_{config["optuna_epochs"]}.png')
+        temp_forecast_csv_path = os.path.join(
+            tmpdir, f'forecast_{config["optuna_epochs"]}.csv')
+        temp_plot_file_path = os.path.join(
+            tmpdir, f'forecast_plot_{config["optuna_epochs"]}.png')
 
         # Save the forecast CSV and plot in the tmpdir
         forecast_df.to_csv(temp_forecast_csv_path, index=False)
         fig.write_image(temp_plot_file_path, width=1200, height=600)
 
         # Paths for final storage
-        final_forecast_csv_path = os.path.join(script_dir, f'forecast_{config["optuna_epochs"]}.csv')
-        final_plot_file_path = os.path.join(script_dir, f'forecast_plot_{config["optuna_epochs"]}.png')
+        final_forecast_csv_path = os.path.join(
+            script_dir, f'forecast_{config["target_column"]}_{config["optuna_epochs"]}.csv')
+        final_plot_file_path = os.path.join(
+            script_dir, f'forecast_plot_{config["target_column"]}_{config["optuna_epochs"]}.png')
 
         # Copy the forecast CSV and plot to the final destination
         shutil.copy2(temp_forecast_csv_path, final_forecast_csv_path)
         shutil.copy2(temp_plot_file_path, final_plot_file_path)
-
 
 
 if __name__ == "__main__":
