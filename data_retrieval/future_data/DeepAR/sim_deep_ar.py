@@ -109,9 +109,9 @@ def main():
 
         # Create TimeSeries objects
         train_series = TimeSeries.from_dataframe(
-            train_df, value_cols='Temperature (°C)').astype('float32')
+            train_df, value_cols=config["target_column"]).astype('float32')
         test_series = TimeSeries.from_dataframe(
-            test_df, value_cols='Temperature (°C)').astype('float32')
+            test_df, value_cols=config["target_column"]).astype('float32')
 
         # Concatenate train and test data for plotting
         total_series = train_series.append(test_series)
