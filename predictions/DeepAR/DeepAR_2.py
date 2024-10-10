@@ -58,7 +58,7 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
         optimizer_kwargs={'lr': best_params['learning_rate']},
         random_state=42,
         pl_trainer_kwargs={
-            'accelerator': 'gpu' if torch.cuda.is_available() else 'cpu', 
+            'accelerator': 'gpu' if torch.cuda.is_available() else 'cpu',
             'devices': devices,
             'enable_progress_bar': True,
             'logger': tb_logger,
@@ -73,6 +73,7 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
 
     return best_model
 
+
 def objective(trial, series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices, early_stop_callback):
     """
     Optuna objective function for RNN model hyperparameter tuning.
@@ -85,7 +86,8 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     batch_size = trial.suggest_categorical('batch_size', [16, 32])
 
     # Ensure training_length is larger than input_chunk_length but never larger than 500
-    training_length = trial.suggest_int('training_length', input_chunk_length + 1, 500)
+    training_length = trial.suggest_int(
+        'training_length', input_chunk_length + 1, 500)
 
     # Create a new logger for each trial
     tb_logger = create_logger(trial.number, model_name='DeepAR')
@@ -147,7 +149,6 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
 
     return rmse_val
 
-    return rmse_val
 
 def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, devices, early_stop_callback):
     """
@@ -165,6 +166,7 @@ def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled,
     # Return both the best parameters and the study itself
     return best_params, study
 
+
 def inspect_best_trial(study):
     """
     Inspect and print the error metrics from the best trial in the Optuna study.
@@ -175,6 +177,7 @@ def inspect_best_trial(study):
     print(f"  MAPE: {best_trial.user_attrs.get('mape', 'N/A')}%")
     print(f"  MAE: {best_trial.user_attrs.get('mae', 'N/A')}")
     print(f"  MSE: {best_trial.user_attrs.get('mse', 'N/A')}")
+
 
 # Main execution block
 if __name__ == "__main__":
@@ -191,22 +194,24 @@ if __name__ == "__main__":
     set_random_seed(42)
 
     # Create early stopping callback
-    early_stop_callback = create_early_stopping_callback(patience = 25)
+    early_stop_callback = create_early_stopping_callback(patience=25)
 
     # Load in the train and test data
-    train_df = load_and_prepare_data(os.path.join(base_path, 'data/Final_data/train_df.csv'))
-    test_df = load_and_prepare_data(os.path.join(base_path, 'data/Final_data/test_df.csv'))
+    train_df = load_and_prepare_data(os.path.join(
+        base_path, 'data/Final_data/train_df.csv'))
+    test_df = load_and_prepare_data(os.path.join(
+        base_path, 'data/Final_data/test_df.csv'))
 
     # Define future covariates
     future_covariates_columns = ['Solar_radiation (W/m2)', 'Wind_speed (m/s)',
-       'Temperature (°C)', 'Biomass (GWh)', 'Hard_coal (GWh)', 'Hydro (GWh)',
-       'Lignite (GWh)', 'Natural_gas (GWh)', 'Other (GWh)',
-       'Pumped_storage_generation (GWh)', 'Solar_energy (GWh)',
-       'Wind_offshore (GWh)', 'Wind_onshore (GWh)',
-       'Net_total_export_import (GWh)', 'BEV_vehicles', 'Oil_price (EUR)',
-       'TTF_gas_price (€/MWh)', 'Nuclear_energy (GWh)', 'Lag_1_day',
-       'Lag_2_days', 'Lag_3_days', 'Lag_4_days', 'Lag_5_days', 'Lag_6_days',
-       'Lag_7_days', 'Day_of_week', 'Month', 'Rolling_mean_7']
+                                 'Temperature (°C)', 'Biomass (GWh)', 'Hard_coal (GWh)', 'Hydro (GWh)',
+                                 'Lignite (GWh)', 'Natural_gas (GWh)', 'Other (GWh)',
+                                 'Pumped_storage_generation (GWh)', 'Solar_energy (GWh)',
+                                 'Wind_offshore (GWh)', 'Wind_onshore (GWh)',
+                                 'Net_total_export_import (GWh)', 'BEV_vehicles', 'Oil_price (EUR)',
+                                 'TTF_gas_price (€/MWh)', 'Nuclear_energy (GWh)', 'Lag_1_day',
+                                 'Lag_2_days', 'Lag_3_days', 'Lag_4_days', 'Lag_5_days', 'Lag_6_days',
+                                 'Lag_7_days', 'Day_of_week', 'Month', 'Rolling_mean_7']
 
     MAX_INPUT_CHUNK_LENGTH = 100
     # Parameters for epochs and trials
@@ -236,13 +241,15 @@ if __name__ == "__main__":
     os.makedirs(models_dir, exist_ok=True)
 
     # Save best model to TMPDIR
-    model_save_path = os.path.join(models_dir, f'best_deep_ar_model_epochs_{BEST_MODEL_EPOCHS}.pth')
+    model_save_path = os.path.join(
+        models_dir, f'best_deep_ar_model_epochs_{BEST_MODEL_EPOCHS}.pth')
     best_model.save(model_save_path)
     print(f"Best model saved at: {model_save_path}")
 
     # Make predictions
     n = len(series_test_scaled)
-    forecast = best_model.predict(n=n, future_covariates=future_covariates_for_prediction_scaled)
+    forecast = best_model.predict(
+        n=n, future_covariates=future_covariates_for_prediction_scaled)
     forecast = scaler_series.inverse_transform(forecast)
 
     # Inspect the error metrics from best trial in the Optuna study
@@ -250,14 +257,16 @@ if __name__ == "__main__":
 
     # Plot and save results, and retrieve file paths
     fig = plot_forecast(series_test, forecast, title="DeepAR Model forecast")
-    forecast_plot_path, forecast_csv_path, metrics_csv_path = save_results(forecast, series_test_scaled, scaler_series, fig, OPTUNA_EPOCHS)
+    forecast_plot_path, forecast_csv_path, metrics_csv_path = save_results(
+        forecast, series_test_scaled, scaler_series, fig, OPTUNA_EPOCHS)
 
     # Copy results from TMPDIR to the home directory
     home_results_dir = os.path.join(base_path, 'predictions/DeepAR/')
     os.makedirs(home_results_dir, exist_ok=True)
 
     # Copy generated files to home directory
-    copy_results_to_home([forecast_plot_path, forecast_csv_path, metrics_csv_path], home_results_dir)
+    copy_results_to_home(
+        [forecast_plot_path, forecast_csv_path, metrics_csv_path], home_results_dir)
     print(f"Results copied to {home_results_dir}")
 
     # Copy the model from TMPDIR to the home directory
