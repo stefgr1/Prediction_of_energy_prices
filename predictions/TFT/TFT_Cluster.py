@@ -18,7 +18,6 @@ from darts.utils.callbacks import TFMProgressBar
 import plotly.graph_objects as go
 from pytorch_lightning import loggers as pl_loggers
 
-
 def set_random_seed(seed=42):
     random.seed(seed)
     np.random.seed(seed)
@@ -26,32 +25,22 @@ def set_random_seed(seed=42):
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
 
-
 set_random_seed(42)
 
 early_stop_callback = EarlyStopping(
     monitor='train_loss', patience=20, verbose=True
 )
 
-# Create scaler objects
 scaler_series = Scaler(MaxAbsScaler())
 scaler_covariates = Scaler(MaxAbsScaler())
 
-
 def load_and_prepare_data(file_path):
-    """
-    Load energy prices data from a CSV file, ensure chronological order, and convert 'Date' to datetime.
-    """
     df = pd.read_csv(file_path)
     df.sort_values('Date', inplace=True)
     df['Date'] = pd.to_datetime(df['Date'])
     return df
 
-
 def prepare_time_series(df_train, df_test, covariates_columns):
-    """
-    Prepare time series objects for training and testing, including future covariates.
-    """
     series_train = TimeSeries.from_dataframe(
         df_train, 'Date', 'Day_ahead_price (€/MWh)').astype('float32')
     series_test = TimeSeries.from_dataframe(
@@ -60,8 +49,7 @@ def prepare_time_series(df_train, df_test, covariates_columns):
         df_train, 'Date', covariates_columns).astype('float32')
 
     max_input_chunk_length = 200
-    required_covariate_start = series_test.start_time(
-    ) - pd.DateOffset(days=(max_input_chunk_length - 1))
+    required_covariate_start = series_test.start_time() - pd.DateOffset(days=(max_input_chunk_length - 1))
     required_covariate_end = series_test.end_time()
 
     future_covariates_full = TimeSeries.from_dataframe(
@@ -73,11 +61,7 @@ def prepare_time_series(df_train, df_test, covariates_columns):
 
     return series_train, series_test, future_covariates_train, future_covariates_for_prediction
 
-
 def scale_data(series_train, series_test, future_covariates_train, future_covariates_for_prediction):
-    """
-    Scale the time series data and future covariates.
-    """
     scaler_series = Scaler(MaxAbsScaler())
     scaler_covariates = Scaler(MaxAbsScaler())
 
@@ -91,33 +75,53 @@ def scale_data(series_train, series_test, future_covariates_train, future_covari
 
     return series_train_scaled, series_test_scaled, future_covariates_train_scaled, future_covariates_for_prediction_scaled, scaler_series
 
-
 def create_logger(trial_number=None, best_model=False):
-    """
-    Create a TensorBoard logger with a unique log folder for each run.
-    If best_model is True, a separate log directory is used for the best model training.
-    """
     timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
-    
-    # Determine the appropriate base path for logs based on the platform
-    if platform.system() == "Darwin":  # macOS
-        base_log_dir = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/TFT/logs'
-    else:  # Assuming Linux or cluster environment
-        base_log_dir = os.getenv('TMPDIR', '/tmp')  # Use TMPDIR or /tmp if not available
+    base_log_dir = os.getenv('TMPDIR', '/tmp')
 
-    # If training the best model, create a separate directory
     if best_model:
-        log_dir = f'{base_log_dir}/best_model/{timestamp}_best_model'
+        log_dir = f'{base_log_dir}/TFT_logs/best_model/{timestamp}_best_model'
     else:
-        log_dir = f'{base_log_dir}/{timestamp}_trial_{trial_number}'
+        log_dir = f'{base_log_dir}/TFT_logs/{timestamp}_trial_{trial_number}'
 
-    # Ensure the directory is created
     os.makedirs(log_dir, exist_ok=True)
-
-    # Return the TensorBoard logger
     return pl_loggers.TensorBoardLogger(save_dir=log_dir, name='TFT', default_hp_metric=False)
 
+def plot_forecast(test_series, forecast, plot_path):
+    fig = go.Figure()
 
+    fig.add_trace(go.Scatter(
+        x=test_series.time_index,
+        y=test_series.values().squeeze(),
+        mode='lines',
+        name='Actual',
+        line=dict(color='blue')
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=forecast.time_index,
+        y=forecast.values().squeeze(),
+        mode='lines',
+        name='Forecast',
+        line=dict(color='red')
+    ))
+
+    fig.update_layout(
+        title='TFT Model',
+        xaxis_title='Date',
+        yaxis_title='Day Ahead Price (€/MWh)',
+        legend=dict(
+            x=1,
+            y=1,
+            xanchor='right',
+            yanchor='top',
+            bordercolor='black',
+            borderwidth=1
+        ),
+        template='plotly'
+    )
+
+    fig.write_image(plot_path)
 
 def train_best_model(best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs):
     """
@@ -241,97 +245,29 @@ def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled,
     # Return both the best parameters and the study itself
     return best_params, study
 
-
-def plot_forecast(test_series, forecast):
-    """
-    Plot the actual vs predicted forecast using Plotly.
-    """
-    fig = go.Figure()
-
-    fig.add_trace(go.Scatter(
-        x=test_series.time_index,
-        y=test_series.values().squeeze(),
-        mode='lines',
-        name='Actual',
-        line=dict(color='blue')
-    ))
-
-    fig.add_trace(go.Scatter(
-        x=forecast.time_index,
-        y=forecast.values().squeeze(),
-        mode='lines',
-        name='Forecast',
-        line=dict(color='red')
-    ))
-
-    fig.update_layout(
-        title='TFT Model',
-        xaxis_title='Date',
-        yaxis_title='Day Ahead Price (€/MWh)',
-        legend=dict(
-            x=1,
-            y=1,
-            xanchor='right',
-            yanchor='top',
-            bordercolor='black',
-            borderwidth=1
-        ),
-        template='plotly'
-    )
-
-    fig.show()
-
-    return fig
-
-
-def save_results(forecast, test_series, scaler_series, fig, base_path, epochs):
-    """
-    Inverse transform forecast, calculate error metrics, and save the results.
-    """
-
+def save_results(forecast, test_series, scaler_series, plot_path, metrics_path):
     test_series = scaler_series.inverse_transform(test_series)
 
-    print('Error Metrics on Test Set:')
-    print(f'  MAPE: {mape(test_series, forecast):.2f}%')
-    print(f'  MAE: {mae(test_series, forecast):.2f}')
-    print(f'  RMSE: {rmse(test_series, forecast):.2f}')
-    print(f'  MSE: {mse(test_series, forecast):.2f}')
+    error_metrics = pd.DataFrame({
+        'MAE': [mae(test_series, forecast)],
+        'MAPE': [mape(test_series, forecast)],
+        'MSE': [mse(test_series, forecast)],
+        'RMSE': [rmse(test_series, forecast)]
+    })
+    
+    error_metrics.to_csv(metrics_path, index=False)
 
-    # Determine the appropriate suffix based on the platform
-    if platform.system() == "Darwin":
-        suffix = "local"
-    else:
-        suffix = "cluster"
-
-    # Define the paths for the forecast plot and metrics CSV based on the platform
-    forecast_plot_path = os.path.join(
-        base_path, f'predictions/TFT/TFT_forecast_{epochs}_{suffix}.png')
-    metrics_csv_path = os.path.join(
-        base_path, f'predictions/TFT/TFT_metrics_{epochs}_{suffix}.csv')
-
-    fig.write_image(forecast_plot_path)
-    error_metrics = pd.DataFrame({'MAE': [mae(test_series, forecast)], 'MAPE': [mape(test_series, forecast)],
-                                  'MSE': [mse(test_series, forecast)], 'RMSE': [rmse(test_series, forecast)]})
-    error_metrics.to_csv(metrics_csv_path, index=False)
-
-
-# Main execution block
 if __name__ == "__main__":
-
-    # Detect if on Mac or Linux and adjust base path accordingly
-    if platform.system() == "Darwin":  # macOS
-        base_path = os.path.expanduser(
-            "~/Documents/Masterarbeit/Prediction_of_energy_prices/")
-    else:  # Assuming Linux for the cluster
+    if platform.system() == "Darwin":
+        base_path = os.path.expanduser("~/Documents/Masterarbeit/Prediction_of_energy_prices/")
+    else:
         base_path = os.getenv('HOME') + '/Prediction_of_energy_prices/'
 
-    # Load in the train and test data
     train_df = load_and_prepare_data(
         os.path.join(base_path, 'data/Final_data/train_df.csv'))
     test_df = load_and_prepare_data(
         os.path.join(base_path, 'data/Final_data/test_df.csv'))
 
-    # Define future covariates
     future_covariates_columns = ['Solar_radiation (W/m2)', 'Wind_speed (m/s)',
                                  'Temperature (°C)', 'Biomass (GWh)', 'Hard_coal (GWh)', 'Hydro (GWh)',
                                  'Lignite (GWh)', 'Natural_gas (GWh)', 'Other (GWh)',
@@ -342,38 +278,41 @@ if __name__ == "__main__":
                                  'Lag_2_days', 'Lag_3_days', 'Lag_4_days', 'Lag_5_days', 'Lag_6_days',
                                  'Lag_7_days', 'Day_of_week', 'Month', 'Rolling_mean_7']
 
-    # Prepare time series
     series_train, series_test, future_covariates_train, future_covariates_for_prediction = prepare_time_series(
         train_df, test_df, future_covariates_columns)
 
-    # Scale data
     series_train_scaled, series_test_scaled, future_covariates_train_scaled, future_covariates_for_prediction_scaled, scaler_series = scale_data(
         series_train, series_test, future_covariates_train, future_covariates_for_prediction)
 
-    # Customizable parameters
-    optuna_epochs = 1  # Define the number of epochs for Optuna trials
-    optuna_trials = 1  # Define the number of trials for Optuna
-    best_model_epochs = 1  # Define the number of epochs for the best model
+    optuna_epochs = 50
+    optuna_trials = 250
+    best_model_epochs = 50
 
-    # Run Optuna optimization and get the study and best parameters
     best_params, study = run_optuna_optimization(
         series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs)
 
-    # Get the best trial number from the Optuna study
     best_trial_number = study.best_trial.number
-
-    # Train the best model, passing the trial number and best_model_epochs
     best_model = train_best_model(
         best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs)
 
-    # Make predictions
     n = len(series_test_scaled)
     forecast = best_model.predict(
         n=n, future_covariates=future_covariates_for_prediction_scaled)
 
     forecast = scaler_series.inverse_transform(forecast)
 
-    # Plot and save results
-    fig = plot_forecast(series_test, forecast)
-    save_results(forecast, series_test_scaled, scaler_series,
-                 fig, base_path, optuna_epochs)
+    tmpdir = os.getenv('TMPDIR', '/tmp')
+    plot_path = os.path.join(tmpdir, 'TFT_forecast.png')
+    metrics_path = os.path.join(tmpdir, 'TFT_metrics.csv')
+    plot_forecast(series_test, forecast, plot_path)
+    save_results(forecast, series_test_scaled, scaler_series, plot_path, metrics_path)
+
+    final_plot_path = os.path.join(base_path, f'predictions/TFT/TFT_forecast_{optuna_epochs}.png')
+    final_metrics_path = os.path.join(base_path, f'predictions/TFT/TFT_metrics_{optuna_epochs}.csv')
+    final_logs_path = os.path.join(base_path, 'predictions/TFT/logs/')
+    
+    os.makedirs(final_logs_path, exist_ok=True)
+
+    shutil.copy(plot_path, final_plot_path)
+    shutil.copy(metrics_path, final_metrics_path)
+    shutil.copytree(os.path.join(tmpdir, 'TFT_logs'), final_logs_path, dirs_exist_ok=True)

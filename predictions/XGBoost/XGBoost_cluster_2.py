@@ -12,6 +12,7 @@ from pytorch_lightning import loggers as pl_loggers
 import plotly.graph_objs as go
 import sys
 import importlib
+from pytorch_lightning.callbacks import EarlyStopping
 
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -75,13 +76,13 @@ def main():
     series_train_scaled, series_test_scaled, future_covariates_train_scaled, future_covariates_test_scaled, scaler_series = utils.scale_data(
         series_train, series_test, future_covariates_train, future_covariates_test)
 
-    # Adjust Objective Function with Early Stopping and Consistent GPU Usage
+    # Your original code continues here
     def objective(trial):
         tb_logger = pl_loggers.TensorBoardLogger(
             save_dir=os.path.join(tmp_dir, f"XGBoost_Optuna_{trial.number}")
         )
 
-        # Suggest hyperparameters with refined ranges
+        # Suggest hyperparameters
         max_depth = trial.suggest_int('max_depth', 2, 8)
         learning_rate = trial.suggest_float('learning_rate', 0.01, 0.1)
         n_estimators = trial.suggest_int('n_estimators', 100, 500)
@@ -116,6 +117,7 @@ def main():
 
         tb_logger.log_metrics({"rmse": float(error)}, step=trial.number)
         return error
+
 
     # Run Optuna optimization
     study = optuna.create_study(direction='minimize')

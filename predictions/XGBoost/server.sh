@@ -1,12 +1,13 @@
 #!/bin/bash
 
-#SBATCH --partition=gpu_8        # Ensure this partition is valid
+#SBATCH --partition=dev_gpu_4        # Ensure this partition is valid
 #SBATCH --nodes=1                   # Request a single node
 #SBATCH --cpus-per-task=6          # Specify the number of CPU cores for the task
 #SBATCH --mem=8000mb               # Set memory for the job
 #SBATCH --time=00:30:00             # Set maximum runtime
-#SBATCH --output=job_output_%j.log  # Output log file for each job
-#SBATCH --gres=gpu:4                 # Request 1 GPU
+#SBATCH --output=job_output_%j.out
+#SBATCH --error=job_error_%j.err
+#SBATCH --gres=gpu:2                 # Request 1 GPU
 #SBATCH --job-name=XG_Boost
 #SBATCH --mail-user=zxoul27@student.uni-tuebingen.de
 #SBATCH --mail-type=BEGIN,END,FAIL
