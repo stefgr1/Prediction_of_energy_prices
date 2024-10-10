@@ -9,6 +9,7 @@ from darts import TimeSeries
 from darts.models import XGBModel
 from darts.metrics import mape, rmse, mse, mae
 from pytorch_lightning import loggers as pl_loggers
+from pytorch_lightning.callbacks import EarlyStopping
 import plotly.graph_objs as go
 import sys
 import importlib
@@ -34,19 +35,21 @@ save_results = utils.save_results
 copy_results_to_home = utils.copy_results_to_home
 plot_forecast = utils.plot_forecast
 
+
 def load_config(config_path=None):
     # Default to using config.yaml in the current script's directory
     if config_path is None:
         config_path = os.path.join(os.path.dirname(__file__), "config.yaml")
-    
+
     with open(config_path, "r") as file:
         config = yaml.safe_load(file)
-    
+
     # Set n_jobs to the number of available CPU cores if not defined
     if config.get("n_jobs") is None or config["n_jobs"] == -1:
         config["n_jobs"] = os.cpu_count()
-    
+
     return config
+
 
 def main():
     # Load configuration parameters
@@ -54,10 +57,11 @@ def main():
 
     # Detect if on Mac or Linux and adjust base path accordingly
     if platform.system() == "Darwin":  # macOS
-        base_path = os.path.expanduser("~/Documents/Masterarbeit/Prediction_of_energy_prices/")
+        base_path = os.path.expanduser(
+            "~/Documents/Masterarbeit/Prediction_of_energy_prices/")
     else:  # Assuming Linux for the cluster
         base_path = os.getenv('HOME') + '/Prediction_of_energy_prices/'
-        
+
     tmp_dir = os.path.join(os.getenv('TMPDIR'), 'predictions/XGBoost')
     home_results_dir = os.path.join(base_path, 'predictions/XGBoost/')
     if os.path.exists(tmp_dir):
@@ -65,13 +69,15 @@ def main():
     os.makedirs(tmp_dir, exist_ok=True)
 
     # Load data
-    train_df = utils.load_and_prepare_data(os.path.join(base_path, 'data/Final_data/train_df.csv'))
-    test_df = utils.load_and_prepare_data(os.path.join(base_path, 'data/Final_data/test_df.csv'))
+    train_df = utils.load_and_prepare_data(
+        os.path.join(base_path, 'data/Final_data/train_df.csv'))
+    test_df = utils.load_and_prepare_data(
+        os.path.join(base_path, 'data/Final_data/test_df.csv'))
 
     # Prepare time series
     series_train, series_test, future_covariates_train, future_covariates_test = utils.prepare_time_series(
         train_df, test_df, future_covariates_columns, config["max_input_chunk_length"])
-    
+
     # Scale data
     series_train_scaled, series_test_scaled, future_covariates_train_scaled, future_covariates_test_scaled, scaler_series = utils.scale_data(
         series_train, series_test, future_covariates_train, future_covariates_test)
@@ -109,9 +115,12 @@ def main():
         )
 
         # Early stopping callback
-        early_stop = EarlyStopping(monitor="train_loss", patience=20, mode="min")
-        model.fit(series_train_scaled, future_covariates=future_covariates_train_scaled, verbose=False, callbacks=[early_stop])
-        forecast_scaled = model.predict(n=len(series_test_scaled), future_covariates=future_covariates_test_scaled)
+        early_stop = EarlyStopping(
+            monitor="train_loss", patience=20, mode="min")
+        model.fit(series_train_scaled, future_covariates=future_covariates_train_scaled,
+                  verbose=False, callbacks=[early_stop])
+        forecast_scaled = model.predict(
+            n=len(series_test_scaled), future_covariates=future_covariates_test_scaled)
         forecast = scaler_series.inverse_transform(forecast_scaled)
         error = rmse(series_test, forecast)
 
@@ -121,12 +130,14 @@ def main():
 
     # Run Optuna optimization
     study = optuna.create_study(direction='minimize')
-    study.optimize(objective, n_trials=config["optuna_trials"], n_jobs=config["n_jobs"])
-    
+    study.optimize(
+        objective, n_trials=config["optuna_trials"], n_jobs=config["n_jobs"])
+
     best_params = study.best_params
 
     # Create a new logger for the final model training with best parameters
-    final_tb_logger = pl_loggers.TensorBoardLogger(save_dir=tmp_dir, name="XGBoost_Best_Model")
+    final_tb_logger = pl_loggers.TensorBoardLogger(
+        save_dir=tmp_dir, name="XGBoost_Best_Model")
 
     # Train model with best hyperparameters and TensorBoard logging
     best_model = XGBModel(
@@ -145,18 +156,24 @@ def main():
         device="cuda" if torch.cuda.is_available() else "cpu"
     )
 
-    best_model.fit(series_train_scaled, future_covariates=future_covariates_train_scaled)
-    forecast_scaled = best_model.predict(n=len(series_test_scaled), future_covariates=future_covariates_test_scaled)
+    best_model.fit(series_train_scaled,
+                   future_covariates=future_covariates_train_scaled)
+    forecast_scaled = best_model.predict(
+        n=len(series_test_scaled), future_covariates=future_covariates_test_scaled)
     forecast = scaler_series.inverse_transform(forecast_scaled)
 
     # Debugging: Print forecast values after scaling
-    print("First few values of forecast_scaled:", forecast_scaled.values()[:5].squeeze())
-    print("First few values of forecast after inverse transform:", forecast.values()[:5].squeeze())
-    print("First few values of test series for comparison:", series_test.values()[:5].squeeze())
+    print("First few values of forecast_scaled:",
+          forecast_scaled.values()[:5].squeeze())
+    print("First few values of forecast after inverse transform:",
+          forecast.values()[:5].squeeze())
+    print("First few values of test series for comparison:",
+          series_test.values()[:5].squeeze())
 
     # Plot forecast using the utility function
-    fig = utils.plot_forecast(series_test, forecast, title="XGBoost Model Forecast")
-    
+    fig = utils.plot_forecast(series_test, forecast,
+                              title="XGBoost Model Forecast")
+
     # Save forecast plot and metrics
     forecast_plot_path, forecast_csv_path, metrics_csv_path = utils.save_results(
         forecast, series_test, scaler_series, fig, optuna_epochs=config["optuna_epochs"], model_name="XGBoost")
@@ -166,10 +183,11 @@ def main():
     tmp_files = [forecast_plot_path, forecast_csv_path, metrics_csv_path]
     if os.path.exists(final_tb_log_dir):
         tmp_files.append(final_tb_log_dir)
-    
+
     utils.copy_results_to_home(tmp_files, home_results_dir)
 
     print(f"Results copied to {home_results_dir}")
+
 
 if __name__ == "__main__":
     main()
