@@ -1,0 +1,21 @@
+[I 2024-10-10 15:47:01,156] A new study created in memory with name: no-name-37a487ab-af8d-479e-8604-0e9bde8f80d5
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Metric train_loss improved. New best score: 0.870
+`Trainer.fit` stopped: `max_epochs=1` reached.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-10 15:47:20,788] Trial 0 finished with value: 36.61162185668945 and parameters: {'n_layers': 2, 'dropout': 0.19161328790353543, 'input_chunk_length': 88, 'hidden_dim': 104, 'learning_rate': 2.5887150208014153e-07, 'batch_size': 32, 'training_length': 453}. Best is trial 0 with value: 36.61162185668945.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+`Trainer.fit` stopped: `max_epochs=1` reached.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
