@@ -27,9 +27,23 @@ from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import EarlyStopping
 from darts.dataprocessing.transformers import Scaler
 
+# Function to create and load config file
+add_encoders = {
+    'datetime_attribute': {
+        'past': ['day', 'weekday', 'month'],
+        'future': ['day', 'weekday', 'month']
+    },
+    'cyclic': {
+        'past': ['day', 'weekday', 'month'],
+        'future': ['day', 'weekday', 'month']
+    },
+    'position': {
+        'future': ['relative']
+    }
+}
+
 
 def sanitize_filename(filename):
-    # Replace any character that is not alphanumeric or one of the allowed special characters
     return re.sub(r'[^\w\-_\. ]', '_', filename)
 
 
@@ -42,6 +56,8 @@ def load_config(config_path=None):
     return config
 
 # Function to load and prepare data
+
+
 def load_and_prepare_data(file_path):
     df = pd.read_csv(file_path)
     df.reset_index(drop=True, inplace=True)
@@ -51,12 +67,16 @@ def load_and_prepare_data(file_path):
     return df
 
 # Early stopping callback function
+
+
 def create_early_stopping_callback(patience):
     return EarlyStopping(
-        monitor='train_loss', patience=patience, verbose=True
+        monitor='val_loss', patience=patience, verbose=True
     )
 
 # Logger creation function
+
+
 def create_logger(tmpdir, trial_number=None, model_name='DeepAR_Model'):
     if platform.system() == 'Darwin':  # macOS
         final_base_log_dir = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data_retrieval/future_data/DeepAR/logs'
@@ -144,11 +164,6 @@ def main():
         test_transformed = scaler.transform(test_series)
         total_series_transformed = scaler.transform(total_series)
 
-        # Create a time series for the day of the week
-        day_series = datetime_attribute_timeseries(
-            total_series_transformed, attribute="day", one_hot=True, dtype=np.float32
-        )
-
         # Create early stopping callback
         early_stop_callback = create_early_stopping_callback(
             patience=config["patience"])
@@ -175,7 +190,7 @@ def main():
 
             # Create a new logger for each trial
             tb_logger = create_logger(
-                tmpdir, trial_number=trial.number, model_name='DeepAR')
+                tmpdir, trial_number=trial.number, model_name=f'DeepAR_{target_column}')
 
             # Create model
             model = RNNModel(
@@ -185,7 +200,7 @@ def main():
                 hidden_dim=hidden_dim,
                 n_rnn_layers=n_layers,
                 dropout=dropout,
-                likelihood=GaussianLikelihood(),
+                likelihood=ExponentialLikelihood(), # GaussianLikelihood(),
                 batch_size=batch_size,
                 n_epochs=config["optuna_epochs"],
                 optimizer_kwargs={'lr': learning_rate},
@@ -209,9 +224,7 @@ def main():
                 # Fit the model
                 model.fit(
                     series=train_transformed,
-                    future_covariates=day_series,
                     val_series=test_transformed,
-                    val_future_covariates=day_series,
                 )
 
                 # Forecast over the test period
@@ -255,7 +268,7 @@ def main():
         dropout = best_params.get('dropout', 0.0)
         best_trial = study.best_trial
         tb_logger = create_logger(
-            tmpdir, trial_number=best_trial.number, model_name='DeepAR_best_model')
+            tmpdir, trial_number=best_trial.number, model_name=f'DeepAR_bestmodel_{target_column}')
 
         # Retrain the model on the entire dataset with best hyperparameters
         best_model = RNNModel(
@@ -265,7 +278,7 @@ def main():
             hidden_dim=best_params['hidden_dim'],
             n_rnn_layers=best_params['n_layers'],
             dropout=dropout,
-            likelihood=GaussianLikelihood(),
+            likelihood=ExponentialLikelihood(), #GaussianLikelihood(),
             batch_size=best_params['batch_size'],
             n_epochs=config["best_model_epochs"],
             optimizer_kwargs={'lr': best_params['learning_rate']},
@@ -288,34 +301,15 @@ def main():
         # Fit the model on the entire data
         best_model.fit(
             series=total_series_transformed,
-            future_covariates=day_series,
         )
 
         # Set forecast horizon for two years (daily data)
         forecast_horizon = 365 * 2  # Two years into the future
 
-        # Generate future dates for the forecast horizon
-        future_dates = pd.date_range(
-            start=total_series_transformed.end_time() + total_series_transformed.freq,
-            periods=forecast_horizon,
-            freq=total_series_transformed.freq
-        )
-
-        # Generate future covariates for the forecast horizon
-        future_covariates = datetime_attribute_timeseries(
-            time_index=future_dates,
-            attribute="day",
-            one_hot=True,
-            dtype=np.float32,
-        )
-
-        # Combine existing and future covariates
-        full_covariates = day_series.append(future_covariates)
 
         # Make future prediction
         forecast = best_model.predict(
             n=forecast_horizon,
-            future_covariates=full_covariates,
         )
 
         # Inverse transform the forecasted data
@@ -327,9 +321,6 @@ def main():
         forecast_df.rename(columns={'index': 'Date'}, inplace=True)
         forecast_csv_path = os.path.join(script_dir, 'forecast.csv')
         forecast_df.to_csv(forecast_csv_path, index=False)
-
-        # Sanitize the target column name for filenames only
-        sanitized_target_column = sanitize_filename(config["target_column"])
 
         # Plot the results using Plotly
         fig = go.Figure()
@@ -356,6 +347,10 @@ def main():
             xaxis_title='Date',
             yaxis_title=target_column
         )
+
+        # Sanitize the target column name for filenames only
+        sanitized_target_column = sanitize_filename(config["target_column"])
+
 
         # Paths for temporary storage in tmpdir
         temp_forecast_csv_path = os.path.join(
