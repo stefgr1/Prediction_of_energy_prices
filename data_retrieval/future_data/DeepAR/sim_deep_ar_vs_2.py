@@ -11,7 +11,7 @@ import optuna
 import yaml
 import traceback
 import tempfile
-import shutil  # For moving files from tmpdir to final destination
+import shutil  
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from datetime import datetime
@@ -21,13 +21,13 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from darts import TimeSeries
 from darts.models import RNNModel
 from darts.metrics import mae, rmse, mse, mape
-from darts.utils.likelihood_models import GaussianLikelihood
+from darts.utils.likelihood_models import GaussianLikelihood, ExponentialLikelihood
 from darts.utils.callbacks import TFMProgressBar
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import EarlyStopping
 from darts.dataprocessing.transformers import Scaler
 
-# Function to create and load config file
+
 add_encoders = {
     'datetime_attribute': {
         'past': ['day', 'weekday', 'month'],
@@ -46,7 +46,7 @@ add_encoders = {
 def sanitize_filename(filename):
     return re.sub(r'[^\w\-_\. ]', '_', filename)
 
-
+# Function to create and load config file
 def load_config(config_path=None):
     # Default to using config.yaml in the current script's directory
     if config_path is None:
@@ -200,7 +200,7 @@ def main():
                 hidden_dim=hidden_dim,
                 n_rnn_layers=n_layers,
                 dropout=dropout,
-                likelihood=ExponentialLikelihood(), # GaussianLikelihood(),
+                likelihood= GaussianLikelihood(),
                 batch_size=batch_size,
                 n_epochs=config["optuna_epochs"],
                 optimizer_kwargs={'lr': learning_rate},
@@ -232,6 +232,9 @@ def main():
                 forecast = model.predict(n=n)
 
                 forecast = scaler.inverse_transform(forecast)
+
+                # Get rid off impossible negative values
+                forecast = forecast.with_values(np.maximum(forecast.values(), 0))
 
                 # Calculate error metrics
                 rmse_val = rmse(test_series, forecast)
@@ -278,7 +281,7 @@ def main():
             hidden_dim=best_params['hidden_dim'],
             n_rnn_layers=best_params['n_layers'],
             dropout=dropout,
-            likelihood=ExponentialLikelihood(), #GaussianLikelihood(),
+            likelihood=GaussianLikelihood(),
             batch_size=best_params['batch_size'],
             n_epochs=config["best_model_epochs"],
             optimizer_kwargs={'lr': best_params['learning_rate']},
@@ -291,7 +294,7 @@ def main():
                 'accelerator': accelerator,
                 'devices': config["devices"],
                 'enable_progress_bar': True,
-                'enable_checkpointing': False,  # Enable checkpointing
+                'enable_checkpointing': False, 
                 'logger': tb_logger,
                 'enable_model_summary': False,
                 'log_every_n_steps': 20,
@@ -314,6 +317,8 @@ def main():
 
         # Inverse transform the forecasted data
         forecast = scaler.inverse_transform(forecast)
+
+        forecast = forecast.with_values(np.maximum(forecast.values(), 0))
 
         # Save the forecast values and dates to CSV
         forecast_df = forecast.pd_dataframe()

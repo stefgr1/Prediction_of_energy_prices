@@ -5,7 +5,7 @@
 #SBATCH --nodes=1                   # Request a single node
 #SBATCH --cpus-per-task=8          # Specify the number of CPU cores for the task
 #SBATCH --mem=8000mb               # Set memory for the job
-#SBATCH --time=03:00:00             # Set maximum runtime
+#SBATCH --time=05:00:00             # Set maximum runtime
 #SBATCH --output=job_output_%j.out
 #SBATCH --error=job_error_%j.err
 #SBATCH --job-name=Deep_sim
