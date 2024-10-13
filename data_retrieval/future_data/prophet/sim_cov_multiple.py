@@ -45,10 +45,12 @@ slurm_task_id = int(os.getenv('SLURM_PROCID', '0'))
 total_tasks = int(os.getenv('SLURM_NTASKS', '1'))
 
 # Covariates to be used for prediction
-covariates = ['Solar_radiation (W/m2)', 'Temperature (°C)', 'Biomass (GWh)', 
-              'Hard_coal (GWh)', 'Hydro (GWh)', 'Lignite (GWh)', 
-              'Natural_gas (GWh)', 'Other (GWh)', 'Pumped_storage_generation (GWh)', 
-              'Solar_energy (GWh)', 'Net_total_export_import (GWh)']
+#covariates = ['Solar_radiation (W/m2)', 'Temperature (°C)', 'Biomass (GWh)', 
+#              'Hard_coal (GWh)', 'Hydro (GWh)', 'Lignite (GWh)', 
+#              'Natural_gas (GWh)', 'Other (GWh)', 'Pumped_storage_generation (GWh)', 
+#              'Solar_energy (GWh)', 'Net_total_export_import (GWh)']
+
+covariates = ["Oil_price (EUR)","TTF_gas_price (€/MWh)"]
 
 # Split covariates using np.array_split to handle uneven splits
 assigned_covariates = np.array_split(covariates, total_tasks)[slurm_task_id]
