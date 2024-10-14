@@ -1,13 +1,12 @@
 #!/bin/bash
 
-#SBATCH --partition=gpu_8        # Ensure this partition is valid
+#SBATCH --partition=single        # Ensure this partition is valid
 #SBATCH --nodes=1                   # Request a single node
-#SBATCH --cpus-per-task=6          # Specify the number of CPU cores for the task
+#SBATCH --cpus-per-task=8          # Specify the number of CPU cores for the task
 #SBATCH --mem=8000mb               # Set memory for the job
-#SBATCH --time=05:00:00             # Set maximum runtime
+#SBATCH --time=24:00:00             # Set maximum runtime
 #SBATCH --output=job_output_%j.out
 #SBATCH --error=job_error_%j.err
-#SBATCH --gres=gpu:1                 # Request 1 GPU
 #SBATCH --job-name=Chro_GAS
 #SBATCH --mail-user=zxoul27@student.uni-tuebingen.de
 #SBATCH --mail-type=BEGIN,END,FAIL
