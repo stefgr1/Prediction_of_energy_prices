@@ -92,7 +92,7 @@ for covariate in covariates:
     print(f"Task {slurm_task_id} processing covariate: {covariate}")
     
     # Load and prepare data
-    df = load_and_prepare_data('../../data/Final_data/final_data_july.csv')
+    df = load_and_prepare_data('../../../data/Final_data/final_data_july.csv')
     
     # Prepare data for Prophet
     df_prophet = pd.DataFrame({
