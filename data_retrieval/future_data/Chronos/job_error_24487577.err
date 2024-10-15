@@ -1,0 +1,30 @@
+Traceback (most recent call last):
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/data_retrieval/future_data/Chronos/chronos_3.py", line 123, in <module>
+    main()
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/data_retrieval/future_data/Chronos/chronos_3.py", line 113, in main
+    plot_filename = plot_forecast(df, forecast_index, low, mean_smoothed, high, output_path)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/data_retrieval/future_data/Chronos/chronos_3.py", line 66, in plot_forecast
+    plt.savefig(plot_filename, bbox_inches="tight")
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/matplotlib/pyplot.py", line 1228, in savefig
+    res = fig.savefig(*args, **kwargs)  # type: ignore[func-returns-value]
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/matplotlib/figure.py", line 3395, in savefig
+    self.canvas.print_figure(fname, **kwargs)
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/matplotlib/backend_bases.py", line 2204, in print_figure
+    result = print_method(
+             ^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/matplotlib/backend_bases.py", line 2054, in <lambda>
+    print_method = functools.wraps(meth)(lambda *args, **kwargs: meth(
+                                                                 ^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/matplotlib/backends/backend_agg.py", line 496, in print_png
+    self._print_pil(filename_or_obj, "png", pil_kwargs, metadata)
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/matplotlib/backends/backend_agg.py", line 445, in _print_pil
+    mpl.image.imsave(
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/matplotlib/image.py", line 1676, in imsave
+    image.save(fname, **pil_kwargs)
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/PIL/Image.py", line 2563, in save
+    fp = builtins.open(filename, "w+b")
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/data_retrieval/future_data/Chronos/forecast_plot_small_730_Wind_speed_m/s.png'
+srun: error: uc2n261: task 0: Exited with exit code 1
