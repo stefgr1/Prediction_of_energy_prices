@@ -12,8 +12,8 @@ import os
 import platform
 
 # Global configuration
-TARGET_COLUMN = "Other (GWh)"
-SIZE = "small"
+TARGET_COLUMN = "Oil_price (EUR)"
+SIZE = "tiny"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
@@ -25,47 +25,31 @@ def load_and_prepare_data(file_path):
     return df
 
 def run_chronos_recursive(data, num_steps):
-
-    # Set the seed 
     transformers.set_seed(42)
-
-    # Load the pretrained model
     chronos_model = ChronosPipeline.from_pretrained(
         f"amazon/chronos-t5-{SIZE}",
-        torch_dtype=torch.float32  
-    )
-    
-    # Ensure model is on CPU
-    chronos_model.model.to("cpu")
-    
-    context = data.copy().values.flatten()
+        torch_dtype=torch.float32
+    ).to(DEVICE)
+
+    context = list(data.values.flatten())
     forecasts = []
-    forecast_dates = []
+    start_date = data.index[-1] + pd.Timedelta(days=1)
+    forecast_dates = pd.date_range(start=start_date, periods=num_steps, freq='D')
 
-    for i in tqdm(range(num_steps)):
-
-        # Convert context to float32 for CPU compatibility
-        context_tensor = torch.from_numpy(context).to(torch.float32)
-        
-        # Generate the one-step-ahead forecast
+    for _ in tqdm(range(num_steps)):
+        context_tensor = torch.tensor(context, dtype=torch.float32, device=DEVICE)
         chronos_forecast = chronos_model.predict(
             context=context_tensor,
             prediction_length=1,
             num_samples=100
-        ).detach().cpu().numpy().flatten()
-        
-        # Append forecast
+        ).cpu().detach().numpy().flatten()
+
         forecasts.append(chronos_forecast[0])
+        context.append(chronos_forecast[0])
 
-        # Update context by appending the forecasted value
-        context = np.append(context, chronos_forecast[0])
-
-        # Generate new date
-        last_date = data.index[-1] if i == 0 else forecast_dates[-1]
-        new_date = last_date + pd.Timedelta(days=1)
-        forecast_dates.append(new_date)
-        final_df = pd.DataFrame({'ds': forecast_dates, 'yhat': forecasts})
+    final_df = pd.DataFrame({'ds': forecast_dates, 'yhat': forecasts})
     return final_df
+
 
 
 def plot_forecasts(forecasts, title, original_data):
@@ -129,7 +113,7 @@ def main():
     data = data.set_index('Date')
 
     # Run recursive Chronos forecast
-    chronos_forecasts = run_chronos_recursive(data[TARGET_COLUMN], num_steps=730)
+    chronos_forecasts = run_chronos_recursive(data[TARGET_COLUMN], num_steps=2)
     
     # Plot forecasts and save metrics in the same directory as the script
     plot_forecasts(chronos_forecasts, f"Chronos Forecast for {TARGET_COLUMN}", data)
