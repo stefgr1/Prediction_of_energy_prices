@@ -26,11 +26,16 @@ def load_and_prepare_data(file_path):
 
 def run_chronos_recursive(data, num_steps):
     transformers.set_seed(42)
+    
+    # Load the pretrained model
     chronos_model = ChronosPipeline.from_pretrained(
         f"amazon/chronos-t5-{SIZE}",
         torch_dtype=torch.float32
-    ).to(DEVICE)
-
+    )
+    
+    # Ensure model is on the specified device
+    chronos_model.model.to(DEVICE)
+    
     context = list(data.values.flatten())
     forecasts = []
     start_date = data.index[-1] + pd.Timedelta(days=1)
@@ -49,6 +54,7 @@ def run_chronos_recursive(data, num_steps):
 
     final_df = pd.DataFrame({'ds': forecast_dates, 'yhat': forecasts})
     return final_df
+
 
 
 
