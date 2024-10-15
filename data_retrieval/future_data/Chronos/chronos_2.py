@@ -13,7 +13,7 @@ import platform
 
 # Global configuration
 TARGET_COLUMN = "Oil_price (EUR)"
-SIZE = "tiny"
+SIZE = "base"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
@@ -119,7 +119,7 @@ def main():
     data = data.set_index('Date')
 
     # Run recursive Chronos forecast
-    chronos_forecasts = run_chronos_recursive(data[TARGET_COLUMN], num_steps=2)
+    chronos_forecasts = run_chronos_recursive(data[TARGET_COLUMN], num_steps=730)
     
     # Plot forecasts and save metrics in the same directory as the script
     plot_forecasts(chronos_forecasts, f"Chronos Forecast for {TARGET_COLUMN}", data)
