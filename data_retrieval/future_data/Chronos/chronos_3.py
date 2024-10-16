@@ -7,12 +7,12 @@ from chronos import ChronosPipeline
 import platform
 
 # Global configuration
-TARGET_COLUMN = "Oil_price (EUR)"
-MODEL_SIZE = "base"
+TARGET_COLUMN = "TTF_gas_price (€/MWh)"
+MODEL_SIZE = "large"
 # als nächstes 400 testen und dann 500 , das gleiche dann nochmaml mit batch size 16 und 64
-CONTEXT_SIZE = 300
+CONTEXT_SIZE = 500
 TOTAL_PREDICTION_LENGTH = 730
-CHUNK_SIZE = 32
+CHUNK_SIZE = 64
 SMOOTHING_WINDOW = 5
 DEVICE = "mps" if torch.cuda.is_available() else "cpu"
 

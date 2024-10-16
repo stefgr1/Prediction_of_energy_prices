@@ -7,7 +7,7 @@
 #SBATCH --time=08:00:00             # Set maximum runtime
 #SBATCH --output=job_output_%j.out
 #SBATCH --error=job_error_%j.err
-#SBATCH --job-name=Chro_OiL
+#SBATCH --job-name=Chro_Gas
 #SBATCH --mail-user=zxoul27@student.uni-tuebingen.de
 #SBATCH --mail-type=BEGIN,END,FAIL
 
