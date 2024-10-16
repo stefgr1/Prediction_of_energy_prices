@@ -8,7 +8,7 @@ import platform
 
 # Global configuration
 TARGET_COLUMN = "Oil_price (EUR)"
-MODEL_SIZE = "base"
+MODEL_SIZE = "large"
 CONTEXT_SIZE = 400
 TOTAL_PREDICTION_LENGTH = 730
 CHUNK_SIZE = 16
