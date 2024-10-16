@@ -7,12 +7,13 @@ from chronos import ChronosPipeline
 import platform
 
 # Global configuration
-TARGET_COLUMN = "Wind_speed (m/s)"
-MODEL_SIZE = "small"
-CONTEXT_SIZE = 200
+TARGET_COLUMN = "Oil_price (EUR)"
+MODEL_SIZE = "base"
+# als nächstes 400 testen und dann 500 , das gleiche dann nochmaml mit batch size 16 und 64
+CONTEXT_SIZE = 300
 TOTAL_PREDICTION_LENGTH = 730
-CHUNK_SIZE = 16
-SMOOTHING_WINDOW = 3
+CHUNK_SIZE = 32
+SMOOTHING_WINDOW = 5
 DEVICE = "mps" if torch.cuda.is_available() else "cpu"
 
 # Load and prepare data
@@ -23,7 +24,6 @@ def load_and_prepare_data(file_path):
     df.sort_values('Date', inplace=True)
     df['Date'] = pd.to_datetime(df['Date'])
     return df
-
 
 # Replace special characters in TARGET_COLUMN to make it suitable for a file name
 
@@ -72,21 +72,43 @@ def smooth_predictions(predictions, window_size):
 # Plot and save the forecast
 
 
-# Plot and save the forecast
-def plot_forecast(df, forecast_index, low, mean_smoothed, high, output_path):
-    plt.figure(figsize=(12, 4.5))
+def plot_forecast(df, forecast_index, low, mean, mean_smoothed, high, output_path):
+    plt.figure(figsize=(14, 6))
+
+    # Plot historical data with enhanced color and thickness
     plt.plot(df['Date'], df[TARGET_COLUMN],
-             color="#1f77b4", linewidth=1, label="Actual")
-    plt.plot(forecast_index, mean_smoothed, color="#ca8a04",
-             linewidth=1, label="Predicted (Smoothed Mean)")
-    plt.fill_between(forecast_index, low, high, color="#ca8a04",
+             color="#1f77b4", linewidth=1.5, label="Actual Data", alpha=0.8)
+
+    # Plot smoothed mean forecast with markers for clarity
+    '''
+    plt.plot(forecast_index, mean_smoothed, color="#ff7f0e",
+             linewidth=2, linestyle='-', label="Predicted (Smoothed Mean)", alpha=0.9)
+    '''
+    # Plot original mean forecast with different styling
+    plt.plot(forecast_index, mean, color="darkred",
+             linewidth=1, label="Predicted Mean", alpha=0.8)
+
+    # Fill between the low and high prediction intervals with improved transparency
+    plt.fill_between(forecast_index, low, high, color="#ffbb78",
                      alpha=0.3, label="80% Prediction Interval")
-    plt.title(f"Forecast for {TARGET_COLUMN}")
-    plt.xlabel("Date")
-    plt.ylabel(TARGET_COLUMN)
+
+    # Set the title and labels with better font size and style
+    plt.title(f"Forecast for {TARGET_COLUMN}",
+              fontsize=16, fontweight='bold', pad=20)
+    plt.xlabel("Date", fontsize=14)
+    plt.ylabel(TARGET_COLUMN, fontsize=14)
+
+    # Customize the x-axis to match the specified range
     plt.xlim([pd.to_datetime("2022-01-01"), forecast_index[-1]])
-    plt.legend(loc="upper left", bbox_to_anchor=(1.05, 1))
-    plt.grid(visible=True, linestyle='--', alpha=0.7)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+
+    # Customize the legend for better positioning and readability
+    plt.legend(loc="upper left", bbox_to_anchor=(1.05, 1),
+               fontsize=12, frameon=True, shadow=True)
+
+    # Customize the grid for better aesthetics
+    plt.grid(visible=True, linestyle='--', linewidth=0.7, alpha=0.6)
 
     # Create the directory if it does not exist
     if not os.path.exists(output_path):
@@ -96,15 +118,17 @@ def plot_forecast(df, forecast_index, low, mean_smoothed, high, output_path):
     sanitized_target_column = sanitize_filename(TARGET_COLUMN)
 
     plot_filename = os.path.join(
-        output_path, f"forecast_plot_{MODEL_SIZE}_{TOTAL_PREDICTION_LENGTH}_{sanitized_target_column}.png")
-    plt.savefig(plot_filename, bbox_inches="tight")
+        output_path, f"forecast_plot_{MODEL_SIZE}_{TOTAL_PREDICTION_LENGTH}_{sanitized_target_column}_{CONTEXT_SIZE}_{CHUNK_SIZE}.png")
+    plt.tight_layout()
+    # Save with higher resolution for better quality
+    plt.savefig(plot_filename, bbox_inches="tight", dpi=300)
     plt.close()
     return plot_filename
 
 # Save forecast data to CSV
 
 
-def save_forecast_to_csv(forecast_dates, low, mean_smoothed, high, output_path):
+def save_forecast_to_csv(forecast_dates, low, mean, mean_smoothed, high, output_path):
     # Create the directory if it does not exist
     if not os.path.exists(output_path):
         os.makedirs(output_path)
@@ -115,11 +139,12 @@ def save_forecast_to_csv(forecast_dates, low, mean_smoothed, high, output_path):
     forecast_df = pd.DataFrame({
         'Date': forecast_dates,
         'Low_10': low,
+        'Mean': mean,
         'Mean_Smoothed': mean_smoothed,
         'High_90': high
     })
     csv_filename = os.path.join(
-        output_path, f"forecast_values_{MODEL_SIZE}_{TOTAL_PREDICTION_LENGTH}_{sanitized_target_column}.csv")
+        output_path, f"forecast_values_{MODEL_SIZE}_{TOTAL_PREDICTION_LENGTH}_{sanitized_target_column}_{CONTEXT_SIZE}_{CHUNK_SIZE}.csv")
     forecast_df.to_csv(csv_filename, index=False)
     return csv_filename
 
@@ -166,11 +191,11 @@ def main():
 
     # Plot and save forecast
     plot_filename = plot_forecast(
-        df, forecast_index, low, mean_smoothed, high, output_path)
+        df, forecast_index, low, mean, mean_smoothed, high, output_path)
 
-    # Save forecast data to CSV
+    # Save forecast data to CSV, including both normal and smoothed means
     csv_filename = save_forecast_to_csv(
-        forecast_index, low, mean_smoothed, high, output_path)
+        forecast_index, low, mean, mean_smoothed, high, output_path)
 
     # Print the paths to confirm saving
     print(f"Plot saved to: {plot_filename}")
