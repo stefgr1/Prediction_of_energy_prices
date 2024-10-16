@@ -6,7 +6,7 @@ import os
 # %%
 # Navigate one directory up from the current working directory and then into the 'data' directory
 path = os.path.join(os.getcwd(
-), '..', 'data/Energy_production/storage/Per_year/', 'power_gen_2012_2024.csv')
+), '..', '..', 'data/Energy_production/storage/Per_year/', 'power_gen_2012_2024.csv')
 
 # Use the absolute path for clarity and reliability
 absolute_path = os.path.abspath(path)

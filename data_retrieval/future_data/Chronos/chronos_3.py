@@ -7,11 +7,11 @@ from chronos import ChronosPipeline
 import platform
 
 # Global configuration
-TARGET_COLUMN = "Wind_offshore (GWh)"
+TARGET_COLUMN = "TTF_gas_price (€/MWh)"
 MODEL_SIZE = "large"
-CONTEXT_SIZE = 200
+CONTEXT_SIZE = 300
 TOTAL_PREDICTION_LENGTH = 730
-CHUNK_SIZE = 64
+CHUNK_SIZE = 16
 SMOOTHING_WINDOW = 5
 DEVICE = "cpu"
 MODEL_SAVE_DIR = "./data_retrieval/future_data/Chronos/saved_models"
