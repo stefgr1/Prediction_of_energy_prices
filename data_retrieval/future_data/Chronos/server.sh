@@ -2,12 +2,12 @@
 
 #SBATCH --partition=single     # Ensure this partition is valid
 #SBATCH --nodes=1                   # Request a single node
-#SBATCH --cpus-per-task=16          # Specify the number of CPU cores for the task
+#SBATCH --cpus-per-task=25          # Specify the number of CPU cores for the task
 #SBATCH --mem=128GB              # Set memory for the job
 #SBATCH --time=12:00:00             # Set maximum runtime
 #SBATCH --output=job_output_%j.out
 #SBATCH --error=job_error_%j.err
-#SBATCH --job-name=Nat_Gas
+#SBATCH --job-name=Winoff
 #SBATCH --mail-user=zxoul27@student.uni-tuebingen.de
 #SBATCH --mail-type=BEGIN,END,FAIL
 

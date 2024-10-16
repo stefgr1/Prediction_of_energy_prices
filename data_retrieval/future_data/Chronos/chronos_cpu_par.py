@@ -5,24 +5,29 @@ import torch
 import os
 from chronos import ChronosPipeline
 import platform
-from concurrent.futures import ProcessPoolExecutor, as_completed
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import itertools
+from sklearn.preprocessing import MinMaxScaler
 
 # Global configuration
-TARGET_COLUMN = "Natural_gas (GWh)"
+TARGET_COLUMN = "Wind_offshore (GWh)"
 MODEL_SIZE = "large"
 TOTAL_PREDICTION_LENGTH = 730
 SMOOTHING_WINDOW = 5
 DEVICE = "cpu"
 MODEL_SAVE_DIR = "./saved_models"
 
-# Load and prepare data
-def load_and_prepare_data(file_path):
+# Load, scale, and prepare data
+def load_and_prepare_data(file_path, TARGET_COLUMN):
     df = pd.read_csv(file_path)
     df.sort_values('Date', inplace=True)
     df['Date'] = pd.to_datetime(df['Date'])
-    return df
+    
+    # Scaling the target column
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    df[TARGET_COLUMN] = scaler.fit_transform(df[[TARGET_COLUMN]])
+    
+    return df, scaler
 
 # Replace special characters in TARGET_COLUMN to make it suitable for a file name
 def sanitize_filename(name):
@@ -40,8 +45,6 @@ def initialize_model(size):
             torch_dtype=torch.float32
         )
         model.model.load_state_dict(torch.load(model_path, map_location="cpu", weights_only=True))
-
-        # Move the model to the appropriate device (MPS or CUDA)
         model.model.to(DEVICE)
         return model
     else:
@@ -51,12 +54,9 @@ def initialize_model(size):
             device_map="cpu",
             torch_dtype=torch.float32
         )
-        # Save model state manually
         if not os.path.exists(MODEL_SAVE_DIR):
             os.makedirs(MODEL_SAVE_DIR)
         torch.save(model.model.state_dict(), model_path)
-
-        # Move the model to the appropriate device
         model.model.to(DEVICE)
         return model
 
@@ -64,7 +64,6 @@ def initialize_model(size):
 def recursive_predict(pipeline, context, total_steps, step_size=32, max_context_size=100):
     forecasts = []
     for _ in range(0, total_steps, step_size):
-        # Ensure the context tensor is on the CPU
         context = context.to(DEVICE)
 
         # Predict a chunk of the forecast
@@ -72,7 +71,6 @@ def recursive_predict(pipeline, context, total_steps, step_size=32, max_context_
             context, min(step_size, total_steps - len(forecasts))
         ).to(DEVICE)
 
-        # Move the forecast back to CPU for further processing
         current_forecast_np = current_forecast.cpu().detach().numpy()
         forecasts.append(current_forecast_np[0])
 
@@ -85,7 +83,6 @@ def recursive_predict(pipeline, context, total_steps, step_size=32, max_context_
 
     full_forecast = np.concatenate(forecasts, axis=-1)[:total_steps]
     return full_forecast
-
 
 # Smooth the predictions using a moving average
 def smooth_predictions(predictions, window_size):
@@ -143,9 +140,8 @@ def save_forecast_to_csv(forecast_dates, low, mean, mean_smoothed, high, output_
     forecast_df.to_csv(csv_filename, index=False)
     return csv_filename
 
-# Main function to run forecasts in parallel with shared model
-def run_forecast_thread(context_size, chunk_size, df, pipeline):
-    # Prepare the context (historical data)
+# Main function to run forecasts with scaling
+def run_forecast_thread(context_size, chunk_size, df, scaler, pipeline):
     context = torch.tensor(
         df[TARGET_COLUMN].values[-context_size:], dtype=torch.float32).to(DEVICE)
 
@@ -154,11 +150,13 @@ def run_forecast_thread(context_size, chunk_size, df, pipeline):
         pipeline, context, TOTAL_PREDICTION_LENGTH, step_size=chunk_size, max_context_size=100)
 
     # Calculate prediction intervals and mean
-    low, high = np.quantile(forecast, [0.1, 0.9], axis=0)
+    low, high = np.percentile(forecast, [10, 90], axis=0)
     mean = np.mean(forecast, axis=0)
 
-    # Trim to match TOTAL_PREDICTION_LENGTH
-    low, high, mean = low[:TOTAL_PREDICTION_LENGTH], high[:TOTAL_PREDICTION_LENGTH], mean[:TOTAL_PREDICTION_LENGTH]
+    # Inverse transform the predictions
+    low, high, mean = scaler.inverse_transform(low.reshape(-1, 1)).flatten(), \
+                      scaler.inverse_transform(high.reshape(-1, 1)).flatten(), \
+                      scaler.inverse_transform(mean.reshape(-1, 1)).flatten()
 
     # Smooth the mean forecast
     mean_smoothed = smooth_predictions(mean, window_size=SMOOTHING_WINDOW)
@@ -178,17 +176,16 @@ def run_forecast_thread(context_size, chunk_size, df, pipeline):
     csv_filename = save_forecast_to_csv(
         forecast_index, low, mean, mean_smoothed, high, output_path, context_size, chunk_size)
 
-    # Return file paths for confirmation
     return plot_filename, csv_filename
 
 if __name__ == "__main__":
-    # Load the dataset
+    # Load the dataset and scale it
     if platform.system() == "Darwin":
-        df = load_and_prepare_data(
-            '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/Final_data/final_data_july.csv')
+        df, scaler = load_and_prepare_data(
+            '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/Final_data/final_data_july.csv', TARGET_COLUMN)
     else:
-        df = load_and_prepare_data(
-            '/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/data/Final_data/final_data_july.csv')
+        df, scaler = load_and_prepare_data(
+            '/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/data/Final_data/final_data_july.csv', TARGET_COLUMN)
 
     # Define combinations of context sizes and chunk sizes to test
     context_sizes = [100, 200, 300, 400, 500]
@@ -198,9 +195,9 @@ if __name__ == "__main__":
     # Initialize the model once
     pipeline = initialize_model(MODEL_SIZE)
 
-    # Use ThreadPoolExecutor to run forecasts in parallel with the shared pipeline
-    with ThreadPoolExecutor(max_workers=16) as executor:
-        future_to_combination = {executor.submit(run_forecast_thread, context_size, chunk_size, df, pipeline): (context_size, chunk_size)
+    # Run forecasts in parallel with scaling and the shared pipeline
+    with ThreadPoolExecutor(max_workers=25) as executor:
+        future_to_combination = {executor.submit(run_forecast_thread, context_size, chunk_size, df, scaler, pipeline): (context_size, chunk_size)
                                  for context_size, chunk_size in combinations}
 
         for future in as_completed(future_to_combination):
