@@ -7,14 +7,14 @@ from chronos import ChronosPipeline
 import platform
 
 # Global configuration
-TARGET_COLUMN = "TTF_gas_price (€/MWh)"
+TARGET_COLUMN = "Oil_price (EUR)"
 MODEL_SIZE = "large"
-# als nächstes 400 testen und dann 500 , das gleiche dann nochmaml mit batch size 16 und 64
-CONTEXT_SIZE = 500
+CONTEXT_SIZE = 400
 TOTAL_PREDICTION_LENGTH = 730
-CHUNK_SIZE = 64
+CHUNK_SIZE = 16
 SMOOTHING_WINDOW = 5
-DEVICE = "mps" if torch.cuda.is_available() else "cpu"
+DEVICE = "cpu"
+MODEL_SAVE_DIR = "./data_retrieval/future_data/Chronos/saved_models"
 
 # Load and prepare data
 
@@ -31,15 +31,39 @@ def load_and_prepare_data(file_path):
 def sanitize_filename(name):
     return name.replace(" ", "_").replace("(", "").replace(")", "").replace("/", "_").replace("€", "EUR")
 
-# Initialize the model
+# Initialize the model, loading from saved file if available
 
 
 def initialize_model(size):
-    return ChronosPipeline.from_pretrained(
-        f"amazon/chronos-t5-{size}",
-        device_map=DEVICE,
-        torch_dtype=torch.bfloat16  # For memory efficiency
-    )
+    model_path = os.path.join(MODEL_SAVE_DIR, f"chronos-t5-{size}.pt")
+
+    if os.path.exists(model_path):
+        print(f"Loading model from {model_path}...")
+        model = ChronosPipeline.from_pretrained(
+            f"amazon/chronos-t5-{size}",
+            device_map="cpu",  # Load to CPU initially
+            torch_dtype=torch.float32
+        )
+        model.model.load_state_dict(torch.load(model_path, map_location="cpu"))
+
+        # Move the model to the appropriate device (MPS or CUDA)
+        model.model.to(DEVICE)
+        return model
+    else:
+        print(f"Downloading and saving model {size}...")
+        model = ChronosPipeline.from_pretrained(
+            f"amazon/chronos-t5-{size}",
+            device_map="cpu",
+            torch_dtype=torch.float32
+        )
+        # Save model state manually
+        if not os.path.exists(MODEL_SAVE_DIR):
+            os.makedirs(MODEL_SAVE_DIR)
+        torch.save(model.model.state_dict(), model_path)
+
+        # Move the model to the appropriate device
+        model.model.to(DEVICE)
+        return model
 
 # Recursive prediction function with limited context update
 
@@ -47,13 +71,22 @@ def initialize_model(size):
 def recursive_predict(pipeline, context, total_steps, step_size=32, max_context_size=100):
     forecasts = []
     for _ in range(0, total_steps, step_size):
+        # Ensure the context tensor is on the correct device
+        context = context.to(DEVICE)
+
+        # Predict a chunk of the forecast
         current_forecast = pipeline.predict(
             context, min(step_size, total_steps - len(forecasts)))
+
+        # Ensure forecast tensor is on the same device as context
+        current_forecast = current_forecast.to(DEVICE)
+
+        # Move the forecast back to CPU for further processing
         current_forecast_np = current_forecast.cpu().detach().numpy()
         forecasts.append(current_forecast_np[0])
 
         forecast_flat = torch.tensor(
-            current_forecast_np[0].flatten(), dtype=torch.bfloat16)
+            current_forecast_np[0].flatten(), dtype=torch.float32).to(DEVICE)
         context = torch.cat(
             [context[-max_context_size:], forecast_flat], dim=0)
 
@@ -74,53 +107,30 @@ def smooth_predictions(predictions, window_size):
 
 def plot_forecast(df, forecast_index, low, mean, mean_smoothed, high, output_path):
     plt.figure(figsize=(14, 6))
-
-    # Plot historical data with enhanced color and thickness
-    plt.plot(df['Date'], df[TARGET_COLUMN],
-             color="#1f77b4", linewidth=1.5, label="Actual Data", alpha=0.8)
-
-    # Plot smoothed mean forecast with markers for clarity
-    '''
-    plt.plot(forecast_index, mean_smoothed, color="#ff7f0e",
-             linewidth=2, linestyle='-', label="Predicted (Smoothed Mean)", alpha=0.9)
-    '''
-    # Plot original mean forecast with different styling
+    plt.plot(df['Date'], df[TARGET_COLUMN], color="#1f77b4",
+             linewidth=1.5, label="Actual Data", alpha=0.8)
     plt.plot(forecast_index, mean, color="darkred",
              linewidth=1, label="Predicted Mean", alpha=0.8)
-
-    # Fill between the low and high prediction intervals with improved transparency
     plt.fill_between(forecast_index, low, high, color="#ffbb78",
                      alpha=0.3, label="80% Prediction Interval")
-
-    # Set the title and labels with better font size and style
     plt.title(f"Forecast for {TARGET_COLUMN}",
               fontsize=16, fontweight='bold', pad=20)
     plt.xlabel("Date", fontsize=14)
     plt.ylabel(TARGET_COLUMN, fontsize=14)
-
-    # Customize the x-axis to match the specified range
     plt.xlim([pd.to_datetime("2022-01-01"), forecast_index[-1]])
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
-
-    # Customize the legend for better positioning and readability
     plt.legend(loc="upper left", bbox_to_anchor=(1.05, 1),
                fontsize=12, frameon=True, shadow=True)
-
-    # Customize the grid for better aesthetics
     plt.grid(visible=True, linestyle='--', linewidth=0.7, alpha=0.6)
 
-    # Create the directory if it does not exist
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    # Sanitize the TARGET_COLUMN for the file name
     sanitized_target_column = sanitize_filename(TARGET_COLUMN)
-
     plot_filename = os.path.join(
         output_path, f"forecast_plot_{MODEL_SIZE}_{TOTAL_PREDICTION_LENGTH}_{sanitized_target_column}_{CONTEXT_SIZE}_{CHUNK_SIZE}.png")
     plt.tight_layout()
-    # Save with higher resolution for better quality
     plt.savefig(plot_filename, bbox_inches="tight", dpi=300)
     plt.close()
     return plot_filename
@@ -129,13 +139,10 @@ def plot_forecast(df, forecast_index, low, mean, mean_smoothed, high, output_pat
 
 
 def save_forecast_to_csv(forecast_dates, low, mean, mean_smoothed, high, output_path):
-    # Create the directory if it does not exist
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    # Sanitize the TARGET_COLUMN for the file name
     sanitized_target_column = sanitize_filename(TARGET_COLUMN)
-
     forecast_df = pd.DataFrame({
         'Date': forecast_dates,
         'Low_10': low,
@@ -148,7 +155,7 @@ def save_forecast_to_csv(forecast_dates, low, mean, mean_smoothed, high, output_
     forecast_df.to_csv(csv_filename, index=False)
     return csv_filename
 
-# The rest of the code remains the same
+# Main function
 
 
 def main():
@@ -165,7 +172,7 @@ def main():
 
     # Prepare the context (historical data)
     context = torch.tensor(
-        df[TARGET_COLUMN].values[-CONTEXT_SIZE:], dtype=torch.bfloat16)
+        df[TARGET_COLUMN].values[-CONTEXT_SIZE:], dtype=torch.float32).to(DEVICE)
 
     # Generate the full forecast recursively
     forecast = recursive_predict(

@@ -8,3 +8,5 @@
 *.localdomain
 *.log
 *.jpg
+*.pt
+*.pth
