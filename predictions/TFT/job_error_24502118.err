@@ -1,0 +1,35 @@
+[I 2024-10-20 21:48:30,420] A new study created in memory with name: no-name-d95d3636-bf42-4dd8-8667-00255f8e909b
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Metric train_loss improved. New best score: 3.044
+Metric train_loss improved by 0.620 >= min_delta = 0.0. New best score: 2.424
+Metric train_loss improved by 0.605 >= min_delta = 0.0. New best score: 1.819
+Metric train_loss improved by 0.163 >= min_delta = 0.0. New best score: 1.657
+Metric train_loss improved by 0.084 >= min_delta = 0.0. New best score: 1.573
+Metric train_loss improved by 0.046 >= min_delta = 0.0. New best score: 1.527
+Metric train_loss improved by 0.139 >= min_delta = 0.0. New best score: 1.389
+Metric train_loss improved by 0.216 >= min_delta = 0.0. New best score: 1.172
+Metric train_loss improved by 0.163 >= min_delta = 0.0. New best score: 1.009
+Metric train_loss improved by 0.019 >= min_delta = 0.0. New best score: 0.990
+Metric train_loss improved by 0.031 >= min_delta = 0.0. New best score: 0.960
+Metric train_loss improved by 0.053 >= min_delta = 0.0. New best score: 0.907
+Metric train_loss improved by 0.100 >= min_delta = 0.0. New best score: 0.807
+Metric train_loss improved by 0.057 >= min_delta = 0.0. New best score: 0.751
+Metric train_loss improved by 0.085 >= min_delta = 0.0. New best score: 0.666
+Metric train_loss improved by 0.043 >= min_delta = 0.0. New best score: 0.623
+Metric train_loss improved by 0.056 >= min_delta = 0.0. New best score: 0.567
+Metric train_loss improved by 0.043 >= min_delta = 0.0. New best score: 0.524
+Metric train_loss improved by 0.049 >= min_delta = 0.0. New best score: 0.474
+`Trainer.fit` stopped: `max_epochs=50` reached.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-20 22:04:40,227] Trial 0 finished with value: 0.31332454085350037 and parameters: {'hidden_dim': 152, 'n_layers': 1, 'dropout': 0.39934311660142735, 'input_chunk_length': 11, 'learning_rate': 1.1660484561959714e-06, 'batch_size': 32}. Best is trial 0 with value: 0.31332454085350037.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Metric train_loss improved by 0.259 >= min_delta = 0.0. New best score: 0.215

@@ -14,5 +14,5 @@
 # Set up the correct library paths
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 
-srun /pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/bin/python TFT_Cluster.py
+srun /pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/bin/python TFT_model_short.py
 

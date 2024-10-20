@@ -10,7 +10,7 @@ import itertools
 from sklearn.preprocessing import MinMaxScaler
 
 # Global configuration
-TARGET_COLUMN = "Wind_offshore (GWh)"
+TARGET_COLUMN = "TTF_gas_price (€/MWh)"
 MODEL_SIZE = "large"
 TOTAL_PREDICTION_LENGTH = 730
 SMOOTHING_WINDOW = 5
@@ -41,7 +41,7 @@ def initialize_model(size):
         print(f"Loading model from {model_path}...")
         model = ChronosPipeline.from_pretrained(
             f"amazon/chronos-t5-{size}",
-            device_map="cpu",  # Load to CPU initially
+            device_map="cpu", 
             torch_dtype=torch.float32
         )
         model.model.load_state_dict(torch.load(model_path, map_location="cpu", weights_only=True))
@@ -188,7 +188,7 @@ if __name__ == "__main__":
             '/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/data/Final_data/final_data_july.csv', TARGET_COLUMN)
 
     # Define combinations of context sizes and chunk sizes to test
-    context_sizes = [100, 200, 300, 400, 500]
+    context_sizes = [100, 200, 300, 400, 500, 600]
     chunk_sizes = [16, 32, 64, 128, 256]
     combinations = list(itertools.product(context_sizes, chunk_sizes))
 

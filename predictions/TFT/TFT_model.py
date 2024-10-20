@@ -202,7 +202,7 @@ if __name__ == "__main__":
     set_random_seed(42)
 
     early_stop_callback = EarlyStopping(
-        monitor='train_loss', patience=50, verbose=True)
+        monitor='train_loss', patience=20, verbose=True)
 
     # Load in the train and test data
     train_df = utils.load_and_prepare_data(
@@ -235,7 +235,7 @@ if __name__ == "__main__":
 
     # Save the best model and predictions
     if platform.system() == "Darwin":  # macOS
-        output_path = base_path  # Save directly in the current folder
+        output_path = os.path.join(base_path, 'predictions/TFT/')  # Save directly in the current folder
     else:
         tmpdir_path = os.path.join(os.getenv('TMPDIR'), 'predictions/TFT/')
         output_path = os.path.join(base_path, 'predictions/TFT/')
