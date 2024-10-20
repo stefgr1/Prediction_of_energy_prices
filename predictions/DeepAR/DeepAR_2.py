@@ -215,10 +215,10 @@ if __name__ == "__main__":
 
     MAX_INPUT_CHUNK_LENGTH = 100
     # Parameters for epochs and trials
-    OPTUNA_TRIALS = 1000  # Define the number of Optuna trials
-    OPTUNA_EPOCHS = 49  # Define the number of epochs per Optuna trial
-    BEST_MODEL_EPOCHS = 49  # Define the number of epochs for the best model
-    DEVICES = 4
+    OPTUNA_TRIALS = 2  # Define the number of Optuna trials
+    OPTUNA_EPOCHS = 2  # Define the number of epochs per Optuna trial
+    BEST_MODEL_EPOCHS = 2  # Define the number of epochs for the best model
+    DEVICES = 1
 
     # Prepare time series
     series_train, series_test, future_covariates_train, future_covariates_for_prediction = prepare_time_series(

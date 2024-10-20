@@ -47,7 +47,7 @@ def load_config(config_path=None):
     # Default to using config.yaml in the current script's directory
     if config_path is None:
         config_path = os.path.join(
-            os.path.dirname(__file__), "config_TFT.yaml")
+            os.path.dirname(__file__), "config_TFT.yml")
 
     with open(config_path, "r") as file:
         config = yaml.safe_load(file)
@@ -138,21 +138,32 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
         model.fit(series_train_scaled,
                   future_covariates=future_covariates_train_scaled, verbose=False)
 
+        # Forecast and calculate error metrics
         n = len(series_test_scaled)
         forecast_val = model.predict(
             n=n, future_covariates=future_covariates_for_prediction_scaled)
-        error = rmse(series_test_scaled, forecast_val)
+        rmse_val = rmse(series_test_scaled, forecast_val)
+        mape_val = mape(series_test_scaled, forecast_val)
+        mae_val = mae(series_test_scaled, forecast_val)
+        mse_val = mse(series_test_scaled, forecast_val)
 
-        if torch.isnan(torch.tensor(error)) or torch.isinf(torch.tensor(error)):
+        # Save the metrics to the trial's user attributes
+        trial.set_user_attr("rmse", rmse_val)
+        trial.set_user_attr("mape", mape_val)
+        trial.set_user_attr("mae", mae_val)
+        trial.set_user_attr("mse", mse_val)
+
+        # Handle NaN or Inf errors in the metrics
+        if torch.isnan(torch.tensor(rmse_val)) or torch.isinf(torch.tensor(rmse_val)):
             print(f"NaN or Inf detected in RMSE during trial {trial.number}")
             return float('inf')
+
+        return rmse_val  # Minimize RMSE
 
     except Exception as e:
         print(f'Exception during model training: {e}')
         traceback.print_exc()
         return float('inf')
-
-    return error
 
 
 def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, devices, early_stop_callback):
@@ -216,27 +227,24 @@ if __name__ == "__main__":
 
     # Run Optuna optimization and get the study and best parameters
     best_params, study = run_optuna_optimization(
-        series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, device, early_stop_callback)
+        series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, devices, early_stop_callback)
 
     # Train the best model
     best_model = train_best_model(
         best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs, devices)
 
-    # Ensure the directory exists before copying
-    tmpdir_path = os.path.join(os.getenv('TMPDIR'), 'predictions/TFT/')
-    home_results_dir = os.path.join(base_path, 'predictions/TFT/')
-    if os.path.exists(tmpdir_path):
-        shutil.copytree(tmpdir_path, home_results_dir, dirs_exist_ok=True)
-        print(f"Results copied to {home_results_dir}")
+    # Save the best model and predictions
+    if platform.system() == "Darwin":  # macOS
+        output_path = base_path  # Save directly in the current folder
     else:
-        print(
-            f"Directory {tmpdir_path} does not exist. Skipping copy operation.")
+        tmpdir_path = os.path.join(os.getenv('TMPDIR'), 'predictions/TFT/')
+        output_path = os.path.join(base_path, 'predictions/TFT/')
 
-    os.makedirs(tmpdir_path, exist_ok=True)
+    os.makedirs(output_path, exist_ok=True)
 
     # Save the best model
     model_save_path = os.path.join(
-        tmpdir_path, f'best_tft_model_epochs_{optuna_epochs}.pth')
+        output_path, f'best_tft_model_epochs_{optuna_epochs}.pth')
     best_model.save(model_save_path)
     print(f"Best model saved at: {model_save_path}")
 
@@ -254,9 +262,10 @@ if __name__ == "__main__":
     utils.save_results(forecast, series_test_scaled,
                        scaler_series, fig, optuna_epochs)
 
-    # Copy results from TMPDIR to the home directory
-    shutil.copytree(tmpdir_path, home_results_dir, dirs_exist_ok=True)
-    print(f"Results copied to {home_results_dir}")
+    # Copy results from TMPDIR to the home directory (only for non-macOS)
+    if platform.system() != "Darwin" and os.path.exists(tmpdir_path):
+        shutil.copytree(tmpdir_path, output_path, dirs_exist_ok=True)
+        print(f"Results copied to {output_path}")
 
     # Print best hyperparameters at the end
     print('Best hyperparameters:')
