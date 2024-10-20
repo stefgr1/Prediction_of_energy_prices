@@ -32,6 +32,18 @@ create_logger = utils.create_logger
 save_results = utils.save_results
 copy_results_to_home = utils.copy_results_to_home
 plot_forecast = utils.plot_forecast
+future_covariates_columns = utils.future_covariates_columns
+
+# Function to load configuration from YAML file
+
+
+def load_config(config_path=None):
+    if config_path is None:
+        config_path = os.path.join(
+            os.path.dirname(__file__), 'config_DeepAR.yml')
+    with open(config_path, 'r') as file:
+        config = yaml.safe_load(file)
+    return config
 
 
 def train_best_model(best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs, devices):
@@ -74,6 +86,23 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
     return best_model
 
 
+def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, devices, early_stop_callback):
+    """
+    Run Optuna optimization to find the best hyperparameters.
+    """
+    study = optuna.create_study(direction='minimize')
+    study.optimize(lambda trial: objective(trial, series_train_scaled, future_covariates_train_scaled,
+                                           series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices, early_stop_callback), n_trials=optuna_trials)
+
+    best_params = study.best_params
+    print('Best hyperparameters:')
+    for key, value in best_params.items():
+        print(f'  {key}: {value}')
+
+    # Return both the best parameters and the study itself
+    return best_params, study
+
+
 def objective(trial, series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices, early_stop_callback):
     """
     Optuna objective function for RNN model hyperparameter tuning.
@@ -109,7 +138,7 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
         model_name="rnn_model",
         force_reset=True,
         pl_trainer_kwargs={
-            'accelerator': 'gpu',
+            'accelerator': 'mps',
             'devices': devices,
             'enable_progress_bar': True,
             'logger': tb_logger,
@@ -150,23 +179,6 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     return rmse_val
 
 
-def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, devices, early_stop_callback):
-    """
-    Run Optuna optimization to find the best hyperparameters.
-    """
-    study = optuna.create_study(direction='minimize')
-    study.optimize(lambda trial: objective(trial, series_train_scaled, future_covariates_train_scaled,
-                                           series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices, early_stop_callback), n_trials=optuna_trials)
-
-    best_params = study.best_params
-    print('Best hyperparameters:')
-    for key, value in best_params.items():
-        print(f'  {key}: {value}')
-
-    # Return both the best parameters and the study itself
-    return best_params, study
-
-
 def inspect_best_trial(study):
     """
     Inspect and print the error metrics from the best trial in the Optuna study.
@@ -182,13 +194,22 @@ def inspect_best_trial(study):
 # Main execution block
 if __name__ == "__main__":
 
+    # Load configuration parameters from the YAML file
+    config = load_config()
+
     check_cuda_availability()
 
     # Detect if on Mac or Linux and adjust base path accordingly
     if platform.system() == "Darwin":  # Check if it's macOS
         base_path = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/'
+        models_dir = os.path.join(base_path, 'predictions/DeepAR/')
     else:  # Assuming Linux for the cluster
         base_path = os.getenv('HOME') + '/Prediction_of_energy_prices/'
+        models_dir = os.path.join(
+            os.getenv('TMPDIR', '/tmp'), 'predictions/DeepAR/')
+
+    # Ensure model directory exists
+    os.makedirs(models_dir, exist_ok=True)
 
     # Set random seed
     set_random_seed(42)
@@ -202,23 +223,12 @@ if __name__ == "__main__":
     test_df = load_and_prepare_data(os.path.join(
         base_path, 'data/Final_data/test_df.csv'))
 
-    # Define future covariates
-    future_covariates_columns = ['Solar_radiation (W/m2)', 'Wind_speed (m/s)',
-                                 'Temperature (°C)', 'Biomass (GWh)', 'Hard_coal (GWh)', 'Hydro (GWh)',
-                                 'Lignite (GWh)', 'Natural_gas (GWh)', 'Other (GWh)',
-                                 'Pumped_storage_generation (GWh)', 'Solar_energy (GWh)',
-                                 'Wind_offshore (GWh)', 'Wind_onshore (GWh)',
-                                 'Net_total_export_import (GWh)', 'BEV_vehicles', 'Oil_price (EUR)',
-                                 'TTF_gas_price (€/MWh)', 'Nuclear_energy (GWh)', 'Lag_1_day',
-                                 'Lag_2_days', 'Lag_3_days', 'Lag_4_days', 'Lag_5_days', 'Lag_6_days',
-                                 'Lag_7_days', 'Day_of_week', 'Month', 'Rolling_mean_7']
-
-    MAX_INPUT_CHUNK_LENGTH = 100
-    # Parameters for epochs and trials
-    OPTUNA_TRIALS = 2  # Define the number of Optuna trials
-    OPTUNA_EPOCHS = 2  # Define the number of epochs per Optuna trial
-    BEST_MODEL_EPOCHS = 2  # Define the number of epochs for the best model
-    DEVICES = 1
+    # Use parameters loaded from config.yml
+    MAX_INPUT_CHUNK_LENGTH = config['max_input_chunk_length']
+    OPTUNA_TRIALS = config['optuna_trials']
+    OPTUNA_EPOCHS = config['optuna_epochs']
+    BEST_MODEL_EPOCHS = config['best_model_epochs']
+    DEVICES = config['devices']
 
     # Prepare time series
     series_train, series_test, future_covariates_train, future_covariates_for_prediction = prepare_time_series(
@@ -236,11 +246,7 @@ if __name__ == "__main__":
     best_model = train_best_model(
         best_params, series_train_scaled, future_covariates_train_scaled, BEST_MODEL_EPOCHS, DEVICES)
 
-    # Use TMPDIR for model saving
-    models_dir = os.getenv('TMPDIR', '/tmp') + '/predictions/DeepAR/'
-    os.makedirs(models_dir, exist_ok=True)
-
-    # Save best model to TMPDIR
+    # Save the best model
     model_save_path = os.path.join(
         models_dir, f'best_deep_ar_model_epochs_{BEST_MODEL_EPOCHS}.pth')
     best_model.save(model_save_path)
@@ -260,22 +266,37 @@ if __name__ == "__main__":
     forecast_plot_path, forecast_csv_path, metrics_csv_path = save_results(
         forecast, series_test_scaled, scaler_series, fig, OPTUNA_EPOCHS)
 
-    # Copy results from TMPDIR to the home directory
-    home_results_dir = os.path.join(base_path, 'predictions/DeepAR/')
-    os.makedirs(home_results_dir, exist_ok=True)
+    if platform.system() == "Darwin":  # If running on Mac
+        # Save results directly to local directory
+        home_results_dir = os.path.join(base_path, 'predictions/DeepAR/')
+        os.makedirs(home_results_dir, exist_ok=True)
 
-    # Copy generated files to home directory
-    copy_results_to_home(
-        [forecast_plot_path, forecast_csv_path, metrics_csv_path], home_results_dir)
-    print(f"Results copied to {home_results_dir}")
+        # Only copy the file if the destination is different from the source
+        if model_save_path != os.path.join(home_results_dir, os.path.basename(model_save_path)):
+            shutil.copy(model_save_path, home_results_dir)
 
-    # Copy the model from TMPDIR to the home directory
-    home_model_dir = os.path.join(base_path, 'predictions/DeepAR/')
-    os.makedirs(home_model_dir, exist_ok=True)
-    shutil.copy(model_save_path, home_model_dir)
-    print(f"Model copied to {home_model_dir}")
+        # Copy generated files to home directory
+        shutil.copy(forecast_plot_path, home_results_dir)
+        shutil.copy(forecast_csv_path, home_results_dir)
+        shutil.copy(metrics_csv_path, home_results_dir)
 
-    # ** Print best hyperparameters at the end **
+        print(f"Results copied to {home_results_dir}")
+
+    else:  # Linux or cluster
+        # Copy results from TMPDIR to the home directory
+        home_results_dir = os.path.join(base_path, 'predictions/DeepAR/')
+        os.makedirs(home_results_dir, exist_ok=True)
+
+        # Copy generated files to home directory
+        copy_results_to_home(
+            [forecast_plot_path, forecast_csv_path, metrics_csv_path], home_results_dir)
+        print(f"Results copied to {home_results_dir}")
+
+        # Copy the model from TMPDIR to the home directory
+        shutil.copy(model_save_path, home_results_dir)
+        print(f"Model copied to {home_results_dir}")
+
+    # Print best hyperparameters at the end
     print('Best hyperparameters:')
     for key, value in best_params.items():
         print(f'  {key}: {value}')
