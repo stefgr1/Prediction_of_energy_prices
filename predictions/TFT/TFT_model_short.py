@@ -6,7 +6,7 @@ import traceback
 import torch
 import pandas as pd
 import optuna
-import platform  
+import platform
 import sys
 import importlib
 import yaml
@@ -29,7 +29,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 utils = importlib.import_module('utils')
 
 # Load functions from utils file
-future_covariates_columns=utils.future_covariates_columns
+future_covariates_columns = utils.future_covariates_columns
 check_cuda_availability = utils.check_cuda_availability
 set_random_seed = utils.set_random_seed
 create_early_stopping_callback = utils.create_early_stopping_callback
@@ -42,19 +42,22 @@ save_results = utils.save_results
 copy_results_to_home = utils.copy_results_to_home
 plot_forecast = utils.plot_forecast
 
+
 def load_config(config_path=None):
     # Default to using config.yaml in the current script's directory
     if config_path is None:
-        config_path = os.path.join(os.path.dirname(__file__), "config_TFT.yaml")
-    
+        config_path = os.path.join(
+            os.path.dirname(__file__), "config_TFT.yaml")
+
     with open(config_path, "r") as file:
         config = yaml.safe_load(file)
-    
+
     # Set n_jobs to the number of available CPU cores if not defined
     if config.get("n_jobs") is None or config["n_jobs"] == -1:
         config["n_jobs"] = os.cpu_count()
-    
+
     return config
+
 
 def train_best_model(best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs, devices):
     tb_logger = create_logger(best_model=True)
@@ -81,7 +84,8 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
     )
 
     try:
-        best_model.fit(series_train_scaled, future_covariates=future_covariates_train_scaled, verbose=True)
+        best_model.fit(series_train_scaled,
+                       future_covariates=future_covariates_train_scaled, verbose=True)
     except RuntimeError as e:
         print(f"RuntimeError during training: {e}")
     except Exception as e:
@@ -90,7 +94,8 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
 
     return best_model
 
-def objective(trial, series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices):
+
+def objective(trial, series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices, early_stop_callback):
     """
     Optuna objective function for TFT model hyperparameter tuning.
     """
@@ -102,7 +107,8 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     batch_size = trial.suggest_categorical('batch_size', [32, 64])
 
     if series_train_scaled.pd_dataframe().isnull().values.any() or future_covariates_train_scaled.pd_dataframe().isnull().values.any():
-        print(f"NaN values detected in the input data during trial {trial.number}")
+        print(
+            f"NaN values detected in the input data during trial {trial.number}")
         return float('inf')
 
     tb_logger = create_logger(trial.number)
@@ -129,10 +135,12 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     )
 
     try:
-        model.fit(series_train_scaled, future_covariates=future_covariates_train_scaled, verbose=False)
+        model.fit(series_train_scaled,
+                  future_covariates=future_covariates_train_scaled, verbose=False)
 
         n = len(series_test_scaled)
-        forecast_val = model.predict(n=n, future_covariates=future_covariates_for_prediction_scaled)
+        forecast_val = model.predict(
+            n=n, future_covariates=future_covariates_for_prediction_scaled)
         error = rmse(series_test_scaled, forecast_val)
 
         if torch.isnan(torch.tensor(error)) or torch.isinf(torch.tensor(error)):
@@ -147,10 +155,10 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     return error
 
 
-def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, devices):
+def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, devices, early_stop_callback):
     study = optuna.create_study(direction='minimize')
     study.optimize(lambda trial: objective(trial, series_train_scaled, future_covariates_train_scaled,
-                                           series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices), n_trials=optuna_trials)
+                                           series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices, early_stop_callback), n_trials=optuna_trials)
 
     best_params = study.best_params
     return best_params, study
@@ -175,17 +183,21 @@ if __name__ == "__main__":
 
     # Detect if on Mac or Linux and adjust base path accordingly
     if platform.system() == "Darwin":  # macOS
-        base_path = os.path.expanduser("~/Documents/Masterarbeit/Prediction_of_energy_prices/")
+        base_path = os.path.expanduser(
+            "~/Documents/Masterarbeit/Prediction_of_energy_prices/")
     else:  # Assuming Linux for the cluster
         base_path = os.getenv('HOME') + '/Prediction_of_energy_prices/'
 
     set_random_seed(42)
 
-    early_stop_callback = EarlyStopping(monitor='train_loss', patience=50, verbose=True)
+    early_stop_callback = EarlyStopping(
+        monitor='train_loss', patience=50, verbose=True)
 
     # Load in the train and test data
-    train_df = utils.load_and_prepare_data(os.path.join(base_path, 'data/Final_data/train_df.csv'))
-    test_df = utils.load_and_prepare_data(os.path.join(base_path, 'data/Final_data/test_df.csv'))
+    train_df = utils.load_and_prepare_data(
+        os.path.join(base_path, 'data/Final_data/train_df.csv'))
+    test_df = utils.load_and_prepare_data(
+        os.path.join(base_path, 'data/Final_data/test_df.csv'))
 
     # Extract parameters from the configuration
     optuna_epochs = config["optuna_epochs"]
@@ -204,7 +216,7 @@ if __name__ == "__main__":
 
     # Run Optuna optimization and get the study and best parameters
     best_params, study = run_optuna_optimization(
-        series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, devices)
+        series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, device, early_stop_callback)
 
     # Train the best model
     best_model = train_best_model(
@@ -217,25 +229,30 @@ if __name__ == "__main__":
         shutil.copytree(tmpdir_path, home_results_dir, dirs_exist_ok=True)
         print(f"Results copied to {home_results_dir}")
     else:
-        print(f"Directory {tmpdir_path} does not exist. Skipping copy operation.")
+        print(
+            f"Directory {tmpdir_path} does not exist. Skipping copy operation.")
 
     os.makedirs(tmpdir_path, exist_ok=True)
 
     # Save the best model
-    model_save_path = os.path.join(tmpdir_path, f'best_tft_model_epochs_{optuna_epochs}.pth')
+    model_save_path = os.path.join(
+        tmpdir_path, f'best_tft_model_epochs_{optuna_epochs}.pth')
     best_model.save(model_save_path)
     print(f"Best model saved at: {model_save_path}")
 
     # Make predictions
     n = len(series_test_scaled)
-    forecast = best_model.predict(n=n, future_covariates=future_covariates_for_prediction_scaled)
+    forecast = best_model.predict(
+        n=n, future_covariates=future_covariates_for_prediction_scaled)
     forecast = scaler_series.inverse_transform(forecast)
 
     inspect_best_trial(study)
 
     # Plot and save results
-    fig = utils.plot_forecast(series_test, forecast, title="TFT Model forecast")
-    utils.save_results(forecast, series_test_scaled, scaler_series, fig, optuna_epochs)
+    fig = utils.plot_forecast(series_test, forecast,
+                              title="TFT Model forecast")
+    utils.save_results(forecast, series_test_scaled,
+                       scaler_series, fig, optuna_epochs)
 
     # Copy results from TMPDIR to the home directory
     shutil.copytree(tmpdir_path, home_results_dir, dirs_exist_ok=True)

@@ -98,12 +98,13 @@ def create_logger(trial_number=None, best_model=False):
     If best_model is True, a separate log directory is used for the best model training.
     """
     timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
-    
+
     # Determine the appropriate base path for logs based on the platform
     if platform.system() == "Darwin":  # macOS
         base_log_dir = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/TFT/logs'
     else:  # Assuming Linux or cluster environment
-        base_log_dir = os.getenv('TMPDIR', '/tmp')  # Use TMPDIR or /tmp if not available
+        # Use TMPDIR or /tmp if not available
+        base_log_dir = os.getenv('TMPDIR', '/tmp')
 
     # If training the best model, create a separate directory
     if best_model:
@@ -116,7 +117,6 @@ def create_logger(trial_number=None, best_model=False):
 
     # Return the TensorBoard logger
     return pl_loggers.TensorBoardLogger(save_dir=log_dir, name='TFT', default_hp_metric=False)
-
 
 
 def train_best_model(best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs):
@@ -351,9 +351,9 @@ if __name__ == "__main__":
         series_train, series_test, future_covariates_train, future_covariates_for_prediction)
 
     # Customizable parameters
-    optuna_epochs = 1  # Define the number of epochs for Optuna trials
-    optuna_trials = 1  # Define the number of trials for Optuna
-    best_model_epochs = 1  # Define the number of epochs for the best model
+    optuna_epochs = 3  # Define the number of epochs for Optuna trials
+    optuna_trials = 3  # Define the number of trials for Optuna
+    best_model_epochs = 3  # Define the number of epochs for the best model
 
     # Run Optuna optimization and get the study and best parameters
     best_params, study = run_optuna_optimization(
