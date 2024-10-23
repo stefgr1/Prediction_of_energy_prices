@@ -164,12 +164,14 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
         mape_val = mape(series_test_scaled, forecast_val)
         mae_val = mae(series_test_scaled, forecast_val)
         mse_val = mse(series_test_scaled, forecast_val)
+        smape_val = smape(series_test_scaled, forecast_val)
 
         # Log the error metrics in the trial object
         trial.set_user_attr('rmse', rmse_val)
         trial.set_user_attr('mape', mape_val)
         trial.set_user_attr('mae', mae_val)
         trial.set_user_attr('mse', mse_val)
+        trial.set_user_attr('smape', smape_val)
 
     except Exception as e:
         print(f'Exception during model training: {e}')

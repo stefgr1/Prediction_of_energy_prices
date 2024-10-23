@@ -15,7 +15,7 @@ from pytorch_lightning.callbacks import EarlyStopping
 from sklearn.preprocessing import MaxAbsScaler
 from darts import TimeSeries
 from darts.models import TFTModel
-from darts.metrics import mape, mae, rmse, mse
+from darts.metrics import mape, mae, rmse, mse, smape
 from darts.dataprocessing.transformers import Scaler
 from darts.utils.callbacks import TFMProgressBar
 import plotly.graph_objects as go
@@ -146,12 +146,14 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
         mape_val = mape(series_test_scaled, forecast_val)
         mae_val = mae(series_test_scaled, forecast_val)
         mse_val = mse(series_test_scaled, forecast_val)
+        smape_val = smape(series_test_scaled, forecast_val)
 
         # Save the metrics to the trial's user attributes
         trial.set_user_attr("rmse", rmse_val)
         trial.set_user_attr("mape", mape_val)
         trial.set_user_attr("mae", mae_val)
         trial.set_user_attr("mse", mse_val)
+        trial.set_user_attr("smape", smape_val)
 
         # Handle NaN or Inf errors in the metrics
         if torch.isnan(torch.tensor(rmse_val)) or torch.isinf(torch.tensor(rmse_val)):
@@ -185,7 +187,7 @@ def inspect_best_trial(study):
     print(f"  MAPE: {best_trial.user_attrs.get('mape', 'N/A')}%")
     print(f"  MAE: {best_trial.user_attrs.get('mae', 'N/A')}")
     print(f"  MSE: {best_trial.user_attrs.get('mse', 'N/A')}")
-
+    print(f"  SMAPE: {best_trial.user_attrs.get('smape', 'N/A')}")
 
 # Main execution block
 if __name__ == "__main__":
@@ -202,7 +204,7 @@ if __name__ == "__main__":
     set_random_seed(42)
 
     early_stop_callback = EarlyStopping(
-        monitor='train_loss', patience=20, verbose=True)
+        monitor='train_loss', patience=60, verbose=True)
 
     # Load in the train and test data
     train_df = utils.load_and_prepare_data(

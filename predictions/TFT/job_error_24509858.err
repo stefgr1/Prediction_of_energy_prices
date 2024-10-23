@@ -3,3 +3,22 @@ GPU available: False, used: False
 TPU available: False, using: 0 TPU cores
 HPU available: False, using: 0 HPUs
 SLURM auto-requeueing enabled. Setting signal handlers.
+Metric train_loss improved. New best score: 0.561
+Metric train_loss improved by 0.030 >= min_delta = 0.0. New best score: 0.531
+Metric train_loss improved by 0.161 >= min_delta = 0.0. New best score: 0.371
+Metric train_loss improved by 0.151 >= min_delta = 0.0. New best score: 0.220
+Metric train_loss improved by 0.023 >= min_delta = 0.0. New best score: 0.197
+Metric train_loss improved by 0.035 >= min_delta = 0.0. New best score: 0.162
+Metric train_loss improved by 0.019 >= min_delta = 0.0. New best score: 0.143
+Metric train_loss improved by 0.022 >= min_delta = 0.0. New best score: 0.121
+Metric train_loss improved by 0.012 >= min_delta = 0.0. New best score: 0.108
+Metric train_loss improved by 0.004 >= min_delta = 0.0. New best score: 0.105
+Metric train_loss improved by 0.002 >= min_delta = 0.0. New best score: 0.103
+Metric train_loss improved by 0.001 >= min_delta = 0.0. New best score: 0.102
+Metric train_loss improved by 0.011 >= min_delta = 0.0. New best score: 0.092
+Metric train_loss improved by 0.007 >= min_delta = 0.0. New best score: 0.084
+Metric train_loss improved by 0.007 >= min_delta = 0.0. New best score: 0.078
+Metric train_loss improved by 0.020 >= min_delta = 0.0. New best score: 0.057
+Metric train_loss improved by 0.002 >= min_delta = 0.0. New best score: 0.055
+slurmstepd: error: *** JOB 24509858 ON uc2n343 CANCELLED AT 2024-10-23T11:41:54 ***
+slurmstepd: error: *** STEP 24509858.0 ON uc2n343 CANCELLED AT 2024-10-23T11:41:54 ***
