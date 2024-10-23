@@ -10,7 +10,7 @@ from datetime import datetime
 from sklearn.preprocessing import MaxAbsScaler
 from darts import TimeSeries
 from darts.models import TFTModel
-from darts.metrics import mape, mae, rmse, mse
+from darts.metrics import mape, mae, rmse, mse, smape
 from darts.dataprocessing.transformers import Scaler
 from darts.utils.callbacks import TFMProgressBar
 import plotly.graph_objects as go
@@ -128,6 +128,7 @@ def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, model
     print(f'  MAE: {mae(test_series, forecast):.2f}')
     print(f'  RMSE: {rmse(test_series, forecast):.2f}')
     print(f'  MSE: {mse(test_series, forecast):.2f}')
+    print(f'  SMAPE: {smape(test_series, forecast):.2f}')
 
     # Save the forecast plot and error metrics
     forecast_plot_path = os.path.join(
@@ -142,7 +143,8 @@ def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, model
     
     fig.write_image(forecast_plot_path)
     error_metrics = pd.DataFrame({'MAE': [mae(test_series, forecast)], 'MAPE': [mape(test_series, forecast)],
-                                  'MSE': [mse(test_series, forecast)], 'RMSE': [rmse(test_series, forecast)]})
+                                  'MSE': [mse(test_series, forecast)], 'RMSE': [rmse(test_series, forecast)], 
+                                  'SMAPE': [smape(test_series, forecast)]})
     error_metrics.to_csv(metrics_csv_path, index=False)
 
     # Save forecast results and metrics

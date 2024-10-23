@@ -33,3 +33,828 @@ TPU available: False, using: 0 TPU cores
 HPU available: False, using: 0 HPUs
 SLURM auto-requeueing enabled. Setting signal handlers.
 Metric train_loss improved by 0.259 >= min_delta = 0.0. New best score: 0.215
+Metric train_loss improved by 0.048 >= min_delta = 0.0. New best score: 0.167
+Metric train_loss improved by 0.018 >= min_delta = 0.0. New best score: 0.149
+Metric train_loss improved by 0.007 >= min_delta = 0.0. New best score: 0.142
+Metric train_loss improved by 0.017 >= min_delta = 0.0. New best score: 0.126
+Metric train_loss improved by 0.031 >= min_delta = 0.0. New best score: 0.094
+Metric train_loss improved by 0.018 >= min_delta = 0.0. New best score: 0.076
+Metric train_loss improved by 0.006 >= min_delta = 0.0. New best score: 0.071
+Metric train_loss improved by 0.006 >= min_delta = 0.0. New best score: 0.065
+Metric train_loss improved by 0.017 >= min_delta = 0.0. New best score: 0.047
+Metric train_loss improved by 0.002 >= min_delta = 0.0. New best score: 0.045
+Metric train_loss improved by 0.000 >= min_delta = 0.0. New best score: 0.045
+`Trainer.fit` stopped: `max_epochs=50` reached.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-20 23:53:55,505] Trial 1 finished with value: 0.08726194500923157 and parameters: {'hidden_dim': 211, 'n_layers': 3, 'dropout': 0.01823175987550224, 'input_chunk_length': 91, 'learning_rate': 0.00026542864072802446, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 50 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 00:50:42,055] Trial 2 finished with value: 0.17732462286949158 and parameters: {'hidden_dim': 227, 'n_layers': 3, 'dropout': 0.3966440643373526, 'input_chunk_length': 52, 'learning_rate': 1.7546304915714173e-05, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 51 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 00:51:21,455] Trial 3 finished with value: 0.40115007758140564 and parameters: {'hidden_dim': 56, 'n_layers': 2, 'dropout': 0.29932228592987714, 'input_chunk_length': 70, 'learning_rate': 1.9314230399086882e-05, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 52 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 00:52:57,710] Trial 4 finished with value: 0.39047110080718994 and parameters: {'hidden_dim': 229, 'n_layers': 1, 'dropout': 0.19431633823064942, 'input_chunk_length': 59, 'learning_rate': 5.5623299843332876e-06, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 53 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 00:54:21,450] Trial 5 finished with value: 0.717265248298645 and parameters: {'hidden_dim': 204, 'n_layers': 1, 'dropout': 0.37785841479252624, 'input_chunk_length': 60, 'learning_rate': 1.8284625898835984e-06, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 54 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 00:56:47,091] Trial 6 finished with value: 0.3162095546722412 and parameters: {'hidden_dim': 222, 'n_layers': 4, 'dropout': 0.0626959290348228, 'input_chunk_length': 71, 'learning_rate': 0.0004592380036688296, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 55 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 00:57:55,665] Trial 7 finished with value: 0.4592047929763794 and parameters: {'hidden_dim': 82, 'n_layers': 5, 'dropout': 0.46491326994672777, 'input_chunk_length': 89, 'learning_rate': 3.9679852441490324e-05, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 56 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 00:59:53,574] Trial 8 finished with value: 0.45566943287849426 and parameters: {'hidden_dim': 206, 'n_layers': 1, 'dropout': 0.31918569387527296, 'input_chunk_length': 80, 'learning_rate': 1.161189326712558e-06, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 57 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:02:10,826] Trial 9 finished with value: 0.4038439691066742 and parameters: {'hidden_dim': 238, 'n_layers': 1, 'dropout': 0.4725064750344635, 'input_chunk_length': 87, 'learning_rate': 3.3498401390998268e-06, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 58 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:03:04,468] Trial 10 finished with value: 0.19393876194953918 and parameters: {'hidden_dim': 152, 'n_layers': 6, 'dropout': 0.017175052184390346, 'input_chunk_length': 34, 'learning_rate': 0.000926937798593175, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 59 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:04:08,481] Trial 11 finished with value: 0.18179601430892944 and parameters: {'hidden_dim': 184, 'n_layers': 3, 'dropout': 0.14745739363293978, 'input_chunk_length': 37, 'learning_rate': 0.00013607369230791887, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 60 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:05:53,576] Trial 12 finished with value: 0.24134235084056854 and parameters: {'hidden_dim': 254, 'n_layers': 3, 'dropout': 0.10890664103803394, 'input_chunk_length': 42, 'learning_rate': 7.155712386510408e-05, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 61 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:06:30,252] Trial 13 finished with value: 0.4591185748577118 and parameters: {'hidden_dim': 175, 'n_layers': 4, 'dropout': 0.26428843315966216, 'input_chunk_length': 14, 'learning_rate': 1.0759093255108647e-05, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 62 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:08:05,540] Trial 14 finished with value: 0.33413466811180115 and parameters: {'hidden_dim': 127, 'n_layers': 3, 'dropout': 0.20316510971926896, 'input_chunk_length': 98, 'learning_rate': 0.00017277959460182808, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 63 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:08:44,832] Trial 15 finished with value: 0.36682775616645813 and parameters: {'hidden_dim': 116, 'n_layers': 2, 'dropout': 0.39206520775033943, 'input_chunk_length': 25, 'learning_rate': 2.4848196203583836e-05, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 64 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:10:11,132] Trial 16 finished with value: 0.3020867705345154 and parameters: {'hidden_dim': 185, 'n_layers': 5, 'dropout': 0.014289291488160123, 'input_chunk_length': 52, 'learning_rate': 0.00021100410049788268, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 65 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:12:56,644] Trial 17 finished with value: 0.2988062798976898 and parameters: {'hidden_dim': 256, 'n_layers': 2, 'dropout': 0.33079066978293903, 'input_chunk_length': 98, 'learning_rate': 5.568526584419574e-05, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 66 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:13:23,476] Trial 18 finished with value: 0.36269500851631165 and parameters: {'hidden_dim': 208, 'n_layers': 4, 'dropout': 0.21661107285573827, 'input_chunk_length': 4, 'learning_rate': 1.201185410846223e-05, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 67 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:15:18,006] Trial 19 finished with value: 0.19564791023731232 and parameters: {'hidden_dim': 173, 'n_layers': 5, 'dropout': 0.08459982500437291, 'input_chunk_length': 75, 'learning_rate': 0.0003865278726860798, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 68 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:16:51,903] Trial 20 finished with value: 0.27194154262542725 and parameters: {'hidden_dim': 235, 'n_layers': 3, 'dropout': 0.15684002006256856, 'input_chunk_length': 48, 'learning_rate': 7.444773264230553e-05, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 69 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:17:52,926] Trial 21 finished with value: 0.30689913034439087 and parameters: {'hidden_dim': 187, 'n_layers': 3, 'dropout': 0.15912863769456362, 'input_chunk_length': 30, 'learning_rate': 0.00013440027703392812, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 70 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:19:01,498] Trial 22 finished with value: 0.1906246542930603 and parameters: {'hidden_dim': 197, 'n_layers': 2, 'dropout': 0.13493848908108197, 'input_chunk_length': 38, 'learning_rate': 0.00035047163726228394, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 71 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:19:47,067] Trial 23 finished with value: 0.22816593945026398 and parameters: {'hidden_dim': 165, 'n_layers': 3, 'dropout': 0.05151266963929996, 'input_chunk_length': 21, 'learning_rate': 0.000116889980968382, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 72 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:21:41,457] Trial 24 finished with value: 0.3161099851131439 and parameters: {'hidden_dim': 219, 'n_layers': 4, 'dropout': 0.23263464726834265, 'input_chunk_length': 58, 'learning_rate': 0.0009944635106559384, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 73 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:22:39,351] Trial 25 finished with value: 0.3286825716495514 and parameters: {'hidden_dim': 137, 'n_layers': 2, 'dropout': 0.11241827456432743, 'input_chunk_length': 44, 'learning_rate': 1.4386450537636826e-05, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 74 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:24:08,130] Trial 26 finished with value: 0.35593557357788086 and parameters: {'hidden_dim': 191, 'n_layers': 3, 'dropout': 0.43073406628948263, 'input_chunk_length': 53, 'learning_rate': 3.8025803461849064e-05, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 75 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:26:20,325] Trial 27 finished with value: 0.43574419617652893 and parameters: {'hidden_dim': 216, 'n_layers': 4, 'dropout': 0.4989913599295457, 'input_chunk_length': 66, 'learning_rate': 6.612750726963426e-06, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 76 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:28:12,830] Trial 28 finished with value: 0.310137003660202 and parameters: {'hidden_dim': 165, 'n_layers': 3, 'dropout': 0.27318366540306915, 'input_chunk_length': 86, 'learning_rate': 0.0002550554982312315, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 77 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:29:08,101] Trial 29 finished with value: 0.2922019064426422 and parameters: {'hidden_dim': 240, 'n_layers': 2, 'dropout': 0.16790641133992526, 'input_chunk_length': 18, 'learning_rate': 0.00010713565378306262, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 78 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:29:35,592] Trial 30 finished with value: 0.23462076485157013 and parameters: {'hidden_dim': 104, 'n_layers': 4, 'dropout': 0.04301807585397627, 'input_chunk_length': 7, 'learning_rate': 0.0005303944367812791, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 79 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:30:36,936] Trial 31 finished with value: 0.24376437067985535 and parameters: {'hidden_dim': 197, 'n_layers': 2, 'dropout': 0.35108927959537656, 'input_chunk_length': 32, 'learning_rate': 0.00028900851844485356, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 80 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:31:41,579] Trial 32 finished with value: 0.20946122705936432 and parameters: {'hidden_dim': 179, 'n_layers': 2, 'dropout': 0.12302804674572683, 'input_chunk_length': 39, 'learning_rate': 0.0006323779610023896, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 81 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:32:51,100] Trial 33 finished with value: 0.15778370201587677 and parameters: {'hidden_dim': 195, 'n_layers': 3, 'dropout': 0.0864105476505866, 'input_chunk_length': 37, 'learning_rate': 0.00031612104135251553, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 82 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:33:56,430] Trial 34 finished with value: 0.1902782917022705 and parameters: {'hidden_dim': 226, 'n_layers': 3, 'dropout': 0.004462652195236533, 'input_chunk_length': 27, 'learning_rate': 0.00017020550387777364, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 83 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:35:49,926] Trial 35 finished with value: 0.3258230984210968 and parameters: {'hidden_dim': 212, 'n_layers': 3, 'dropout': 0.08106170100471105, 'input_chunk_length': 66, 'learning_rate': 2.169955149577591e-05, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 84 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:36:25,219] Trial 36 finished with value: 0.35296517610549927 and parameters: {'hidden_dim': 59, 'n_layers': 4, 'dropout': 0.08282921864910814, 'input_chunk_length': 46, 'learning_rate': 8.901584668715638e-05, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 85 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:37:39,441] Trial 37 finished with value: 0.4189155697822571 and parameters: {'hidden_dim': 163, 'n_layers': 3, 'dropout': 0.038281053721092584, 'input_chunk_length': 57, 'learning_rate': 4.666719670395464e-05, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 86 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:40:18,414] Trial 38 finished with value: 0.20916563272476196 and parameters: {'hidden_dim': 243, 'n_layers': 4, 'dropout': 0.18234735699796484, 'input_chunk_length': 77, 'learning_rate': 0.0006219804826380852, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 87 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:41:55,720] Trial 39 finished with value: 0.4501659572124481 and parameters: {'hidden_dim': 199, 'n_layers': 1, 'dropout': 0.4169794753339213, 'input_chunk_length': 68, 'learning_rate': 2.3543538251459048e-06, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 88 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:42:48,431] Trial 40 finished with value: 0.4919186532497406 and parameters: {'hidden_dim': 149, 'n_layers': 3, 'dropout': 0.2950736664147465, 'input_chunk_length': 37, 'learning_rate': 7.443961098761726e-06, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 89 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:43:56,333] Trial 41 finished with value: 0.26380571722984314 and parameters: {'hidden_dim': 227, 'n_layers': 3, 'dropout': 0.017914150159367606, 'input_chunk_length': 28, 'learning_rate': 0.00016608690103696048, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 90 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:44:54,899] Trial 42 finished with value: 0.2540266811847687 and parameters: {'hidden_dim': 224, 'n_layers': 3, 'dropout': 0.06254911221348741, 'input_chunk_length': 24, 'learning_rate': 0.00023161570455393333, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 91 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:46:00,203] Trial 43 finished with value: 0.30397340655326843 and parameters: {'hidden_dim': 208, 'n_layers': 3, 'dropout': 0.025395666366294915, 'input_chunk_length': 32, 'learning_rate': 0.0001600619779573244, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 92 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:46:51,853] Trial 44 finished with value: 0.2843177020549774 and parameters: {'hidden_dim': 246, 'n_layers': 2, 'dropout': 0.003463479707761433, 'input_chunk_length': 16, 'learning_rate': 2.974955753652955e-05, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 93 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:47:40,051] Trial 45 finished with value: 0.22139571607112885 and parameters: {'hidden_dim': 231, 'n_layers': 4, 'dropout': 0.09366263031860675, 'input_chunk_length': 12, 'learning_rate': 0.0003235028685018062, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 94 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:48:42,104] Trial 46 finished with value: 0.35484132170677185 and parameters: {'hidden_dim': 218, 'n_layers': 5, 'dropout': 0.057764012706971575, 'input_chunk_length': 26, 'learning_rate': 5.74016265420087e-05, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 95 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:49:56,837] Trial 47 finished with value: 0.23056283593177795 and parameters: {'hidden_dim': 202, 'n_layers': 3, 'dropout': 0.13585814163329368, 'input_chunk_length': 40, 'learning_rate': 0.00044192414419329734, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 96 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:51:24,649] Trial 48 finished with value: 0.26425260305404663 and parameters: {'hidden_dim': 192, 'n_layers': 6, 'dropout': 0.006103227048279418, 'input_chunk_length': 49, 'learning_rate': 0.0002051792291402171, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 97 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:52:19,776] Trial 49 finished with value: 0.3657108545303345 and parameters: {'hidden_dim': 182, 'n_layers': 2, 'dropout': 0.3645744492383453, 'input_chunk_length': 35, 'learning_rate': 9.45800767854836e-05, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 98 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:55:19,816] Trial 50 finished with value: 0.307272344827652 and parameters: {'hidden_dim': 249, 'n_layers': 3, 'dropout': 0.06667035283328628, 'input_chunk_length': 90, 'learning_rate': 1.6376496983510057e-05, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 99 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:56:34,222] Trial 51 finished with value: 0.14293964207172394 and parameters: {'hidden_dim': 205, 'n_layers': 1, 'dropout': 0.14165196495253934, 'input_chunk_length': 41, 'learning_rate': 0.0003402702560070392, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 100 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:57:55,986] Trial 52 finished with value: 0.23293480277061462 and parameters: {'hidden_dim': 230, 'n_layers': 1, 'dropout': 0.10399706311014625, 'input_chunk_length': 43, 'learning_rate': 0.00013777362542331752, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 101 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 01:59:22,071] Trial 53 finished with value: 0.1767808347940445 and parameters: {'hidden_dim': 210, 'n_layers': 1, 'dropout': 0.033249667966810614, 'input_chunk_length': 53, 'learning_rate': 0.000689668419774861, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 102 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 02:00:51,092] Trial 54 finished with value: 0.17723794281482697 and parameters: {'hidden_dim': 208, 'n_layers': 1, 'dropout': 0.13506484944643943, 'input_chunk_length': 62, 'learning_rate': 0.0007990889958664166, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 103 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 02:02:24,022] Trial 55 finished with value: 0.2013605386018753 and parameters: {'hidden_dim': 210, 'n_layers': 1, 'dropout': 0.18997129551438205, 'input_chunk_length': 61, 'learning_rate': 0.0007030962094097648, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 104 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 02:03:55,433] Trial 56 finished with value: 0.21048155426979065 and parameters: {'hidden_dim': 203, 'n_layers': 1, 'dropout': 0.03225143105032872, 'input_chunk_length': 62, 'learning_rate': 0.0007398993304624556, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 105 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 02:05:14,083] Trial 57 finished with value: 0.2938631772994995 and parameters: {'hidden_dim': 216, 'n_layers': 1, 'dropout': 0.21880874940868528, 'input_chunk_length': 53, 'learning_rate': 0.0005105915274740173, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 106 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 02:07:04,562] Trial 58 finished with value: 0.1815093457698822 and parameters: {'hidden_dim': 192, 'n_layers': 1, 'dropout': 0.13218693760390499, 'input_chunk_length': 94, 'learning_rate': 0.0009181254425114387, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 107 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 02:08:41,220] Trial 59 finished with value: 0.20189686119556427 and parameters: {'hidden_dim': 235, 'n_layers': 1, 'dropout': 0.0738272500020506, 'input_chunk_length': 57, 'learning_rate': 0.0004174398954736264, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 108 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 02:09:42,352] Trial 60 finished with value: 0.22922617197036743 and parameters: {'hidden_dim': 176, 'n_layers': 1, 'dropout': 0.1102775550606433, 'input_chunk_length': 50, 'learning_rate': 0.0008298455902815561, 'batch_size': 64}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 109 records. Best score: 0.045. Signaling Trainer to stop.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-10-21 02:11:41,660] Trial 61 finished with value: 0.27494266629219055 and parameters: {'hidden_dim': 189, 'n_layers': 1, 'dropout': 0.13839519317179555, 'input_chunk_length': 92, 'learning_rate': 0.000911741875749833, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 110 records. Best score: 0.045. Signaling Trainer to stop.
+ValueError: For the given forecasting case, the provided future covariates at dataset index `0` do not extend far enough into the past. The future covariates must start at time step `2022-03-23 00:00:00`, whereas now they start at time step `2022-03-24 00:00:00`.
+Traceback (most recent call last):
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/predictions/TFT/TFT_model_short.py", line 143, in objective
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/utils/torch.py", line 103, in decorator
+    return decorated(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/torch_forecasting_model.py", line 1465, in predict
+    predictions = self.predict_from_dataset(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/utils/torch.py", line 103, in decorator
+    return decorated(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/torch_forecasting_model.py", line 1559, in predict_from_dataset
+    self._verify_predict_sample(input_series_dataset[0])
+                                ~~~~~~~~~~~~~~~~~~~~^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/utils/data/inference_dataset.py", line 711, in __getitem__
+    _, historic_future_covariate, future_covariate, _, _, _ = self.ds_future[idx]
+                                                              ~~~~~~~~~~~~~~^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/utils/data/inference_dataset.py", line 599, in __getitem__
+    ) = self.ds_past[idx]
+        ~~~~~~~~~~~~^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/utils/data/inference_dataset.py", line 418, in __getitem__
+    return self.ds[idx]
+           ~~~~~~~^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/utils/data/inference_dataset.py", line 291, in __getitem__
+    covariate_start, covariate_end = self._covariate_indexer(
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/utils/data/inference_dataset.py", line 98, in _covariate_indexer
+    raise_log(
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/logging.py", line 132, in raise_log
+    raise exception
+ValueError: For the given forecasting case, the provided future covariates at dataset index `0` do not extend far enough into the past. The future covariates must start at time step `2022-03-23 00:00:00`, whereas now they start at time step `2022-03-24 00:00:00`.
+[I 2024-10-21 02:13:30,841] Trial 62 finished with value: inf and parameters: {'hidden_dim': 196, 'n_layers': 1, 'dropout': 0.16603797346199908, 'input_chunk_length': 100, 'learning_rate': 0.0005556471998316792, 'batch_size': 32}. Best is trial 1 with value: 0.08726194500923157.
+[W 2024-10-21 02:13:31,159] Trial 63 failed with parameters: {'hidden_dim': 208, 'n_layers': 1, 'dropout': 0.12490739967133854, 'input_chunk_length': 85, 'learning_rate': 0.000374056990225677, 'batch_size': 32} because of the following error: RuntimeError('Only Tensors created explicitly by the user (graph leaves) support the deepcopy protocol at the moment.  If you were attempting to deepcopy a module, this may be because of a torch.nn.utils.weight_norm usage, see https://github.com/pytorch/pytorch/pull/103001').
+Traceback (most recent call last):
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/optuna/study/_optimize.py", line 197, in _run_trial
+    value_or_values = func(trial)
+                      ^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/predictions/TFT/TFT_model_short.py", line 171, in <lambda>
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/predictions/TFT/TFT_model_short.py", line 116, in objective
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/forecasting_model.py", line 110, in __call__
+    return super().__call__(**all_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/tft_model.py", line 944, in __init__
+    super().__init__(**self._extract_torch_model_params(**model_kwargs))
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/utils/torch.py", line 103, in decorator
+    return decorated(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/torch_forecasting_model.py", line 293, in __init__
+    super().__init__(add_encoders=add_encoders)
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/forecasting_model.py", line 2651, in __init__
+    super().__init__(add_encoders=add_encoders)
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/forecasting_model.py", line 138, in __init__
+    self._model_params = self._extract_model_creation_params()
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/forecasting_model.py", line 2363, in _extract_model_creation_params
+    model_params = copy.deepcopy(self._model_call)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 285, in _reconstruct
+    value = deepcopy(value, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 196, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 226, in _deepcopy_method
+    return type(x)(x.__func__, deepcopy(x.__self__, memo))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 143, in deepcopy
+    y = copier(memo)
+        ^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/torch/_tensor.py", line 87, in __deepcopy__
+    raise RuntimeError(
+RuntimeError: Only Tensors created explicitly by the user (graph leaves) support the deepcopy protocol at the moment.  If you were attempting to deepcopy a module, this may be because of a torch.nn.utils.weight_norm usage, see https://github.com/pytorch/pytorch/pull/103001
+[W 2024-10-21 02:13:31,185] Trial 63 failed with value None.
+Traceback (most recent call last):
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/predictions/TFT/TFT_model_short.py", line 229, in <module>
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/predictions/TFT/TFT_model_short.py", line 171, in run_optuna_optimization
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/optuna/study/study.py", line 475, in optimize
+    _optimize(
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/optuna/study/_optimize.py", line 63, in _optimize
+    _optimize_sequential(
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/optuna/study/_optimize.py", line 160, in _optimize_sequential
+    frozen_trial = _run_trial(study, func, catch)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/optuna/study/_optimize.py", line 248, in _run_trial
+    raise func_err
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/optuna/study/_optimize.py", line 197, in _run_trial
+    value_or_values = func(trial)
+                      ^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/predictions/TFT/TFT_model_short.py", line 171, in <lambda>
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/predictions/TFT/TFT_model_short.py", line 116, in objective
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/forecasting_model.py", line 110, in __call__
+    return super().__call__(**all_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/tft_model.py", line 944, in __init__
+    super().__init__(**self._extract_torch_model_params(**model_kwargs))
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/utils/torch.py", line 103, in decorator
+    return decorated(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/torch_forecasting_model.py", line 293, in __init__
+    super().__init__(add_encoders=add_encoders)
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/forecasting_model.py", line 2651, in __init__
+    super().__init__(add_encoders=add_encoders)
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/forecasting_model.py", line 138, in __init__
+    self._model_params = self._extract_model_creation_params()
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/forecasting_model.py", line 2363, in _extract_model_creation_params
+    model_params = copy.deepcopy(self._model_call)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 285, in _reconstruct
+    value = deepcopy(value, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 196, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 226, in _deepcopy_method
+    return type(x)(x.__func__, deepcopy(x.__self__, memo))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/copy.py", line 143, in deepcopy
+    y = copier(memo)
+        ^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/torch/_tensor.py", line 87, in __deepcopy__
+    raise RuntimeError(
+RuntimeError: Only Tensors created explicitly by the user (graph leaves) support the deepcopy protocol at the moment.  If you were attempting to deepcopy a module, this may be because of a torch.nn.utils.weight_norm usage, see https://github.com/pytorch/pytorch/pull/103001
+srun: error: uc2n387: task 0: Exited with exit code 1

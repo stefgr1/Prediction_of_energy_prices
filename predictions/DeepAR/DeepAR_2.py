@@ -10,7 +10,7 @@ import importlib
 import yaml
 from darts import TimeSeries
 from darts.models import RNNModel
-from darts.metrics import mape, mae, rmse, mse
+from darts.metrics import mape, mae, rmse, mse, smape 
 from darts.utils.likelihood_models import GaussianLikelihood
 from darts.utils.callbacks import TFMProgressBar
 
@@ -109,10 +109,10 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     """
     n_layers = trial.suggest_int('n_layers', 1, 2)
     dropout = trial.suggest_float('dropout', 0.0, 0.5) if n_layers > 1 else 0.0
-    input_chunk_length = trial.suggest_int('input_chunk_length', 10, 100)
+    input_chunk_length = trial.suggest_int('input_chunk_length', 10, 150)
     hidden_dim = trial.suggest_int('hidden_dim', 50, 200)
     learning_rate = trial.suggest_float('learning_rate', 1e-7, 1e-3, log=True)
-    batch_size = trial.suggest_categorical('batch_size', [16, 32])
+    batch_size = trial.suggest_categorical('batch_size', [16, 32, 64])
 
     # Ensure training_length is larger than input_chunk_length but never larger than 500
     training_length = trial.suggest_int(
@@ -138,14 +138,14 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
         model_name="rnn_model",
         force_reset=True,
         pl_trainer_kwargs={
-            'accelerator': 'mps',
+            'accelerator': 'gpu',
             'devices': devices,
             'enable_progress_bar': True,
             'logger': tb_logger,
             'enable_model_summary': False,
             'callbacks': [early_stop_callback, TFMProgressBar(enable_train_bar_only=True)],
-            'gradient_clip_val': 0.5,  # Clip gradients if they exceed 0.5
-            'log_every_n_steps': 20,
+            #'gradient_clip_val': 0.5,  # Clip gradients if they exceed 0.5
+            'log_every_n_steps': 10,
         }
     )
 
@@ -181,14 +181,17 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
 
 def inspect_best_trial(study):
     """
-    Inspect and print the error metrics from the best trial in the Optuna study.
+    Inspect and return the error metrics from the best trial in the Optuna study.
     """
     best_trial = study.best_trial
-    print(f"Best Trial {best_trial.number}:")
-    print(f"  RMSE: {best_trial.user_attrs.get('rmse', 'N/A')}")
-    print(f"  MAPE: {best_trial.user_attrs.get('mape', 'N/A')}%")
-    print(f"  MAE: {best_trial.user_attrs.get('mae', 'N/A')}")
-    print(f"  MSE: {best_trial.user_attrs.get('mse', 'N/A')}")
+    metrics_dict = {
+        "RMSE": best_trial.user_attrs.get('rmse', 'N/A'),
+        "MAPE": best_trial.user_attrs.get('mape', 'N/A'),
+        "MAE": best_trial.user_attrs.get('mae', 'N/A'),
+        "MSE": best_trial.user_attrs.get('mse', 'N/A'),
+        "sMAPE": best_trial.user_attrs.get('smape', 'N/A') 
+    }
+    return metrics_dict
 
 
 # Main execution block
