@@ -16,11 +16,13 @@ from darts.utils.callbacks import TFMProgressBar
 import plotly.graph_objects as go
 from pytorch_lightning import loggers as pl_loggers
 
+
 def check_cuda_availability():
     """
     Check and print if CUDA is available.
     """
     print(torch.cuda.is_available())
+
 
 def set_random_seed(seed=42):
     """
@@ -32,6 +34,7 @@ def set_random_seed(seed=42):
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
 
+
 def create_early_stopping_callback(patience=20):
     """
     Create and return an EarlyStopping callback.
@@ -40,6 +43,7 @@ def create_early_stopping_callback(patience=20):
         monitor='train_loss', patience=patience, verbose=True
     )
 
+
 def create_scalers():
     """
     Create and return scaler objects for both the time series and covariates.
@@ -47,6 +51,7 @@ def create_scalers():
     scaler_series = Scaler(MaxAbsScaler())
     scaler_covariates = Scaler(MaxAbsScaler())
     return scaler_series, scaler_covariates
+
 
 def load_and_prepare_data(file_path):
     """
@@ -57,10 +62,11 @@ def load_and_prepare_data(file_path):
     df['Date'] = pd.to_datetime(df['Date'])
     return df
 
+
 def prepare_time_series(df_train, df_test, covariates_columns, max_input_chunk_length):
     """
     Prepare time series objects for training and testing, including future covariates.
-    
+
     """
     series_train = TimeSeries.from_dataframe(
         df_train, 'Date', 'Day_ahead_price (€/MWh)').astype('float32')
@@ -82,6 +88,7 @@ def prepare_time_series(df_train, df_test, covariates_columns, max_input_chunk_l
 
     return series_train, series_test, future_covariates_train, future_covariates_for_prediction
 
+
 def scale_data(series_train, series_test, future_covariates_train, future_covariates_for_prediction):
     """
     Scale the time series data and future covariates.
@@ -89,12 +96,15 @@ def scale_data(series_train, series_test, future_covariates_train, future_covari
     scaler_series, scaler_covariates = create_scalers()
 
     series_train_scaled = scaler_series.fit_transform(series_train)
-    future_covariates_train_scaled = scaler_covariates.fit_transform(future_covariates_train)
+    future_covariates_train_scaled = scaler_covariates.fit_transform(
+        future_covariates_train)
 
     series_test_scaled = scaler_series.transform(series_test)
-    future_covariates_for_prediction_scaled = scaler_covariates.transform(future_covariates_for_prediction)
+    future_covariates_for_prediction_scaled = scaler_covariates.transform(
+        future_covariates_for_prediction)
 
     return series_train_scaled, series_test_scaled, future_covariates_train_scaled, future_covariates_for_prediction_scaled, scaler_series
+
 
 def create_logger(trial_number=None, best_model=False, model_name='Model'):
     timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
@@ -124,11 +134,11 @@ def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, model
     base_path = os.getenv('TMPDIR', '/tmp')
 
     print('Error Metrics on Test Set:')
-    print(f'  MAPE: {mape(test_series, forecast):.2f}%')
     print(f'  MAE: {mae(test_series, forecast):.2f}')
     print(f'  RMSE: {rmse(test_series, forecast):.2f}')
     print(f'  MSE: {mse(test_series, forecast):.2f}')
-    print(f'  SMAPE: {smape(test_series, forecast):.2f}')
+    print(f'  MAPE: {mape(test_series, forecast):.2f}%')
+    print(f'  SMAPE: {smape(test_series, forecast):.2f}%')
 
     # Save the forecast plot and error metrics
     forecast_plot_path = os.path.join(
@@ -140,11 +150,10 @@ def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, model
 
     # Ensure the directory exists before saving
     os.makedirs(os.path.dirname(forecast_plot_path), exist_ok=True)
-    
+
     fig.write_image(forecast_plot_path)
-    error_metrics = pd.DataFrame({'MAE': [mae(test_series, forecast)], 'MAPE': [mape(test_series, forecast)],
-                                  'MSE': [mse(test_series, forecast)], 'RMSE': [rmse(test_series, forecast)], 
-                                  'SMAPE': [smape(test_series, forecast)]})
+    error_metrics = pd.DataFrame({'MAE': [mae(test_series, forecast)], 'MSE': [mse(test_series, forecast)], 'RMSE': [rmse(test_series, forecast)],
+                                  'MAPE': [mape(test_series, forecast)], 'SMAPE': [smape(test_series, forecast)]})
     error_metrics.to_csv(metrics_csv_path, index=False)
 
     # Save forecast results and metrics
@@ -152,16 +161,20 @@ def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, model
         'Date': forecast.time_index,  # Add time index (dates)
         'Forecast': forecast.values().squeeze()  # Add forecasted values
     })
-    forecast_df.to_csv(forecast_csv_path, index=False)  # Save both date and forecast to CSV
+    # Save both date and forecast to CSV
+    forecast_df.to_csv(forecast_csv_path, index=False)
 
-    return forecast_plot_path, forecast_csv_path, metrics_csv_path  # Return paths for copying
+    # Return paths for copying
+    return forecast_plot_path, forecast_csv_path, metrics_csv_path
+
 
 def copy_results_to_home(tmp_file_paths, home_dir_path):
     """
     Copy files and directories from TMPDIR to the home directory.
     """
     for tmp_file_path in tmp_file_paths:
-        home_file_path = os.path.join(home_dir_path, os.path.basename(tmp_file_path))
+        home_file_path = os.path.join(
+            home_dir_path, os.path.basename(tmp_file_path))
 
         # Check if it is a file or a directory
         if os.path.isfile(tmp_file_path):
@@ -173,7 +186,6 @@ def copy_results_to_home(tmp_file_paths, home_dir_path):
             print(f"Copied directory {tmp_file_path} to {home_file_path}")
         else:
             print(f"{tmp_file_path} is neither a file nor a directory. Skipping.")
-
 
 
 def plot_forecast(test_series, forecast, title):
@@ -215,13 +227,14 @@ def plot_forecast(test_series, forecast, title):
 
     return fig
 
+
 # Define future covariates
 future_covariates_columns = ['Solar_radiation (W/m2)', 'Wind_speed (m/s)',
-       'Temperature (°C)', 'Biomass (GWh)', 'Hard_coal (GWh)', 'Hydro (GWh)',
-       'Lignite (GWh)', 'Natural_gas (GWh)', 'Other (GWh)',
-       'Pumped_storage_generation (GWh)', 'Solar_energy (GWh)',
-       'Wind_offshore (GWh)', 'Wind_onshore (GWh)',
-       'Net_total_export_import (GWh)', 'BEV_vehicles', 'Oil_price (EUR)',
-       'TTF_gas_price (€/MWh)', 'Nuclear_energy (GWh)', 'Lag_1_day',
-       'Lag_2_days', 'Lag_3_days', 'Lag_4_days', 'Lag_5_days', 'Lag_6_days',
-       'Lag_7_days', 'Day_of_week', 'Month', 'Rolling_mean_7']
+                             'Temperature (°C)', 'Biomass (GWh)', 'Hard_coal (GWh)', 'Hydro (GWh)',
+                             'Lignite (GWh)', 'Natural_gas (GWh)', 'Other (GWh)',
+                             'Pumped_storage_generation (GWh)', 'Solar_energy (GWh)',
+                             'Wind_offshore (GWh)', 'Wind_onshore (GWh)',
+                             'Net_total_export_import (GWh)', 'BEV_vehicles', 'Oil_price (EUR)',
+                             'TTF_gas_price (€/MWh)', 'Nuclear_energy (GWh)', 'Lag_1_day',
+                             'Lag_2_days', 'Lag_3_days', 'Lag_4_days', 'Lag_5_days', 'Lag_6_days',
+                             'Lag_7_days', 'Day_of_week', 'Month', 'Rolling_mean_7']

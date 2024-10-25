@@ -13,7 +13,6 @@ from pytorch_lightning.callbacks import EarlyStopping
 import plotly.graph_objs as go
 import sys
 import importlib
-from pytorch_lightning.callbacks import EarlyStopping
 
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -39,7 +38,8 @@ plot_forecast = utils.plot_forecast
 def load_config(config_path=None):
     # Default to using config.yaml in the current script's directory
     if config_path is None:
-        config_path = os.path.join(os.path.dirname(__file__), "config_xg_boost.yml")
+        config_path = os.path.join(
+            os.path.dirname(__file__), "config_xg_boost.yml")
 
     with open(config_path, "r") as file:
         config = yaml.safe_load(file)
@@ -89,19 +89,21 @@ def main():
         )
 
         # Suggest hyperparameters
-        max_depth = trial.suggest_int('max_depth', 2, 8)
-        learning_rate = trial.suggest_float('learning_rate', 0.01, 0.1)
-        n_estimators = trial.suggest_int('n_estimators', 100, 500)
-        input_chunk_length = trial.suggest_int('input_chunk_length', 7, 30)
-        min_child_weight = trial.suggest_float('min_child_weight', 1, 10)
-        subsample = trial.suggest_float('subsample', 0.7, 1.0)
-        colsample_bytree = trial.suggest_float('colsample_bytree', 0.7, 1.0)
-        gamma = trial.suggest_float('gamma', 0, 2)
+        max_depth = trial.suggest_int('max_depth', 1, 6)  # Allow deeper trees
+        learning_rate = trial.suggest_float('learning_rate', 0.005, 0.2)
+        n_estimators = trial.suggest_int(
+            'n_estimators', 200, 1000)  # More estimators
+        input_chunk_length = trial.suggest_int('input_chunk_length', 7, 100)
+        min_child_weight = trial.suggest_float('min_child_weight', 1, 6)
+        subsample = trial.suggest_float('subsample', 0.6, 1.0)
+        colsample_bytree = trial.suggest_float('colsample_bytree', 0.6, 1.0)
+        gamma = trial.suggest_float('gamma', 0, 5)
 
         model = XGBModel(
             lags=input_chunk_length,
+            lags_past_covariates=[-1, -7, -30],
             output_chunk_length=1,
-            lags_future_covariates=[0],
+            lags_future_covariates=[-1, -2, -3],
             max_depth=max_depth,
             learning_rate=learning_rate,
             n_estimators=n_estimators,
@@ -114,11 +116,8 @@ def main():
             device="cuda" if torch.cuda.is_available() else "cpu"
         )
 
-        # Early stopping callback
-        early_stop = EarlyStopping(
-            monitor="train_loss", patience=20, mode="min")
         model.fit(series_train_scaled, future_covariates=future_covariates_train_scaled,
-                  verbose=False, callbacks=[early_stop])
+                  verbose=False)
         forecast_scaled = model.predict(
             n=len(series_test_scaled), future_covariates=future_covariates_test_scaled)
         forecast = scaler_series.inverse_transform(forecast_scaled)
@@ -126,7 +125,6 @@ def main():
 
         tb_logger.log_metrics({"rmse": float(error)}, step=trial.number)
         return error
-
 
     # Run Optuna optimization
     study = optuna.create_study(direction='minimize')
@@ -142,8 +140,9 @@ def main():
     # Train model with best hyperparameters and TensorBoard logging
     best_model = XGBModel(
         lags=best_params['input_chunk_length'],
+        lags_past_covariates=[-1, -7, -30],
+        lags_future_covariates=[-1, -2, -3],
         output_chunk_length=1,
-        lags_future_covariates=[0],
         max_depth=best_params['max_depth'],
         learning_rate=best_params['learning_rate'],
         n_estimators=best_params['n_estimators'],
@@ -162,21 +161,13 @@ def main():
         n=len(series_test_scaled), future_covariates=future_covariates_test_scaled)
     forecast = scaler_series.inverse_transform(forecast_scaled)
 
-    # Debugging: Print forecast values after scaling
-    print("First few values of forecast_scaled:",
-          forecast_scaled.values()[:5].squeeze())
-    print("First few values of forecast after inverse transform:",
-          forecast.values()[:5].squeeze())
-    print("First few values of test series for comparison:",
-          series_test.values()[:5].squeeze())
-
     # Plot forecast using the utility function
     fig = utils.plot_forecast(series_test, forecast,
                               title="XGBoost Model Forecast")
 
     # Save forecast plot and metrics
     forecast_plot_path, forecast_csv_path, metrics_csv_path = utils.save_results(
-        forecast, series_test, scaler_series, fig, optuna_epochs=config["optuna_epochs"], model_name="XGBoost")
+        forecast, series_test_scaled, scaler_series, fig, optuna_epochs=config["optuna_epochs"], model_name="XGBoost")
 
     # Copy results to the home directory, including TensorBoard logs
     final_tb_log_dir = final_tb_logger.log_dir
