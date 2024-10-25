@@ -1,0 +1,6 @@
+optuna_trials: 1        # More trials for hyperparameter tuning
+optuna_epochs: 1        # Increase for better model fitting per trial
+best_model_epochs: 1   # Final model training epochs
+n_jobs: -1                # Number of parallel Optuna trials
+devices: 2               # Number of GPUs to utilize
+max_input_chunk_length: 300
