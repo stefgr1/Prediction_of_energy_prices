@@ -189,6 +189,7 @@ def inspect_best_trial(study):
     print(f"  MSE: {best_trial.user_attrs.get('mse', 'N/A')}")
     print(f"  SMAPE: {best_trial.user_attrs.get('smape', 'N/A')}")
 
+
 # Main execution block
 if __name__ == "__main__":
     # Load configuration parameters
@@ -237,7 +238,8 @@ if __name__ == "__main__":
 
     # Save the best model and predictions
     if platform.system() == "Darwin":  # macOS
-        output_path = os.path.join(base_path, 'predictions/TFT/')  # Save directly in the current folder
+        # Save directly in the current folder
+        output_path = os.path.join(base_path, 'predictions/TFT/')
     else:
         tmpdir_path = os.path.join(os.getenv('TMPDIR'), 'predictions/TFT/')
         output_path = os.path.join(base_path, 'predictions/TFT/')

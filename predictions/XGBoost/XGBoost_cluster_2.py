@@ -21,7 +21,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 utils = importlib.import_module('utils')
 
 # Load functions from utils file
-future_covariates_columns = utils.future_covariates_columns
+future_covariates_columns = utils.future_covariates_columns_2
 check_cuda_availability = utils.check_cuda_availability
 set_random_seed = utils.set_random_seed
 create_early_stopping_callback = utils.create_early_stopping_callback
@@ -70,9 +70,9 @@ def main():
 
     # Load data
     train_df = utils.load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/train_df.csv'))
+        os.path.join(base_path, 'data/Final_data/train_df_no_lags.csv'))
     test_df = utils.load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/test_df.csv'))
+        os.path.join(base_path, 'data/Final_data/test_df_no_lags.csv'))
 
     # Prepare time series
     series_train, series_test, future_covariates_train, future_covariates_test = utils.prepare_time_series(
@@ -90,10 +90,10 @@ def main():
 
         # Suggest hyperparameters
         max_depth = trial.suggest_int('max_depth', 1, 10)  # Allow deeper trees
-        learning_rate = trial.suggest_float('learning_rate', 0.01, 0.3)
+        learning_rate = trial.suggest_float('learning_rate', 0.005, 0.025)
         n_estimators = trial.suggest_int(
-            'n_estimators', 200, 1000)  # More estimators
-        input_chunk_length = trial.suggest_int('input_chunk_length', 7, 100)
+            'n_estimators', 400, 1500)  # More estimators
+        input_chunk_length = trial.suggest_int('input_chunk_length', 30, 150)
         min_child_weight = trial.suggest_float('min_child_weight', 1, 6)
         subsample = trial.suggest_float('subsample', 0.6, 1.0)
         colsample_bytree = trial.suggest_float('colsample_bytree', 0.6, 1.0)
@@ -132,6 +132,17 @@ def main():
 
     best_params = study.best_params
 
+    # Print the best hyperparameters
+    print("Best hyperparameters found by Optuna:")
+    for param, value in best_params.items():
+        print(f"{param}: {value}")
+
+    # Save the best hyperparameters to a YAML file
+    best_params_path = os.path.join(
+        home_results_dir, f'best_hyperparameters_{config["optuna_epochs"]}.yml')
+    with open(best_params_path, 'w') as yaml_file:
+        yaml.dump(best_params, yaml_file)
+
     # Create a new logger for the final model training with best parameters
     final_tb_logger = pl_loggers.TensorBoardLogger(
         save_dir=tmp_dir, name="XGBoost_Best_Model")
@@ -169,7 +180,8 @@ def main():
 
     # Copy results to the home directory, including TensorBoard logs
     final_tb_log_dir = final_tb_logger.log_dir
-    tmp_files = [forecast_plot_path, forecast_csv_path, metrics_csv_path]
+    tmp_files = [forecast_plot_path, forecast_csv_path,
+                 metrics_csv_path, best_params_path]
     if os.path.exists(final_tb_log_dir):
         tmp_files.append(final_tb_log_dir)
 
