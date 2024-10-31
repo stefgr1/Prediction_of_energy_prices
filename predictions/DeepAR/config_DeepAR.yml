@@ -1,5 +1,5 @@
-optuna_trials: 500
-optuna_epochs: 50
-best_model_epochs: 50
+optuna_trials: 1000
+optuna_epochs: 49
+best_model_epochs: 49
 max_input_chunk_length: 100
 devices: 2

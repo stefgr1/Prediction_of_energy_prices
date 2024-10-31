@@ -8,7 +8,7 @@
 #SBATCH --time=24:00:00               # Maximum runtime of 24 hours
 #SBATCH --output=job_output_%j.out
 #SBATCH --error=job_error_%j.err
-#SBATCH --job-name=TFT_52  # Set the job name
+#SBATCH --job-name=TFT_nol  # Set the job name
 #SBATCH --mail-user=zxoul27@student.uni-tuebingen.de  # Email notifications
 #SBATCH --mail-type=BEGIN,END,FAIL    # Email on job start, end, and fail
 

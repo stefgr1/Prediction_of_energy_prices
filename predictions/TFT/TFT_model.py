@@ -209,9 +209,9 @@ if __name__ == "__main__":
 
     # Load in the train and test data
     train_df = utils.load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/train_df.csv'))
+        os.path.join(base_path, 'data/Final_data/train_df_no_lags.csv'))
     test_df = utils.load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/test_df.csv'))
+        os.path.join(base_path, 'data/Final_data/test_df_no_lags.csv'))
 
     # Extract parameters from the configuration
     optuna_epochs = config["optuna_epochs"]
