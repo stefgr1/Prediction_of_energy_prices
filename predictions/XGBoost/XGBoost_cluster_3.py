@@ -89,8 +89,8 @@ def main():
         )
 
         # Suggest hyperparameters
-        max_depth = trial.suggest_int('max_depth', 1, 10)  # Allow deeper trees
-        learning_rate = trial.suggest_float('learning_rate', 0.01, 0.3)
+        max_depth = trial.suggest_int('max_depth', 1, 6)  # Allow deeper trees
+        learning_rate = trial.suggest_float('learning_rate', 0.005, 0.2)
         n_estimators = trial.suggest_int(
             'n_estimators', 200, 1000)  # More estimators
         input_chunk_length = trial.suggest_int('input_chunk_length', 7, 100)
@@ -101,8 +101,9 @@ def main():
 
         model = XGBModel(
             lags=input_chunk_length,
+            lags_past_covariates=[-1, -7, -30],
             output_chunk_length=1,
-            lags_future_covariates=[0],
+            lags_future_covariates=[-1, -2, -3],
             max_depth=max_depth,
             learning_rate=learning_rate,
             n_estimators=n_estimators,
@@ -115,8 +116,12 @@ def main():
             device="cuda" if torch.cuda.is_available() else "cpu"
         )
 
-        model.fit(series_train_scaled, future_covariates=future_covariates_train_scaled,
-                  verbose=False)
+        model.fit(
+            series_train_scaled,
+            past_covariates=future_covariates_train_scaled,
+            future_covariates=future_covariates_train_scaled,
+            verbose=False
+        )
         forecast_scaled = model.predict(
             n=len(series_test_scaled), future_covariates=future_covariates_test_scaled)
         forecast = scaler_series.inverse_transform(forecast_scaled)
@@ -139,7 +144,8 @@ def main():
     # Train model with best hyperparameters and TensorBoard logging
     best_model = XGBModel(
         lags=best_params['input_chunk_length'],
-        lags_future_covariates=[0],
+        lags_past_covariates=[-1, -7, -30],
+        lags_future_covariates=[-1, -2, -3],
         output_chunk_length=1,
         max_depth=best_params['max_depth'],
         learning_rate=best_params['learning_rate'],
@@ -154,6 +160,7 @@ def main():
     )
 
     best_model.fit(series_train_scaled,
+                   past_covariates=future_covariates_train_scaled,
                    future_covariates=future_covariates_train_scaled)
     forecast_scaled = best_model.predict(
         n=len(series_test_scaled), future_covariates=future_covariates_test_scaled)
