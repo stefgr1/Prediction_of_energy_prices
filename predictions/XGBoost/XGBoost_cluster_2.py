@@ -21,7 +21,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 utils = importlib.import_module('utils')
 
 # Load functions from utils file
-future_covariates_columns = utils.future_covariates_columns_2
 check_cuda_availability = utils.check_cuda_availability
 set_random_seed = utils.set_random_seed
 create_early_stopping_callback = utils.create_early_stopping_callback
@@ -69,10 +68,19 @@ def main():
     os.makedirs(tmp_dir, exist_ok=True)
 
     # Load data
-    train_df = utils.load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/train_df_no_lags.csv'))
-    test_df = utils.load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/test_df_no_lags.csv'))
+    if config["lags"] == True:
+        future_covariates_columns = utils.future_covariates_columns_2
+        train_df = utils.load_and_prepare_data(
+            os.path.join(base_path, 'data/Final_data/train_df_no_lags.csv'))
+        test_df = utils.load_and_prepare_data(
+            os.path.join(base_path, 'data/Final_data/test_df_no_lags.csv'))
+
+    else:
+        future_covariates_columns = utils.future_covariates_columns
+        train_df = utils.load_and_prepare_data(
+            os.path.join(base_path, 'data/Final_data/train_df.csv'))
+        test_df = utils.load_and_prepare_data(
+            os.path.join(base_path, 'data/Final_data/test_df.csv'))
 
     # Prepare time series
     series_train, series_test, future_covariates_train, future_covariates_test = utils.prepare_time_series(
