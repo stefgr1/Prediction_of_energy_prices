@@ -10,7 +10,7 @@ import importlib
 import yaml
 from darts import TimeSeries
 from darts.models import RNNModel
-from darts.metrics import mape, mae, rmse, mse, smape 
+from darts.metrics import mape, mae, rmse, mse, smape
 from darts.utils.likelihood_models import GaussianLikelihood
 from darts.utils.callbacks import TFMProgressBar
 
@@ -107,7 +107,7 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     """
     Optuna objective function for RNN model hyperparameter tuning.
     """
-    n_layers = trial.suggest_int('n_layers', 1, 1) 
+    n_layers = trial.suggest_int('n_layers', 1, 1)
     dropout = trial.suggest_float('dropout', 0.0, 0.5) if n_layers > 1 else 0.0
     input_chunk_length = trial.suggest_int('input_chunk_length', 5, 40)
     hidden_dim = trial.suggest_int('hidden_dim', 30, 100)
@@ -144,7 +144,7 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
             'logger': tb_logger,
             'enable_model_summary': False,
             'callbacks': [early_stop_callback, TFMProgressBar(enable_train_bar_only=True)],
-            #'gradient_clip_val': 0.5,  # Clip gradients if they exceed 0.5
+            # 'gradient_clip_val': 0.5,  # Clip gradients if they exceed 0.5
             'log_every_n_steps': 10,
         }
     )
@@ -191,7 +191,7 @@ def inspect_best_trial(study):
         "MAPE": best_trial.user_attrs.get('mape', 'N/A'),
         "MAE": best_trial.user_attrs.get('mae', 'N/A'),
         "MSE": best_trial.user_attrs.get('mse', 'N/A'),
-        "sMAPE": best_trial.user_attrs.get('smape', 'N/A') 
+        "sMAPE": best_trial.user_attrs.get('smape', 'N/A')
     }
     return metrics_dict
 
@@ -223,24 +223,23 @@ if __name__ == "__main__":
     # Create early stopping callback
     early_stop_callback = create_early_stopping_callback(patience=25)
 
-
     # Use the correct columns depending on whether lags are used
-    if config["lags"] == True: 
+    if config["lags"] == True:
         future_covariates_columns = utils.future_covariates_columns
         train_df = utils.load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/train_df.csv')
+            os.path.join(base_path, 'data/Final_data/train_df.csv')
         )
         test_df = utils.load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/test_df.csv')
+            os.path.join(base_path, 'data/Final_data/test_df.csv')
         )
 
-    else: 
+    else:
         future_covariates_columns = utils.future_covariates_columns_2
         train_df = utils.load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/train_df_no_lags.csv')
+            os.path.join(base_path, 'data/Final_data/train_df_no_lags.csv')
         )
         test_df = utils.load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/test_df_no_lags.csv')
+            os.path.join(base_path, 'data/Final_data/test_df_no_lags.csv')
         )
 
     # Use parameters loaded from config.yml
@@ -264,11 +263,11 @@ if __name__ == "__main__":
 
     # Train the best model
     best_model = train_best_model(
-        best_params, series_train_scaled, future_covariates_train_scaled, BEST_MODEL_EPOCHS, DEVICES, lag_suffix)
+        best_params, series_train_scaled, future_covariates_train_scaled, BEST_MODEL_EPOCHS, DEVICES)
 
     # Save the best model
     model_save_path = os.path.join(
-    models_dir, f'best_deep_ar_model_epochs_{BEST_MODEL_EPOCHS}{lag_suffix}.pth')
+        models_dir, f'best_deep_ar_model_epochs_{BEST_MODEL_EPOCHS}{lag_suffix}.pth')
     best_model.save(model_save_path)
     print(f"Best model saved at: {model_save_path}")
 
@@ -284,7 +283,7 @@ if __name__ == "__main__":
     # Plot and save results, and retrieve file paths
     fig = plot_forecast(series_test, forecast, title="DeepAR Model forecast")
     forecast_plot_path, forecast_csv_path, metrics_csv_path = save_results(
-    forecast, series_test_scaled, scaler_series, fig, OPTUNA_EPOCHS, models_dir, lag_suffix
+        forecast, series_test_scaled, scaler_series, fig, OPTUNA_EPOCHS, models_dir, lag_suffix
     )
 
     if platform.system() == "Darwin":  # If running on Mac
