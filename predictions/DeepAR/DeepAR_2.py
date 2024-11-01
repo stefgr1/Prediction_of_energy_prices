@@ -201,6 +201,7 @@ if __name__ == "__main__":
 
     # Load configuration parameters from the YAML file
     config = load_config()
+    lag_suffix = "_with_lags" if config["lags"] else "_no_lags"
 
     check_cuda_availability()
 
@@ -222,11 +223,25 @@ if __name__ == "__main__":
     # Create early stopping callback
     early_stop_callback = create_early_stopping_callback(patience=25)
 
-    # Load in the train and test data
-    train_df = load_and_prepare_data(os.path.join(
-        base_path, 'data/Final_data/train_df.csv'))
-    test_df = load_and_prepare_data(os.path.join(
-        base_path, 'data/Final_data/test_df.csv'))
+
+    # Use the correct columns depending on whether lags are used
+    if config["lags"] == True: 
+        future_covariates_columns = utils.future_covariates_columns
+        train_df = utils.load_and_prepare_data(
+        os.path.join(base_path, 'data/Final_data/train_df.csv')
+        )
+        test_df = utils.load_and_prepare_data(
+        os.path.join(base_path, 'data/Final_data/test_df.csv')
+        )
+
+    else: 
+        future_covariates_columns = utils.future_covariates_columns_2
+        train_df = utils.load_and_prepare_data(
+        os.path.join(base_path, 'data/Final_data/train_df_no_lags.csv')
+        )
+        test_df = utils.load_and_prepare_data(
+        os.path.join(base_path, 'data/Final_data/test_df_no_lags.csv')
+        )
 
     # Use parameters loaded from config.yml
     MAX_INPUT_CHUNK_LENGTH = config['max_input_chunk_length']
@@ -249,11 +264,11 @@ if __name__ == "__main__":
 
     # Train the best model
     best_model = train_best_model(
-        best_params, series_train_scaled, future_covariates_train_scaled, BEST_MODEL_EPOCHS, DEVICES)
+        best_params, series_train_scaled, future_covariates_train_scaled, BEST_MODEL_EPOCHS, DEVICES, lag_suffix)
 
     # Save the best model
     model_save_path = os.path.join(
-        models_dir, f'best_deep_ar_model_epochs_{BEST_MODEL_EPOCHS}.pth')
+    models_dir, f'best_deep_ar_model_epochs_{BEST_MODEL_EPOCHS}{lag_suffix}.pth')
     best_model.save(model_save_path)
     print(f"Best model saved at: {model_save_path}")
 
@@ -269,7 +284,8 @@ if __name__ == "__main__":
     # Plot and save results, and retrieve file paths
     fig = plot_forecast(series_test, forecast, title="DeepAR Model forecast")
     forecast_plot_path, forecast_csv_path, metrics_csv_path = save_results(
-        forecast, series_test_scaled, scaler_series, fig, OPTUNA_EPOCHS)
+    forecast, series_test_scaled, scaler_series, fig, OPTUNA_EPOCHS, models_dir, lag_suffix
+    )
 
     if platform.system() == "Darwin":  # If running on Mac
         # Save results directly to local directory

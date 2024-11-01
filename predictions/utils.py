@@ -124,15 +124,14 @@ def create_logger(trial_number=None, best_model=False, model_name='Model'):
     return pl_loggers.TensorBoardLogger(save_dir=log_dir, name=model_name, default_hp_metric=False)
 
 
-def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, model_name="Model"):
+def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, output_path, lag_suffix, model_name="Model"):
+
     """
     Save forecast results, error metrics, and plot to files.
     """
     test_series = scaler_series.inverse_transform(test_series)
 
-    # Use TMPDIR or a fallback directory
-    base_path = os.getenv('TMPDIR', '/tmp')
-
+    # Print metrics for logging purposes
     print('Error Metrics on Test Set:')
     print(f'  MAE: {mae(test_series, forecast):.2f}')
     print(f'  RMSE: {rmse(test_series, forecast):.2f}')
@@ -140,32 +139,33 @@ def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, model
     print(f'  MAPE: {mape(test_series, forecast):.2f}%')
     print(f'  SMAPE: {smape(test_series, forecast):.2f}%')
 
-    # Save the forecast plot and error metrics
+    # Define output paths in the temporary directory first
     forecast_plot_path = os.path.join(
-        base_path, f'predictions/{model_name}/{model_name}_forecast_epochs_{optuna_epochs}.png')
+        output_path, f'{model_name}_forecast_epochs_{optuna_epochs}{lag_suffix}.png')
     forecast_csv_path = os.path.join(
-        base_path, f'predictions/{model_name}/{model_name}_forecast_epochs_{optuna_epochs}.csv')
+        output_path, f'{model_name}_forecast_epochs_{optuna_epochs}{lag_suffix}.csv')
     metrics_csv_path = os.path.join(
-        base_path, f'predictions/{model_name}/{model_name}_metrics_epochs_{optuna_epochs}.csv')
+        output_path, f'{model_name}_metrics_epochs_{optuna_epochs}{lag_suffix}.csv')
 
     # Ensure the directory exists before saving
-    os.makedirs(os.path.dirname(forecast_plot_path), exist_ok=True)
+    os.makedirs(output_path, exist_ok=True)
 
+    # Save the plot, forecast data, and metrics
     fig.write_image(forecast_plot_path)
-    error_metrics = pd.DataFrame({'MAE': [mae(test_series, forecast)], 'MSE': [mse(test_series, forecast)], 'RMSE': [rmse(test_series, forecast)],
-                                  'MAPE': [mape(test_series, forecast)], 'SMAPE': [smape(test_series, forecast)]})
+    error_metrics = pd.DataFrame({'MAE': [mae(test_series, forecast)], 'MSE': [mse(test_series, forecast)], 
+                                  'RMSE': [rmse(test_series, forecast)], 'MAPE': [mape(test_series, forecast)], 
+                                  'SMAPE': [smape(test_series, forecast)]})
     error_metrics.to_csv(metrics_csv_path, index=False)
 
-    # Save forecast results and metrics
     forecast_df = pd.DataFrame({
         'Date': forecast.time_index,  # Add time index (dates)
         'Forecast': forecast.values().squeeze()  # Add forecasted values
     })
-    # Save both date and forecast to CSV
     forecast_df.to_csv(forecast_csv_path, index=False)
 
-    # Return paths for copying
+    # Return paths for copying or verification
     return forecast_plot_path, forecast_csv_path, metrics_csv_path
+
 
 
 def copy_results_to_home(tmp_file_paths, home_dir_path):

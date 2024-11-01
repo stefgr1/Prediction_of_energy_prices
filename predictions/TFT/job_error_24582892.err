@@ -1,0 +1,14 @@
+[I 2024-11-01 13:01:34,529] A new study created in memory with name: no-name-6133fd88-b30d-4a13-86fa-363eeeb625c8
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+SLURM auto-requeueing enabled. Setting signal handlers.
+Metric train_loss improved. New best score: 0.469
+Metric train_loss improved by 0.170 >= min_delta = 0.0. New best score: 0.299
+Metric train_loss improved by 0.111 >= min_delta = 0.0. New best score: 0.188
+Metric train_loss improved by 0.016 >= min_delta = 0.0. New best score: 0.172
+Metric train_loss improved by 0.029 >= min_delta = 0.0. New best score: 0.143
+Metric train_loss improved by 0.040 >= min_delta = 0.0. New best score: 0.103
+Metric train_loss improved by 0.013 >= min_delta = 0.0. New best score: 0.090
+Metric train_loss improved by 0.009 >= min_delta = 0.0. New best score: 0.081
+Metric train_loss improved by 0.005 >= min_delta = 0.0. New best score: 0.076

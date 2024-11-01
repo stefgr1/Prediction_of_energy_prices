@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#SBATCH --partition=gpu_8
-#SBATCH --gres=gpu:2
+#SBATCH --partition=gpu_4
+#SBATCH --gres=gpu:1
 #SBATCH --nodes=1                     # Request 1 node
 #SBATCH --cpus-per-task=6             # 6 CPU cores per task
 #SBATCH --mem=8000mb                  # 12 GB of memory

@@ -1,6 +1,0 @@
-[I 2024-10-31 23:01:43,942] A new study created in memory with name: no-name-d905b75c-2c3d-4c98-afcc-6f6c7f057660
-GPU available: False, used: False
-TPU available: False, using: 0 TPU cores
-HPU available: False, using: 0 HPUs
-SLURM auto-requeueing enabled. Setting signal handlers.
-Metric train_loss improved. New best score: 0.261
