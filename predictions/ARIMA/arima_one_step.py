@@ -32,7 +32,7 @@ future_covariates_with_lags = ['Solar_radiation (W/m2)', 'Wind_speed (m/s)',
 TARGET_COLUMN = "Day_ahead_price (€/MWh)"
 START_DATE = "2024-07-26"
 END_DATE = "2024-07-28"
-INCLUDE_LAGS = False  # Set to True if you want to include lags
+INCLUDE_LAGS = True  # Set to True if you want to include lags
 TMPDIR = os.getenv("TMPDIR", "/tmp")
 HOME_DIR = os.path.expanduser("~")
 
@@ -236,7 +236,7 @@ def copy_files_to_home_directory():
 
 def main():
     # Determine file path based on the include_lags flag
-    file_path = '../../data/Final_data/final_data_july.csv' if INCLUDE_LAGS else '../../data/Final_data/final_data_no_lags.csv'
+    file_path = '/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/data/Final_data/final_data_no_lags.csv' if not INCLUDE_LAGS else '/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/data/Final_data/final_data_july.csv'
 
     # Load and prepare data
     y, X = load_and_prepare_data(file_path, INCLUDE_LAGS)
