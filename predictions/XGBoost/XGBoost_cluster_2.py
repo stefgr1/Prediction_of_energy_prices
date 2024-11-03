@@ -184,7 +184,7 @@ def main():
 
     # Save forecast plot and metrics
     forecast_plot_path, forecast_csv_path, metrics_csv_path = utils.save_results(
-        forecast, series_test_scaled, scaler_series, fig, optuna_epochs=config["optuna_epochs"], model_name="XGBoost")
+        forecast, series_test_scaled, scaler_series, fig, optuna_epochs=config["optuna_epochs"], optuna_trials= config["optuna_trials"], model_name="XGBoost")
 
     # Copy results to the home directory, including TensorBoard logs
     final_tb_log_dir = final_tb_logger.log_dir

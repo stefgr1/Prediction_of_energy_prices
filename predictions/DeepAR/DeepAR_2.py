@@ -283,7 +283,7 @@ if __name__ == "__main__":
     # Plot and save results, and retrieve file paths
     fig = plot_forecast(series_test, forecast, title="DeepAR Model forecast")
     forecast_plot_path, forecast_csv_path, metrics_csv_path = save_results(
-        forecast, series_test_scaled, scaler_series, fig, OPTUNA_EPOCHS, models_dir, lag_suffix
+        forecast, series_test_scaled, scaler_series, fig, OPTUNA_EPOCHS, OPTUNA_TRIALS, models_dir, lag_suffix
     )
 
     if platform.system() == "Darwin":  # If running on Mac

@@ -124,7 +124,7 @@ def create_logger(trial_number=None, best_model=False, model_name='Model'):
     return pl_loggers.TensorBoardLogger(save_dir=log_dir, name=model_name, default_hp_metric=False)
 
 
-def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, output_path, lag_suffix, model_name="Model"):
+def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, optuna_trials, output_path, lag_suffix, model_name="Model"):
 
     """
     Save forecast results, error metrics, and plot to files.
@@ -141,11 +141,11 @@ def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, outpu
 
     # Define output paths in the temporary directory first
     forecast_plot_path = os.path.join(
-        output_path, f'{model_name}_forecast_epochs_{optuna_epochs}{lag_suffix}.png')
+        output_path, f'{model_name}_forecast_epochs_{optuna_epochs}_{optuna_trials}{lag_suffix}.png')
     forecast_csv_path = os.path.join(
-        output_path, f'{model_name}_forecast_epochs_{optuna_epochs}{lag_suffix}.csv')
+        output_path, f'{model_name}_forecast_epochs_{optuna_epochs}_{optuna_trials}{lag_suffix}.csv')
     metrics_csv_path = os.path.join(
-        output_path, f'{model_name}_metrics_epochs_{optuna_epochs}{lag_suffix}.csv')
+        output_path, f'{model_name}_metrics_epochs_{optuna_epochs}_{optuna_trials}{lag_suffix}.csv')
 
     # Ensure the directory exists before saving
     os.makedirs(output_path, exist_ok=True)

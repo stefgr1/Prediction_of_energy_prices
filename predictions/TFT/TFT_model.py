@@ -290,7 +290,7 @@ if __name__ == "__main__":
     fig = utils.plot_forecast(series_test, forecast,
                               title="TFT Model forecast")
     forecast_plot_path, forecast_csv_path, metrics_csv_path = utils.save_results(
-        forecast, series_test_scaled, scaler_series, fig, optuna_epochs, output_path, lag_suffix
+        forecast, series_test_scaled, scaler_series, fig, optuna_epochs, optuna_trials, output_path, lag_suffix
     )
 
     # Copy results from TMPDIR to the home directory (only for non-macOS)
