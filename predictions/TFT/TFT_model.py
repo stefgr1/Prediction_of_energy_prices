@@ -86,7 +86,8 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
         best_model.fit(series_train_scaled,
                        future_covariates=future_covariates_train_scaled, verbose=True)
         # Save the best model to the specified output path
-        model_save_path = os.path.join(output_path, f'best_tft_model_epochs_{best_model_epochs}{lag_suffix}.pth')
+        model_save_path = os.path.join(
+            output_path, f'best_tft_model_epochs_{best_model_epochs}{lag_suffix}.pth')
         best_model.save(model_save_path)
         print(f"Best model saved at: {model_save_path}")
     except RuntimeError as e:
@@ -96,7 +97,6 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
         traceback.print_exc()
 
     return best_model
-
 
 
 def objective(trial, series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices, early_stop_callback):
@@ -193,6 +193,7 @@ def inspect_best_trial(study):
     print(f"  MSE: {best_trial.user_attrs.get('mse', 'N/A')}")
     print(f"  SMAPE: {best_trial.user_attrs.get('smape', 'N/A')}")
 
+
 # Main execution block
 if __name__ == "__main__":
     # Load configuration parameters
@@ -201,38 +202,41 @@ if __name__ == "__main__":
 
     # Detect if on Mac or Linux and adjust base path and temp path accordingly
     if platform.system() == "Darwin":  # macOS
-        base_path = os.path.expanduser("~/Documents/Masterarbeit/Prediction_of_energy_prices/")
+        base_path = os.path.expanduser(
+            "~/Documents/Masterarbeit/Prediction_of_energy_prices/")
         output_path = os.path.join(base_path, 'predictions/TFT/')
     else:  # Assuming Linux for the cluster
         base_path = os.getenv('HOME') + '/Prediction_of_energy_prices/'
-        output_path = os.path.join(os.getenv('TMPDIR', '/tmp'), 'predictions/TFT/')  # Temporary save location
+        # Temporary save location
+        output_path = os.path.join(
+            os.getenv('TMPDIR', '/tmp'), 'predictions/TFT/')
 
     # Ensure output path is created in TMPDIR on Linux or base path on macOS
     os.makedirs(output_path, exist_ok=True)
 
     set_random_seed(42)
 
-    early_stop_callback = EarlyStopping(monitor='train_loss', patience=30, verbose=True)
+    early_stop_callback = EarlyStopping(
+        monitor='train_loss', patience=30, verbose=True)
 
     # Use the correct columns depending on whether lags are used
-    if config["lags"] == True: 
+    if config["lags"] == True:
         future_covariates_columns = utils.future_covariates_columns
         train_df = utils.load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/train_df.csv')
+            os.path.join(base_path, 'data/Final_data/train_df.csv')
         )
         test_df = utils.load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/test_df.csv')
+            os.path.join(base_path, 'data/Final_data/test_df.csv')
         )
 
-    else: 
+    else:
         future_covariates_columns = utils.future_covariates_columns_2
         train_df = utils.load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/train_df_no_lags.csv')
+            os.path.join(base_path, 'data/Final_data/train_df_no_lags.csv')
         )
         test_df = utils.load_and_prepare_data(
-        os.path.join(base_path, 'data/Final_data/test_df_no_lags.csv')
+            os.path.join(base_path, 'data/Final_data/test_df_no_lags.csv')
         )
-
 
     # Extract parameters from the configuration
     optuna_epochs = config["optuna_epochs"]
@@ -283,19 +287,23 @@ if __name__ == "__main__":
     inspect_best_trial(study)
 
     # Plot and save results
-    fig = utils.plot_forecast(series_test, forecast, title="TFT Model forecast")
+    fig = utils.plot_forecast(series_test, forecast,
+                              title="TFT Model forecast")
     forecast_plot_path, forecast_csv_path, metrics_csv_path = utils.save_results(
         forecast, series_test_scaled, scaler_series, fig, optuna_epochs, output_path, lag_suffix
     )
 
     # Copy results from TMPDIR to the home directory (only for non-macOS)
     if platform.system() != "Darwin":
-        tmp_file_paths = [forecast_plot_path, forecast_csv_path, metrics_csv_path]
+        tmp_file_paths = [forecast_plot_path,
+                          forecast_csv_path, metrics_csv_path]
         try:
-            copy_results_to_home(tmp_file_paths, os.path.join(base_path, 'predictions/TFT/'))
+            copy_results_to_home(tmp_file_paths, os.path.join(
+                base_path, 'predictions/TFT/'))
             print(f"Results copied to {base_path}/predictions/TFT/")
         except Exception as e:
-            print(f"Failed to copy results to {base_path}/predictions/TFT/: {e}")
+            print(
+                f"Failed to copy results to {base_path}/predictions/TFT/: {e}")
 
     # Print best hyperparameters at the end
     print('Best hyperparameters:')
