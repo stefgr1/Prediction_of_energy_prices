@@ -1,4 +1,3 @@
-*.csv
 *.yaml
 *.h
 *.ckpt
@@ -9,3 +8,5 @@
 *.jpg
 *.pt
 *.pth
+data/
+data_retrieval/
