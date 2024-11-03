@@ -1,0 +1,53 @@
+GpuFreq=control_disabled
+[I 2024-11-03 15:27:29,592] A new study created in memory with name: no-name-99b8ccb0-4c72-4d23-986e-51f8640fdfa4
+/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/torch/random.py:167: UserWarning: CUDA reports that you have 2 available devices, and you have used fork_rng without explicitly specifying which devices are being used. For safety, we initialize *every* CUDA device by default, which can be quite slow if you have a lot of CUDAs. If you know that you are only making use of a few CUDA devices, set the environment variable CUDA_VISIBLE_DEVICES or the 'devices' keyword argument of fork_rng with the set of devices you are actually using. For example, if you are using CPU only, set device.upper()_VISIBLE_DEVICES= or devices=[]; if you are using device 0 only, set CUDA_VISIBLE_DEVICES=0 or devices=[0].  To initialize all devices and suppress this warning, set the 'devices' keyword argument to `range(torch.cuda.device_count())`.
+  warnings.warn(message)
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/1
+----------------------------------------------------------------------------------------------------
+distributed_backend=nccl
+All distributed processes registered. Starting with 1 processes
+----------------------------------------------------------------------------------------------------
+
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1]
+SLURM auto-requeueing enabled. Setting signal handlers.
+Metric train_loss improved. New best score: 0.761
+Metric train_loss improved by 0.147 >= min_delta = 0.0. New best score: 0.613
+Metric train_loss improved by 0.204 >= min_delta = 0.0. New best score: 0.410
+Metric train_loss improved by 0.014 >= min_delta = 0.0. New best score: 0.396
+Metric train_loss improved by 0.039 >= min_delta = 0.0. New best score: 0.357
+Metric train_loss improved by 0.065 >= min_delta = 0.0. New best score: 0.292
+Metric train_loss improved by 0.007 >= min_delta = 0.0. New best score: 0.285
+Metric train_loss improved by 0.076 >= min_delta = 0.0. New best score: 0.210
+Metric train_loss improved by 0.023 >= min_delta = 0.0. New best score: 0.187
+Metric train_loss improved by 0.057 >= min_delta = 0.0. New best score: 0.130
+Metric train_loss improved by 0.019 >= min_delta = 0.0. New best score: 0.110
+Metric train_loss improved by 0.014 >= min_delta = 0.0. New best score: 0.096
+Metric train_loss improved by 0.008 >= min_delta = 0.0. New best score: 0.088
+Metric train_loss improved by 0.024 >= min_delta = 0.0. New best score: 0.064
+Metric train_loss improved by 0.003 >= min_delta = 0.0. New best score: 0.061
+Metric train_loss improved by 0.007 >= min_delta = 0.0. New best score: 0.054
+Metric train_loss improved by 0.015 >= min_delta = 0.0. New best score: 0.039
+Metric train_loss improved by 0.005 >= min_delta = 0.0. New best score: 0.033
+Metric train_loss improved by 0.005 >= min_delta = 0.0. New best score: 0.028
+Metric train_loss improved by 0.001 >= min_delta = 0.0. New best score: 0.028
+Metric train_loss improved by 0.003 >= min_delta = 0.0. New best score: 0.024
+`Trainer.fit` stopped: `max_epochs=100` reached.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1]
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-11-03 15:40:04,929] Trial 0 finished with value: 0.09353659301996231 and parameters: {'hidden_dim': 497, 'n_layers': 2, 'dropout': 0.23995928336421268, 'input_chunk_length': 62, 'learning_rate': 0.0025968504320364825, 'batch_size': 64}. Best is trial 0 with value: 0.09353659301996231.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1]
+SLURM auto-requeueing enabled. Setting signal handlers.
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** JOB 24600673 ON uc2n507 CANCELLED AT 2024-11-03T15:40:46 ***
+slurmstepd: error: *** STEP 24600673.0 ON uc2n507 CANCELLED AT 2024-11-03T15:40:46 ***
+[rank: 0] Received SIGTERM: 15
+Bypassing SIGTERM: 15

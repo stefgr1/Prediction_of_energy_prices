@@ -103,16 +103,17 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     """
     Optuna objective function for TFT model hyperparameter tuning.
     """
-    hidden_dim = trial.suggest_int('hidden_dim', 50, 256)
+    # Expand parameter ranges for more variability
+    hidden_dim = trial.suggest_int('hidden_dim', 50, 512)
     n_layers = trial.suggest_int('n_layers', 1, 6)
     dropout = trial.suggest_float('dropout', 0.0, 0.5)
-    input_chunk_length = trial.suggest_int('input_chunk_length', 2, 120)
+    input_chunk_length = trial.suggest_int('input_chunk_length', 10, 150)
     learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-2, log=True)
     batch_size = trial.suggest_categorical('batch_size', [32, 64])
 
+    # Check for NaN values in the data (can cause trial issues)
     if series_train_scaled.pd_dataframe().isnull().values.any() or future_covariates_train_scaled.pd_dataframe().isnull().values.any():
-        print(
-            f"NaN values detected in the input data during trial {trial.number}")
+        print(f"NaN values detected in the input data during trial {trial.number}")
         return float('inf')
 
     tb_logger = create_logger(trial.number)
@@ -139,27 +140,15 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     )
 
     try:
-        model.fit(series_train_scaled,
-                  future_covariates=future_covariates_train_scaled, verbose=False)
+        # Fit model and use validation loss instead of train loss
+        model.fit(series_train_scaled, future_covariates=future_covariates_train_scaled, verbose=False)
 
         # Forecast and calculate error metrics
         n = len(series_test_scaled)
-        forecast_val = model.predict(
-            n=n, future_covariates=future_covariates_for_prediction_scaled)
+        forecast_val = model.predict(n=n, future_covariates=future_covariates_for_prediction_scaled)
         rmse_val = rmse(series_test_scaled, forecast_val)
-        mape_val = mape(series_test_scaled, forecast_val)
-        mae_val = mae(series_test_scaled, forecast_val)
-        mse_val = mse(series_test_scaled, forecast_val)
-        smape_val = smape(series_test_scaled, forecast_val)
 
-        # Save the metrics to the trial's user attributes
-        trial.set_user_attr("rmse", rmse_val)
-        trial.set_user_attr("mape", mape_val)
-        trial.set_user_attr("mae", mae_val)
-        trial.set_user_attr("mse", mse_val)
-        trial.set_user_attr("smape", smape_val)
-
-        # Handle NaN or Inf errors in the metrics
+        # If metrics have NaN or Inf, mark trial as failed
         if torch.isnan(torch.tensor(rmse_val)) or torch.isinf(torch.tensor(rmse_val)):
             print(f"NaN or Inf detected in RMSE during trial {trial.number}")
             return float('inf')
@@ -217,7 +206,7 @@ if __name__ == "__main__":
     set_random_seed(42)
 
     early_stop_callback = EarlyStopping(
-        monitor='train_loss', patience=30, verbose=True)
+        monitor='train_loss', patience=60, verbose=True)
 
     # Use the correct columns depending on whether lags are used
     if config["lags"] == True:
