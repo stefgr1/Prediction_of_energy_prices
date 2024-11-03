@@ -54,6 +54,8 @@ def main():
     # Load configuration parameters
     config = load_config()
 
+    lag_suffix = "_with_lags" if config["lags"] else "_no_lags"
+
     # Detect if on Mac or Linux and adjust base path accordingly
     if platform.system() == "Darwin":  # macOS
         base_path = os.path.expanduser(
@@ -97,14 +99,14 @@ def main():
         )
 
         # Suggest hyperparameters
-        max_depth = trial.suggest_int('max_depth', 1, 10)  # Allow deeper trees
-        learning_rate = trial.suggest_float('learning_rate', 0.005, 0.025)
+        max_depth = trial.suggest_int('max_depth', 1, 20)  # Allow deeper trees
+        learning_rate = trial.suggest_float('learning_rate', 0.0001, 0.01)
         n_estimators = trial.suggest_int(
-            'n_estimators', 400, 1500)  # More estimators
-        input_chunk_length = trial.suggest_int('input_chunk_length', 30, 150)
+            'n_estimators', 400, 3000)  # More estimators
+        input_chunk_length = trial.suggest_int('input_chunk_length', 30, 200)
         min_child_weight = trial.suggest_float('min_child_weight', 1, 6)
-        subsample = trial.suggest_float('subsample', 0.6, 1.0)
-        colsample_bytree = trial.suggest_float('colsample_bytree', 0.6, 1.0)
+        subsample = trial.suggest_float('subsample', 0.3, 1.0)
+        colsample_bytree = trial.suggest_float('colsample_bytree', 0.3, 1.0)
         gamma = trial.suggest_float('gamma', 0, 5)
 
         model = XGBModel(
@@ -184,7 +186,7 @@ def main():
 
     # Save forecast plot and metrics
     forecast_plot_path, forecast_csv_path, metrics_csv_path = utils.save_results(
-        forecast, series_test_scaled, scaler_series, fig, optuna_epochs=config["optuna_epochs"], optuna_trials= config["optuna_trials"], model_name="XGBoost")
+        forecast, series_test_scaled, scaler_series, fig, optuna_epochs=config["optuna_epochs"], optuna_trials=config["optuna_trials"], output_path=home_results_dir, lag_suffix=lag_suffix, model_name="XGBoost")
 
     # Copy results to the home directory, including TensorBoard logs
     final_tb_log_dir = final_tb_logger.log_dir

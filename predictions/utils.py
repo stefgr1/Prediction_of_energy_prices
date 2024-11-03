@@ -125,7 +125,6 @@ def create_logger(trial_number=None, best_model=False, model_name='Model'):
 
 
 def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, optuna_trials, output_path, lag_suffix, model_name="Model"):
-
     """
     Save forecast results, error metrics, and plot to files.
     """
@@ -152,8 +151,8 @@ def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, optun
 
     # Save the plot, forecast data, and metrics
     fig.write_image(forecast_plot_path)
-    error_metrics = pd.DataFrame({'MAE': [mae(test_series, forecast)], 'MSE': [mse(test_series, forecast)], 
-                                  'RMSE': [rmse(test_series, forecast)], 'MAPE': [mape(test_series, forecast)], 
+    error_metrics = pd.DataFrame({'MAE': [mae(test_series, forecast)], 'MSE': [mse(test_series, forecast)],
+                                  'RMSE': [rmse(test_series, forecast)], 'MAPE': [mape(test_series, forecast)],
                                   'SMAPE': [smape(test_series, forecast)]})
     error_metrics.to_csv(metrics_csv_path, index=False)
 
@@ -167,21 +166,26 @@ def save_results(forecast, test_series, scaler_series, fig, optuna_epochs, optun
     return forecast_plot_path, forecast_csv_path, metrics_csv_path
 
 
-
 def copy_results_to_home(tmp_file_paths, home_dir_path):
     """
     Copy files and directories from TMPDIR to the home directory.
+    Skips copying if the source and destination are the same.
     """
     for tmp_file_path in tmp_file_paths:
         home_file_path = os.path.join(
             home_dir_path, os.path.basename(tmp_file_path))
 
-        # Check if it is a file or a directory
+        # Skip if the source and destination are the same
+        if os.path.abspath(tmp_file_path) == os.path.abspath(home_file_path):
+            print(
+                f"Skipped copying {tmp_file_path} as source and destination are the same")
+            continue
+
+        # Check if it is a file or a directory and copy accordingly
         if os.path.isfile(tmp_file_path):
             shutil.copy(tmp_file_path, home_file_path)
             print(f"Copied {tmp_file_path} to {home_file_path}")
         elif os.path.isdir(tmp_file_path):
-            # Use copytree for directories
             shutil.copytree(tmp_file_path, home_file_path, dirs_exist_ok=True)
             print(f"Copied directory {tmp_file_path} to {home_file_path}")
         else:
