@@ -13,6 +13,7 @@ from darts.models import RNNModel
 from darts.metrics import mape, mae, rmse, mse, smape
 from darts.utils.likelihood_models import GaussianLikelihood
 from darts.utils.callbacks import TFMProgressBar
+import yaml
 
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -196,6 +197,27 @@ def inspect_best_trial(study):
     return metrics_dict
 
 
+
+# Function to save best hyperparameters to TMPDIR and copy to home directory
+def save_best_hyperparameters(best_params, optuna_trials, best_model_epochs, lag_suffix):
+    tmp_dir = os.getenv('TMPDIR', '/tmp')
+    hyperparams_path = os.path.join(tmp_dir, f"best_hyperparameters_{optuna_trials}_{best_model_epochs}{lag_suffix}.yml")
+    
+    # Save best parameters in TMPDIR
+    with open(hyperparams_path, 'w') as yaml_file:
+        yaml.dump(best_params, yaml_file)
+    print(f"Best hyperparameters saved at: {hyperparams_path}")
+    
+    # Define home directory for results and ensure it exists
+    home_hyperparams_dir = os.path.join(base_path, 'predictions/DeepAR/')
+    os.makedirs(home_hyperparams_dir, exist_ok=True)
+    
+    # Copy YAML file to home directory
+    home_hyperparams_path = os.path.join(home_hyperparams_dir, os.path.basename(hyperparams_path))
+    shutil.copy(hyperparams_path, home_hyperparams_path)
+    print(f"Hyperparameters file copied to {home_hyperparams_path}")
+
+
 # Main execution block
 if __name__ == "__main__":
 
@@ -267,9 +289,10 @@ if __name__ == "__main__":
 
     # Save the best model
     model_save_path = os.path.join(
-        models_dir, f'best_deep_ar_model_epochs_{BEST_MODEL_EPOCHS}{lag_suffix}.pth')
+        models_dir, f'best_deep_ar_model_epochs_{BEST_MODEL_EPOCHS}_{OPTUNA_TRIALS}{lag_suffix}.pth')
     best_model.save(model_save_path)
     print(f"Best model saved at: {model_save_path}")
+
 
     # Make predictions
     n = len(series_test_scaled)
@@ -286,37 +309,33 @@ if __name__ == "__main__":
         forecast, series_test_scaled, scaler_series, fig, OPTUNA_EPOCHS, OPTUNA_TRIALS, models_dir, lag_suffix
     )
 
-    if platform.system() == "Darwin":  # If running on Mac
-        # Save results directly to local directory
+    # Save best hyperparameters and copy to home directory
+    save_best_hyperparameters(best_params, OPTUNA_TRIALS, BEST_MODEL_EPOCHS, lag_suffix)
+
+    if platform.system() == "Darwin":
+        # If on macOS, copy files directly to the home directory
         home_results_dir = os.path.join(base_path, 'predictions/DeepAR/')
         os.makedirs(home_results_dir, exist_ok=True)
 
-        # Only copy the file if the destination is different from the source
-        if model_save_path != os.path.join(home_results_dir, os.path.basename(model_save_path)):
-            shutil.copy(model_save_path, home_results_dir)
-
-        # Copy generated files to home directory
+        # Copy model and results files to home directory
+        shutil.copy(model_save_path, home_results_dir)
         shutil.copy(forecast_plot_path, home_results_dir)
         shutil.copy(forecast_csv_path, home_results_dir)
         shutil.copy(metrics_csv_path, home_results_dir)
-
         print(f"Results copied to {home_results_dir}")
 
-    else:  # Linux or cluster
-        # Copy results from TMPDIR to the home directory
+    else:  # On Linux or cluster
+        # Copy results and model from TMPDIR to home directory
         home_results_dir = os.path.join(base_path, 'predictions/DeepAR/')
         os.makedirs(home_results_dir, exist_ok=True)
 
-        # Copy generated files to home directory
         copy_results_to_home(
             [forecast_plot_path, forecast_csv_path, metrics_csv_path], home_results_dir)
-        print(f"Results copied to {home_results_dir}")
-
-        # Copy the model from TMPDIR to the home directory
         shutil.copy(model_save_path, home_results_dir)
-        print(f"Model copied to {home_results_dir}")
+        print(f"Model and results copied to {home_results_dir}")
 
     # Print best hyperparameters at the end
     print('Best hyperparameters:')
     for key, value in best_params.items():
         print(f'  {key}: {value}')
+
