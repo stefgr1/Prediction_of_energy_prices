@@ -16,4 +16,4 @@
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 
 # Run your Python script
-srun /pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/bin/python XGBoost_cluster_2.py
+srun /pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/bin/python XGBoost.py
