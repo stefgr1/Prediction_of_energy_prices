@@ -99,15 +99,15 @@ def main():
         )
 
         # Suggest hyperparameters
-        max_depth = trial.suggest_int('max_depth', 1, 20)
-        learning_rate = trial.suggest_float('learning_rate', 0.0001, 0.01)
+        max_depth = trial.suggest_int('max_depth', 5, 25)
+        learning_rate = trial.suggest_float('learning_rate', 0.001, 0.01)
         n_estimators = trial.suggest_int(
-            'n_estimators', 400, 3000)
+            'n_estimators', 400, 3500)
         input_chunk_length = trial.suggest_int('input_chunk_length', 30, 200)
-        min_child_weight = trial.suggest_float('min_child_weight', 1, 6)
+        min_child_weight = trial.suggest_float('min_child_weight', 2, 6)
         subsample = trial.suggest_float('subsample', 0.3, 1.0)
         colsample_bytree = trial.suggest_float('colsample_bytree', 0.3, 1.0)
-        gamma = trial.suggest_float('gamma', 0, 5)
+        gamma = trial.suggest_float('gamma', 0, 2)
 
         model = XGBModel(
             lags=input_chunk_length,
@@ -149,7 +149,7 @@ def main():
 
     # Save the best hyperparameters to a YAML file
     best_params_path = os.path.join(
-        home_results_dir, f'best_hyperparameters_{config["optuna_epochs"]}_{config["optuna_trials"]}.yml')
+        home_results_dir, f'best_hyperparameters_{config["optuna_epochs"]}_{config["optuna_trials"]}_{lag_suffix}.yml')
     with open(best_params_path, 'w') as yaml_file:
         yaml.dump(best_params, yaml_file)
 

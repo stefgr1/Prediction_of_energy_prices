@@ -1,4 +1,4 @@
-optuna_trials: 100      # trials for hyperparameter tuning
+optuna_trials: 500      # trials for hyperparameter tuning
 optuna_epochs: 250       # Number epochs for fitting per trial
 best_model_epochs: 250   # Final model training epochs
 n_jobs: 6                # Number of parallel Optuna trials
