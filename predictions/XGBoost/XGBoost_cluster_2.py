@@ -99,10 +99,10 @@ def main():
         )
 
         # Suggest hyperparameters
-        max_depth = trial.suggest_int('max_depth', 1, 20)  # Allow deeper trees
+        max_depth = trial.suggest_int('max_depth', 1, 20)
         learning_rate = trial.suggest_float('learning_rate', 0.0001, 0.01)
         n_estimators = trial.suggest_int(
-            'n_estimators', 400, 3000)  # More estimators
+            'n_estimators', 400, 3000)
         input_chunk_length = trial.suggest_int('input_chunk_length', 30, 200)
         min_child_weight = trial.suggest_float('min_child_weight', 1, 6)
         subsample = trial.suggest_float('subsample', 0.3, 1.0)
@@ -149,7 +149,7 @@ def main():
 
     # Save the best hyperparameters to a YAML file
     best_params_path = os.path.join(
-        home_results_dir, f'best_hyperparameters_{config["optuna_epochs"]}.yml')
+        home_results_dir, f'best_hyperparameters_{config["optuna_epochs"]}_{config["optuna_trials"]}.yml')
     with open(best_params_path, 'w') as yaml_file:
         yaml.dump(best_params, yaml_file)
 
