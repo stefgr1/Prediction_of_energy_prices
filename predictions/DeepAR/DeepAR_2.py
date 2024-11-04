@@ -111,13 +111,13 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     n_layers = trial.suggest_int('n_layers', 1, 2)
     dropout = trial.suggest_float('dropout', 0.0, 0.5) if n_layers > 1 else 0.0
     input_chunk_length = trial.suggest_int('input_chunk_length', 5, 80)
-    hidden_dim = trial.suggest_int('hidden_dim', 30, 100)
-    learning_rate = trial.suggest_float('learning_rate', 1e-7, 1e-3, log=True)
-    batch_size = trial.suggest_categorical('batch_size', [16, 32, 64])
+    hidden_dim = trial.suggest_int('hidden_dim', 50, 100)
+    learning_rate = trial.suggest_float('learning_rate', 1e-8, 1e-5, log=True)
+    batch_size = trial.suggest_categorical('batch_size', [16])
 
     # Ensure training_length is larger than input_chunk_length but never larger than 500
     training_length = trial.suggest_int(
-        'training_length', input_chunk_length + 1, 200)
+        'training_length', input_chunk_length + 1, 120)
 
     # Create a new logger for each trial
     tb_logger = create_logger(trial.number, model_name='DeepAR')
@@ -145,7 +145,6 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
             'logger': tb_logger,
             'enable_model_summary': False,
             'callbacks': [early_stop_callback, TFMProgressBar(enable_train_bar_only=True)],
-            # 'gradient_clip_val': 0.5,  # Clip gradients if they exceed 0.5
             'log_every_n_steps': 10,
         }
     )
@@ -243,7 +242,7 @@ if __name__ == "__main__":
     set_random_seed(42)
 
     # Create early stopping callback
-    early_stop_callback = create_early_stopping_callback(patience=60)
+    early_stop_callback = create_early_stopping_callback(patience=150)
 
     # Use the correct columns depending on whether lags are used
     if config["lags"] == True:
