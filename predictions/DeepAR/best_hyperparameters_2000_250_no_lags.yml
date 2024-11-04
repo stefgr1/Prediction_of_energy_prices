@@ -1,0 +1,6 @@
+batch_size: 16
+hidden_dim: 97
+input_chunk_length: 76
+learning_rate: 1.5187680576670716e-07
+n_layers: 1
+training_length: 118
