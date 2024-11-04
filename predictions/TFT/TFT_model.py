@@ -58,7 +58,7 @@ def load_config(config_path=None):
     return config
 
 
-def train_best_model(best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs, devices, output_path, lag_suffix):
+def train_best_model(best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs, devices, output_path, lag_suffix, optuna_trials):
     tb_logger = create_logger(best_model=True)
     dropout = best_params.get('dropout', 0.0)
 
@@ -87,7 +87,7 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
                        future_covariates=future_covariates_train_scaled, verbose=True)
         # Save the best model to the specified output path
         model_save_path = os.path.join(
-            output_path, f'best_tft_model_epochs_{best_model_epochs}{lag_suffix}.pth')
+            output_path, f'best_tft_model_epochs_{best_model_epochs}_{optuna_trials}{lag_suffix}.pth')
         best_model.save(model_save_path)
         print(f"Best model saved at: {model_save_path}")
     except RuntimeError as e:
@@ -100,21 +100,13 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
 
 
 def objective(trial, series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_epochs, devices, early_stop_callback):
-    """
-    Optuna objective function for TFT model hyperparameter tuning.
-    """
-    # Expand parameter ranges for more variability
+    # Define hyperparameters
     hidden_dim = trial.suggest_int('hidden_dim', 50, 512)
     n_layers = trial.suggest_int('n_layers', 1, 6)
     dropout = trial.suggest_float('dropout', 0.0, 0.5)
     input_chunk_length = trial.suggest_int('input_chunk_length', 10, 150)
     learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-2, log=True)
     batch_size = trial.suggest_categorical('batch_size', [32, 64])
-
-    # Check for NaN values in the data (can cause trial issues)
-    if series_train_scaled.pd_dataframe().isnull().values.any() or future_covariates_train_scaled.pd_dataframe().isnull().values.any():
-        print(f"NaN values detected in the input data during trial {trial.number}")
-        return float('inf')
 
     tb_logger = create_logger(trial.number)
 
@@ -140,13 +132,29 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     )
 
     try:
-        # Fit model and use validation loss instead of train loss
+        # Fit model
         model.fit(series_train_scaled, future_covariates=future_covariates_train_scaled, verbose=False)
 
         # Forecast and calculate error metrics
         n = len(series_test_scaled)
         forecast_val = model.predict(n=n, future_covariates=future_covariates_for_prediction_scaled)
+
+        # Calculate error metrics
         rmse_val = rmse(series_test_scaled, forecast_val)
+        mape_val = mape(series_test_scaled, forecast_val)
+        mae_val = mae(series_test_scaled, forecast_val)
+        mse_val = mse(series_test_scaled, forecast_val)
+        smape_val = smape(series_test_scaled, forecast_val)
+
+        # Save metrics in user attributes for later retrieval
+        trial.set_user_attr("rmse", rmse_val)
+        trial.set_user_attr("mape", mape_val)
+        trial.set_user_attr("mae", mae_val)
+        trial.set_user_attr("mse", mse_val)
+        trial.set_user_attr("smape", smape_val)
+
+        # Print metrics for each trial
+        print(f"Trial {trial.number} - RMSE: {rmse_val}, MAPE: {mape_val}, MAE: {mae_val}, MSE: {mse_val}, SMAPE: {smape_val}")
 
         # If metrics have NaN or Inf, mark trial as failed
         if torch.isnan(torch.tensor(rmse_val)) or torch.isinf(torch.tensor(rmse_val)):
@@ -159,6 +167,7 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
         print(f'Exception during model training: {e}')
         traceback.print_exc()
         return float('inf')
+
 
 
 def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, devices, early_stop_callback):
@@ -181,6 +190,7 @@ def inspect_best_trial(study):
     print(f"  MAE: {best_trial.user_attrs.get('mae', 'N/A')}")
     print(f"  MSE: {best_trial.user_attrs.get('mse', 'N/A')}")
     print(f"  SMAPE: {best_trial.user_attrs.get('smape', 'N/A')}")
+
 
 
 # Main execution block
@@ -263,7 +273,7 @@ if __name__ == "__main__":
 
     # Train the best model
     best_model = train_best_model(
-        best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs, devices, output_path, lag_suffix
+        best_params, series_train_scaled, future_covariates_train_scaled, best_model_epochs, devices, output_path, lag_suffix, optuna_trials
     )
 
     # Make predictions

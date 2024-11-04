@@ -6,7 +6,7 @@
 #SBATCH --nodes=1                     # Request 1 node
 #SBATCH --cpus-per-task=6             # 6 CPU cores per task
 #SBATCH --mem=16GB                  # 12 GB of memory
-#SBATCH --time=48:00:00             
+#SBATCH --time=10:00:00             
 #SBATCH --output=job_output_%j.out
 #SBATCH --error=job_error_%j.err    
 #SBATCH --mail-user=zxoul27@student.uni-tuebingen.de  # Email notifications

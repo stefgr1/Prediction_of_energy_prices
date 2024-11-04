@@ -221,7 +221,7 @@ if __name__ == "__main__":
     set_random_seed(42)
 
     # Create early stopping callback
-    early_stop_callback = create_early_stopping_callback(patience=25)
+    early_stop_callback = create_early_stopping_callback(patience=60)
 
     # Use the correct columns depending on whether lags are used
     if config["lags"] == True:

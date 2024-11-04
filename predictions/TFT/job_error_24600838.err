@@ -1,0 +1,133 @@
+GpuFreq=control_disabled
+[I 2024-11-04 09:36:12,714] A new study created in memory with name: no-name-0115f02f-41f2-4cdc-92fa-816c4f3fa649
+/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/torch/random.py:167: UserWarning: CUDA reports that you have 4 available devices, and you have used fork_rng without explicitly specifying which devices are being used. For safety, we initialize *every* CUDA device by default, which can be quite slow if you have a lot of CUDAs. If you know that you are only making use of a few CUDA devices, set the environment variable CUDA_VISIBLE_DEVICES or the 'devices' keyword argument of fork_rng with the set of devices you are actually using. For example, if you are using CPU only, set device.upper()_VISIBLE_DEVICES= or devices=[]; if you are using device 0 only, set CUDA_VISIBLE_DEVICES=0 or devices=[0].  To initialize all devices and suppress this warning, set the 'devices' keyword argument to `range(torch.cuda.device_count())`.
+  warnings.warn(message)
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/1
+----------------------------------------------------------------------------------------------------
+distributed_backend=nccl
+All distributed processes registered. Starting with 1 processes
+----------------------------------------------------------------------------------------------------
+
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+Metric train_loss improved. New best score: 0.466
+Metric train_loss improved by 0.106 >= min_delta = 0.0. New best score: 0.361
+Metric train_loss improved by 0.113 >= min_delta = 0.0. New best score: 0.248
+Metric train_loss improved by 0.118 >= min_delta = 0.0. New best score: 0.130
+Metric train_loss improved by 0.018 >= min_delta = 0.0. New best score: 0.112
+Metric train_loss improved by 0.004 >= min_delta = 0.0. New best score: 0.108
+Metric train_loss improved by 0.043 >= min_delta = 0.0. New best score: 0.065
+Metric train_loss improved by 0.009 >= min_delta = 0.0. New best score: 0.056
+Metric train_loss improved by 0.007 >= min_delta = 0.0. New best score: 0.050
+Metric train_loss improved by 0.008 >= min_delta = 0.0. New best score: 0.042
+`Trainer.fit` stopped: `max_epochs=50` reached.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-11-04 09:39:43,124] Trial 0 finished with value: 0.11822180449962616 and parameters: {'hidden_dim': 171, 'n_layers': 3, 'dropout': 0.23216964816967928, 'input_chunk_length': 81, 'learning_rate': 0.0023786349403751715, 'batch_size': 32}. Best is trial 0 with value: 0.11822180449962616.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+`Trainer.fit` stopped: `max_epochs=50` reached.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-11-04 09:41:38,835] Trial 1 finished with value: 0.1415281444787979 and parameters: {'hidden_dim': 433, 'n_layers': 1, 'dropout': 0.22504994444530824, 'input_chunk_length': 23, 'learning_rate': 1.611182783230905e-05, 'batch_size': 64}. Best is trial 0 with value: 0.11822180449962616.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 60 records. Best score: 0.042. Signaling Trainer to stop.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-11-04 09:42:24,990] Trial 2 finished with value: 0.23786546289920807 and parameters: {'hidden_dim': 141, 'n_layers': 3, 'dropout': 0.28603968718795025, 'input_chunk_length': 112, 'learning_rate': 0.00021080705768845666, 'batch_size': 32}. Best is trial 0 with value: 0.11822180449962616.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 61 records. Best score: 0.042. Signaling Trainer to stop.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-11-04 09:42:41,106] Trial 3 finished with value: 0.34662044048309326 and parameters: {'hidden_dim': 373, 'n_layers': 1, 'dropout': 0.14164817279656816, 'input_chunk_length': 14, 'learning_rate': 9.463563249004004e-05, 'batch_size': 64}. Best is trial 0 with value: 0.11822180449962616.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 62 records. Best score: 0.042. Signaling Trainer to stop.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-11-04 09:43:03,282] Trial 4 finished with value: 0.4197902977466583 and parameters: {'hidden_dim': 416, 'n_layers': 2, 'dropout': 0.02747888441647911, 'input_chunk_length': 107, 'learning_rate': 0.0007075364869318332, 'batch_size': 64}. Best is trial 0 with value: 0.11822180449962616.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 63 records. Best score: 0.042. Signaling Trainer to stop.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-11-04 09:43:21,391] Trial 5 finished with value: 0.5119161605834961 and parameters: {'hidden_dim': 296, 'n_layers': 1, 'dropout': 0.45880119683485227, 'input_chunk_length': 69, 'learning_rate': 1.3961379798882803e-05, 'batch_size': 64}. Best is trial 0 with value: 0.11822180449962616.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 64 records. Best score: 0.042. Signaling Trainer to stop.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-11-04 09:43:37,453] Trial 6 finished with value: 0.4274318218231201 and parameters: {'hidden_dim': 116, 'n_layers': 6, 'dropout': 0.4773188356860286, 'input_chunk_length': 54, 'learning_rate': 0.00011030605596936148, 'batch_size': 64}. Best is trial 0 with value: 0.11822180449962616.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 65 records. Best score: 0.042. Signaling Trainer to stop.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-11-04 09:43:56,564] Trial 7 finished with value: 0.432779461145401 and parameters: {'hidden_dim': 371, 'n_layers': 1, 'dropout': 0.3705963392496698, 'input_chunk_length': 62, 'learning_rate': 3.440648677404948e-05, 'batch_size': 64}. Best is trial 0 with value: 0.11822180449962616.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+Monitored metric train_loss did not improve in the last 66 records. Best score: 0.042. Signaling Trainer to stop.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.
+[I 2024-11-04 09:44:19,475] Trial 8 finished with value: 0.5323556661605835 and parameters: {'hidden_dim': 373, 'n_layers': 2, 'dropout': 0.4850324685248351, 'input_chunk_length': 123, 'learning_rate': 0.0005529843532544147, 'batch_size': 64}. Best is trial 0 with value: 0.11822180449962616.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+SLURM auto-requeueing enabled. Setting signal handlers.

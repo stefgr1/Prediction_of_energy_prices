@@ -32,7 +32,7 @@ future_covariates_with_lags = ['Solar_radiation (W/m2)', 'Wind_speed (m/s)',
 TARGET_COLUMN = "Day_ahead_price (€/MWh)"
 START_DATE = "2022-07-01"
 END_DATE = "2024-07-28"
-INCLUDE_LAGS = False  
+INCLUDE_LAGS = True  
 TMPDIR = os.getenv("TMPDIR", "/tmp")
 # Define the target directory for saved files
 RESULTS_DIR = "/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/predictions/ARIMA/one_step_forecasts"
