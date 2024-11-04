@@ -8,5 +8,6 @@
 *.jpg
 *.pt
 *.pth
+*.pkl
 data/
 data_retrieval/
