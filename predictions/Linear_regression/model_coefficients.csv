@@ -1,0 +1,22 @@
+Feature,Coefficient
+TTF_gas_price (€/MWh),36.65
+Natural_gas (GWh),10.03
+Temperature (°C),6.76
+Wind_onshore (GWh),-4.32
+Lag_7_days,4.22
+Net_total_export_import (GWh),-3.96
+Other (GWh),3.24
+Solar_radiation (W/m2),-2.66
+Biomass (GWh),2.43
+Wind_speed (m/s),-2.1
+Oil_price (EUR),-2.06
+Day_of_week,-1.75
+BEV_vehicles,1.63
+Solar_energy (GWh),1.29
+Month,-1.16
+Wind_offshore (GWh),1.1
+Lignite (GWh),0.85
+Nuclear_energy (GWh),0.63
+Hard_coal (GWh),0.52
+Hydro (GWh),0.25
+Pumped_storage_generation (GWh),-0.19

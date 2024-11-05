@@ -5,18 +5,17 @@ import optuna
 import shutil
 import platform
 import torch
+import plotly.graph_objs as go
+import sys
+import importlib
 from darts import TimeSeries
 from darts.models import XGBModel
 from darts.metrics import mape, rmse, mse, mae
 from pytorch_lightning import loggers as pl_loggers
-from pytorch_lightning.callbacks import EarlyStopping
-import plotly.graph_objs as go
-import sys
-import importlib
+
 
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 # Dynamically import utils from the parent directory
 utils = importlib.import_module('utils')
 
