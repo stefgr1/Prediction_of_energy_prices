@@ -11,8 +11,8 @@ TARGET_COLUMN = "TTF_gas_price (€/MWh)"
 MODEL_SIZE = "large"
 CONTEXT_SIZE = 300
 TOTAL_PREDICTION_LENGTH = 730
-CHUNK_SIZE = 16
-SMOOTHING_WINDOW = 5
+CHUNK_SIZE = 32
+SMOOTHING_WINDOW = 28
 DEVICE = "cpu"
 MODEL_SAVE_DIR = "./data_retrieval/future_data/Chronos/saved_models"
 
@@ -44,7 +44,9 @@ def initialize_model(size):
             device_map="cpu",  # Load to CPU initially
             torch_dtype=torch.float32
         )
-        model.model.load_state_dict(torch.load(model_path, map_location="cpu"))
+        # Set weights_only=True to avoid the warning
+        model.model.load_state_dict(torch.load(
+            model_path, map_location="cpu", weights_only=True))
 
         # Move the model to the appropriate device (MPS or CUDA)
         model.model.to(DEVICE)
@@ -64,6 +66,7 @@ def initialize_model(size):
         # Move the model to the appropriate device
         model.model.to(DEVICE)
         return model
+
 
 # Recursive prediction function with limited context update
 
@@ -129,7 +132,7 @@ def plot_forecast(df, forecast_index, low, mean, mean_smoothed, high, output_pat
 
     sanitized_target_column = sanitize_filename(TARGET_COLUMN)
     plot_filename = os.path.join(
-        output_path, f"forecast_plot_{MODEL_SIZE}_{TOTAL_PREDICTION_LENGTH}_{sanitized_target_column}_{CONTEXT_SIZE}_{CHUNK_SIZE}.png")
+        output_path, f"forecast_plot_{MODEL_SIZE}_{TOTAL_PREDICTION_LENGTH}_{sanitized_target_column}_{CONTEXT_SIZE}_{CHUNK_SIZE}_{SMOOTHING_WINDOW}.png")
     plt.tight_layout()
     plt.savefig(plot_filename, bbox_inches="tight", dpi=300)
     plt.close()
@@ -151,7 +154,7 @@ def save_forecast_to_csv(forecast_dates, low, mean, mean_smoothed, high, output_
         'High_90': high
     })
     csv_filename = os.path.join(
-        output_path, f"forecast_values_{MODEL_SIZE}_{TOTAL_PREDICTION_LENGTH}_{sanitized_target_column}_{CONTEXT_SIZE}_{CHUNK_SIZE}.csv")
+        output_path, f"forecast_values_{MODEL_SIZE}_{TOTAL_PREDICTION_LENGTH}_{sanitized_target_column}_{CONTEXT_SIZE}_{CHUNK_SIZE}_{SMOOTHING_WINDOW}.csv")
     forecast_df.to_csv(csv_filename, index=False)
     return csv_filename
 

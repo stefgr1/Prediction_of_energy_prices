@@ -101,7 +101,7 @@ def main():
         max_depth = trial.suggest_int('max_depth', 5, 25)
         learning_rate = trial.suggest_float('learning_rate', 0.001, 0.01)
         n_estimators = trial.suggest_int(
-            'n_estimators', 400, 3500)
+            'n_estimators', 500, 3500)
         input_chunk_length = trial.suggest_int('input_chunk_length', 30, 200)
         min_child_weight = trial.suggest_float('min_child_weight', 2, 6)
         subsample = trial.suggest_float('subsample', 0.3, 1.0)
@@ -110,7 +110,7 @@ def main():
 
         model = XGBModel(
             lags=input_chunk_length,
-            output_chunk_length=1,
+            output_chunk_length=len(series_test_scaled),
             lags_future_covariates=[0],
             max_depth=max_depth,
             learning_rate=learning_rate,

@@ -1,7 +1,7 @@
-optuna_trials: 500      # trials for hyperparameter tuning
-optuna_epochs: 100       # Number epochs for fitting per trial
-best_model_epochs: 100   # Final model training epochs
-n_jobs: 6                # Number of parallel Optuna trials
+optuna_trials: 5      # trials for hyperparameter tuning
+optuna_epochs: 3       # Number epochs for fitting per trial
+best_model_epochs: 3   # Final model training epochs
+n_jobs: 1                # Number of parallel Optuna trials
 devices: 1               # Number of GPUs to utilize
-lags: True              # Use lags in the model
+lags: False              # Use lags in the model
 max_input_chunk_length: 300
