@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=tftnolag
-#SBATCH --partition=gpu_8
+#SBATCH --partition=gpu_4
 #SBATCH --gres=gpu:2
 #SBATCH --nodes=1                     # Request 1 node
 #SBATCH --cpus-per-task=6             # 6 CPU cores per task
