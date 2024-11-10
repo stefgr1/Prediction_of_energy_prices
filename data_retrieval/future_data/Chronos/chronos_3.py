@@ -11,8 +11,8 @@ TARGET_COLUMN = "TTF_gas_price (€/MWh)"
 MODEL_SIZE = "large"
 CONTEXT_SIZE = 300
 TOTAL_PREDICTION_LENGTH = 730
-CHUNK_SIZE = 32
-SMOOTHING_WINDOW = 28
+CHUNK_SIZE = 16
+SMOOTHING_WINDOW = 15
 DEVICE = "cpu"
 MODEL_SAVE_DIR = "./data_retrieval/future_data/Chronos/saved_models"
 
@@ -44,7 +44,6 @@ def initialize_model(size):
             device_map="cpu",  # Load to CPU initially
             torch_dtype=torch.float32
         )
-        # Set weights_only=True to avoid the warning
         model.model.load_state_dict(torch.load(
             model_path, map_location="cpu", weights_only=True))
 
@@ -66,7 +65,6 @@ def initialize_model(size):
         # Move the model to the appropriate device
         model.model.to(DEVICE)
         return model
-
 
 # Recursive prediction function with limited context update
 
@@ -141,7 +139,18 @@ def plot_forecast(df, forecast_index, low, mean, mean_smoothed, high, output_pat
 # Save forecast data to CSV
 
 
+# Save forecast data to CSV
 def save_forecast_to_csv(forecast_dates, low, mean, mean_smoothed, high, output_path):
+    # Adjust the length of mean_smoothed to match other arrays if needed
+    if len(mean_smoothed) != len(mean):
+        pad_width = len(mean) - len(mean_smoothed)
+        mean_smoothed = np.pad(mean_smoothed, (0, pad_width), mode='edge')
+
+    # Ensure all arrays are the same length
+    if not (len(forecast_dates) == len(low) == len(mean) == len(mean_smoothed) == len(high)):
+        raise ValueError(
+            "All arrays must be of the same length to save to CSV.")
+
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
@@ -157,6 +166,7 @@ def save_forecast_to_csv(forecast_dates, low, mean, mean_smoothed, high, output_
         output_path, f"forecast_values_{MODEL_SIZE}_{TOTAL_PREDICTION_LENGTH}_{sanitized_target_column}_{CONTEXT_SIZE}_{CHUNK_SIZE}_{SMOOTHING_WINDOW}.csv")
     forecast_df.to_csv(csv_filename, index=False)
     return csv_filename
+
 
 # Main function
 
