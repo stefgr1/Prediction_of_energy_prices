@@ -110,9 +110,9 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     """
     n_layers = trial.suggest_int('n_layers', 1, 2)
     dropout = trial.suggest_float('dropout', 0.0, 0.5) if n_layers > 1 else 0.0
-    input_chunk_length = trial.suggest_int('input_chunk_length', 25, 120)
-    hidden_dim = trial.suggest_int('hidden_dim', 50, 100)
-    learning_rate = trial.suggest_float('learning_rate', 1e-8, 1e-5, log=True)
+    input_chunk_length = trial.suggest_int('input_chunk_length', 10, 80)
+    hidden_dim = trial.suggest_int('hidden_dim', 60, 100)
+    learning_rate = trial.suggest_float('learning_rate', 1e-9, 1e-6, log=True)
     batch_size = trial.suggest_categorical('batch_size', [16, 32])
 
     # Ensure training_length is larger than input_chunk_length but never larger than 500
@@ -126,7 +126,7 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     model = RNNModel(
         model='LSTM',
         input_chunk_length=input_chunk_length,
-        training_length=training_length,  # Use the hyperparameter for training_length
+        training_length=training_length,  
         hidden_dim=hidden_dim,
         n_rnn_layers=n_layers,
         dropout=dropout,
