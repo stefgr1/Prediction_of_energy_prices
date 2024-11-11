@@ -87,7 +87,7 @@ def train_best_model(best_params, series_train_scaled, future_covariates_train_s
                        future_covariates=future_covariates_train_scaled, verbose=True)
         # Save the best model to the specified output path
         model_save_path = os.path.join(
-            output_path, f'best_tft_model_epochs_{best_model_epochs}_{optuna_trials}{lag_suffix}.pth')
+            output_path, f'final_tft_model_epochs_{best_model_epochs}_{optuna_trials}{lag_suffix}.pth')
         best_model.save(model_save_path)
         print(f"Best model saved at: {model_save_path}")
     except RuntimeError as e:
@@ -133,11 +133,13 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
 
     try:
         # Fit model
-        model.fit(series_train_scaled, future_covariates=future_covariates_train_scaled, verbose=False)
+        model.fit(series_train_scaled,
+                  future_covariates=future_covariates_train_scaled, verbose=False)
 
         # Forecast and calculate error metrics
         n = len(series_test_scaled)
-        forecast_val = model.predict(n=n, future_covariates=future_covariates_for_prediction_scaled)
+        forecast_val = model.predict(
+            n=n, future_covariates=future_covariates_for_prediction_scaled)
 
         # Calculate error metrics
         rmse_val = rmse(series_test_scaled, forecast_val)
@@ -154,7 +156,8 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
         trial.set_user_attr("smape", smape_val)
 
         # Print metrics for each trial
-        print(f"Trial {trial.number} - RMSE: {rmse_val}, MAPE: {mape_val}, MAE: {mae_val}, MSE: {mse_val}, SMAPE: {smape_val}")
+        print(
+            f"Trial {trial.number} - RMSE: {rmse_val}, MAPE: {mape_val}, MAE: {mae_val}, MSE: {mse_val}, SMAPE: {smape_val}")
 
         # If metrics have NaN or Inf, mark trial as failed
         if torch.isnan(torch.tensor(rmse_val)) or torch.isinf(torch.tensor(rmse_val)):
@@ -167,7 +170,6 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
         print(f'Exception during model training: {e}')
         traceback.print_exc()
         return float('inf')
-
 
 
 def run_optuna_optimization(series_train_scaled, future_covariates_train_scaled, series_test_scaled, future_covariates_for_prediction_scaled, optuna_trials, optuna_epochs, devices, early_stop_callback):
@@ -190,7 +192,6 @@ def inspect_best_trial(study):
     print(f"  MAE: {best_trial.user_attrs.get('mae', 'N/A')}")
     print(f"  MSE: {best_trial.user_attrs.get('mse', 'N/A')}")
     print(f"  SMAPE: {best_trial.user_attrs.get('smape', 'N/A')}")
-
 
 
 # Main execution block
