@@ -1,0 +1,22 @@
+GpuFreq=control_disabled
+/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/models/forecasting/torch_forecasting_model.py:1747: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  model: TorchForecastingModel = torch.load(
+GPU available: True (cuda), used: False
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/pytorch_lightning/trainer/setup.py:177: GPU available but not used. You can set it by doing `Trainer(accelerator='gpu')`.
+/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/torch/random.py:167: UserWarning: CUDA reports that you have 2 available devices, and you have used fork_rng without explicitly specifying which devices are being used. For safety, we initialize *every* CUDA device by default, which can be quite slow if you have a lot of CUDAs. If you know that you are only making use of a few CUDA devices, set the environment variable CUDA_VISIBLE_DEVICES or the 'devices' keyword argument of fork_rng with the set of devices you are actually using. For example, if you are using CPU only, set device.upper()_VISIBLE_DEVICES= or devices=[]; if you are using device 0 only, set CUDA_VISIBLE_DEVICES=0 or devices=[0].  To initialize all devices and suppress this warning, set the 'devices' keyword argument to `range(torch.cuda.device_count())`.
+  warnings.warn(message)
+SLURM auto-requeueing enabled. Setting signal handlers.
+/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/data_connector.py:424: The 'predict_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=5` in the `DataLoader` to improve performance.
+ValueError: Appended TimeSeries must start one time step after current one.
+Traceback (most recent call last):
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/future_prediction/tft_final_sim.py", line 60, in <module>
+    full_series = series.append(forecast)
+                  ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/timeseries.py", line 2844, in append
+    raise_if_not(
+  File "/pfs/data5/home/tu/tu_tu/tu_zxoul27/micromamba/envs/power/lib/python3.12/site-packages/darts/logging.py", line 79, in raise_if_not
+    raise ValueError(message)
+ValueError: Appended TimeSeries must start one time step after current one.
+srun: error: uc2n520: task 0: Exited with exit code 1
