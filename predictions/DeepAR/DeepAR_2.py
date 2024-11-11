@@ -117,7 +117,7 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
 
     # Ensure training_length is larger than input_chunk_length but never larger than 500
     training_length = trial.suggest_int(
-        'training_length', input_chunk_length + 1, 120)
+        'training_length', input_chunk_length + 1, 130)
 
     # Create a new logger for each trial
     tb_logger = create_logger(trial.number, model_name='DeepAR')

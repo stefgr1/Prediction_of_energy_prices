@@ -5,10 +5,13 @@ import plotly.graph_objects as go
 from darts.models import TFTModel
 from darts import TimeSeries
 import shutil
+import os
+
+CHANGE = "constant"
 
 # Load the data
 df = pd.read_csv(
-    '/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/future_prediction/final_df_constant.csv')
+    f'/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/future_prediction/final_df_{CHANGE}.csv')
 
 # Define target column and covariate columns
 target_column = "Day_ahead_price (€/MWh)"
@@ -19,18 +22,18 @@ covariate_columns = [
 if platform.system() == 'Linux':  # Assuming Linux for the cluster
     model_load_path = '/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/predictions/TFT/best_models/best_tft_model_epochs_30_300_no_lags.pth'
     tmp_dir = os.getenv('TMPDIR', '/tmp')
-    local_output_path = '/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/future_prediction/forecast_plot.png'
+    local_output_path = f'/home/tu/tu_tu/tu_zxoul27/Prediction_of_energy_prices/future_prediction/forecast_plot_{CHANGE}.png'
 else:  # Assuming MacOS or other local systems
     model_load_path = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/TFT/best_models/best_tft_model_epochs_30_300_no_lags.pth'
     tmp_dir = './temp'
-    local_output_path = './forecast_plot.png'
+    local_output_path = f'./forecast_plot_{CHANGE}.png'
 
 # Ensure temp directory exists
 os.makedirs(tmp_dir, exist_ok=True)
 
 # Load the fine-tuned model on CPU
 fine_tuned_model = TFTModel.load(
-    model_load_path, map_location=torch.device('gpu'))
+    model_load_path, map_location=torch.device('cuda'))
 
 # Prepare data
 series = TimeSeries.from_dataframe(
@@ -38,7 +41,7 @@ series = TimeSeries.from_dataframe(
 future_covariates = TimeSeries.from_dataframe(
     df, time_col="Date", value_cols=covariate_columns)
 
-# Predict the next two years (730 days) on CPU
+# Predict the next two years (730 days) 
 n_forecast = 730  # Two years into the future
 forecast = fine_tuned_model.predict(
     n=n_forecast, future_covariates=future_covariates)
@@ -72,7 +75,7 @@ fig.update_layout(
 )
 
 # Save plot to the temporary directory
-plot_path_tmp = os.path.join(tmp_dir, 'forecast_plot.png')
+plot_path_tmp = os.path.join(tmp_dir, f'forecast_plot_{CHANGE}.png')
 fig.write_image(plot_path_tmp)
 
 # Copy the plot from the temp directory to the desired location

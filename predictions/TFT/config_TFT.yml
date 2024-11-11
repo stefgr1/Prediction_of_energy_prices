@@ -1,8 +1,8 @@
 # config.yaml
-optuna_epochs: 20
+optuna_epochs: 15
 optuna_trials: 300
-best_model_epochs: 20
+best_model_epochs: 15
 max_input_chunk_length: 250
 lags: False
-devices: 2
+devices: 1
  
