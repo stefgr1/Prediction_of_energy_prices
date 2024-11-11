@@ -1,6 +1,6 @@
 optuna_trials: 2000
-optuna_epochs: 90
-best_model_epochs: 90
+optuna_epochs: 60
+best_model_epochs: 60
 max_input_chunk_length: 130
 lags: False
 devices: 2
