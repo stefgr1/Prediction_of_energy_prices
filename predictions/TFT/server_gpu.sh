@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #SBATCH --job-name=tftnolag
-#SBATCH --partition=gpu_4
+#SBATCH --partition=gpu_8
 #SBATCH --gres=gpu:2
 #SBATCH --nodes=1                     # Request 1 node
 #SBATCH --cpus-per-task=6             # 6 CPU cores per task
-#SBATCH --mem=12GB                    # 12 GB of memory
+#SBATCH --mem=10GB                    # 12 GB of memory
 #SBATCH --time=24:00:00             
 #SBATCH --output=job_output_%j.out
 #SBATCH --error=job_error_%j.err    
