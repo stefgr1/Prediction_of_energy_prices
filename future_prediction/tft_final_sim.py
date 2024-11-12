@@ -33,7 +33,7 @@ else:  # Assuming MacOS or other local systems
 os.makedirs(tmp_dir, exist_ok=True)
 
 # Load the fine-tuned model on CPU
-fine_tuned_model = TFTModel.load(model_load_path, map_location=torch.device('cpu'))
+fine_tuned_model = TFTModel.load(model_load_path, map_location=torch.device('cuda'))
 
 # Prepare data and ensure it uses float32
 series = TimeSeries.from_dataframe(df, time_col="Date", value_cols=target_column).astype(np.float32)
@@ -45,7 +45,7 @@ tb_logger = pl_loggers.TensorBoardLogger(save_dir=tmp_dir)
 # Use Trainer with the CPU setting and no GPU configuration
 trainer = Trainer(
     logger=tb_logger,
-    accelerator='cpu',
+    accelerator='gpu',
     devices=1
 )
 
