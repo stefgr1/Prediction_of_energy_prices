@@ -209,7 +209,16 @@ fig.add_trace(trace_std_1_neg)
 fig.update_layout(
     xaxis_title='Time',
     yaxis_title='Value',
-    legend=dict(x=1.05, y=1),
+    legend=dict(
+        x=0.01,       # Position legend in the top-left corner
+        y=0.99,       # Position it close to the top of the plot
+        xanchor='left',
+        yanchor='top',
+        # Optional: Add background color with some transparency
+        bgcolor='rgba(255, 255, 255, 0.8)',
+        bordercolor='Black',
+        borderwidth=1
+    ),
     margin=dict(t=20, b=20, l=20, r=20),
     width=1200,
     height=450
@@ -218,4 +227,12 @@ fig.update_layout(
 # Show the plot
 pio.show(fig)
 
+
+# %%
+# save the forecasted values as csv
+chronos_forecasts = chronos_forecasts[['date', 'mean']]
+# rename the mean column to Day_ahead_price (€/MWh)
+chronos_forecasts.rename(
+    columns={'mean': 'Day_ahead_price (€/MWh)'}, inplace=True)
+chronos_forecasts.to_csv('chronos_forecasts_large.csv', index=False)
 # %%
