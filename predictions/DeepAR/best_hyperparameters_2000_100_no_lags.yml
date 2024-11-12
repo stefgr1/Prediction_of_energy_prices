@@ -1,0 +1,7 @@
+batch_size: 16
+dropout: 0.18520149378713935
+hidden_dim: 106
+input_chunk_length: 35
+learning_rate: 0.00011385912288969504
+n_layers: 4
+training_length: 73

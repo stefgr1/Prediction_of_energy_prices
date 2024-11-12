@@ -1,9 +1,11 @@
 import platform
 import pandas as pd
 import torch
+import numpy as np
 import plotly.graph_objects as go
 from darts.models import TFTModel
 from darts import TimeSeries
+from pytorch_lightning import Trainer, loggers as pl_loggers
 import shutil
 import os
 
@@ -15,8 +17,7 @@ df = pd.read_csv(
 
 # Define target column and covariate columns
 target_column = "Day_ahead_price (€/MWh)"
-covariate_columns = [
-    col for col in df.columns if col not in ["Date", target_column]]
+covariate_columns = [col for col in df.columns if col not in ["Date", target_column]]
 
 # Determine file paths based on system
 if platform.system() == 'Linux':  # Assuming Linux for the cluster
@@ -32,22 +33,32 @@ else:  # Assuming MacOS or other local systems
 os.makedirs(tmp_dir, exist_ok=True)
 
 # Load the fine-tuned model on CPU
-fine_tuned_model = TFTModel.load(
-    model_load_path, map_location=torch.device('cuda'))
+fine_tuned_model = TFTModel.load(model_load_path, map_location=torch.device('cpu'))
 
-# Prepare data
-series = TimeSeries.from_dataframe(
-    df, time_col="Date", value_cols=target_column)
-future_covariates = TimeSeries.from_dataframe(
-    df, time_col="Date", value_cols=covariate_columns)
+# Prepare data and ensure it uses float32
+series = TimeSeries.from_dataframe(df, time_col="Date", value_cols=target_column).astype(np.float32)
+future_covariates = TimeSeries.from_dataframe(df, time_col="Date", value_cols=covariate_columns).astype(np.float32)
 
-# Predict the next two years (730 days) 
+# Override the default Trainer with a custom TensorBoard logging path
+tb_logger = pl_loggers.TensorBoardLogger(save_dir=tmp_dir)
+
+# Use Trainer with the CPU setting and no GPU configuration
+trainer = Trainer(
+    logger=tb_logger,
+    accelerator='cpu',
+    devices=1
+)
+
+# Predict the next two years (730 days) on CPU
 n_forecast = 730  # Two years into the future
-forecast = fine_tuned_model.predict(
-    n=n_forecast, future_covariates=future_covariates)
+forecast = fine_tuned_model.predict(n=n_forecast, future_covariates=future_covariates, trainer=trainer)
+
+# Ensure forecast starts immediately after the end of historical data
+if forecast.start_time() != series.end_time() + series.freq:
+    forecast = forecast.with_new_start_time(series.end_time() + series.freq)
 
 # Concatenate historical data with forecast for plotting
-full_series = series.append(forecast)
+full_series = series.concatenate(forecast)
 
 # Plotting with Plotly
 fig = go.Figure()
