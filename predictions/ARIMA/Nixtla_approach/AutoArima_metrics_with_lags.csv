@@ -1,0 +1,2 @@
+model,rmse,mse,mae,mape,smape
+AutoARIMA,0.02,0.0,0.02,0.04,0.04
