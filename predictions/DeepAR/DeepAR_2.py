@@ -126,7 +126,7 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     model = RNNModel(
         model='LSTM',
         input_chunk_length=input_chunk_length,
-        training_length=training_length,  
+        training_length=training_length,
         hidden_dim=hidden_dim,
         n_rnn_layers=n_layers,
         dropout=dropout,
@@ -196,23 +196,24 @@ def inspect_best_trial(study):
     return metrics_dict
 
 
-
 # Function to save best hyperparameters to TMPDIR and copy to home directory
 def save_best_hyperparameters(best_params, optuna_trials, best_model_epochs, lag_suffix):
     tmp_dir = os.getenv('TMPDIR', '/tmp')
-    hyperparams_path = os.path.join(tmp_dir, f"best_hyperparameters_{optuna_trials}_{best_model_epochs}{lag_suffix}.yml")
-    
+    hyperparams_path = os.path.join(
+        tmp_dir, f"best_hyperparameters_{optuna_trials}_{best_model_epochs}{lag_suffix}.yml")
+
     # Save best parameters in TMPDIR
     with open(hyperparams_path, 'w') as yaml_file:
         yaml.dump(best_params, yaml_file)
     print(f"Best hyperparameters saved at: {hyperparams_path}")
-    
+
     # Define home directory for results and ensure it exists
     home_hyperparams_dir = os.path.join(base_path, 'predictions/DeepAR/')
     os.makedirs(home_hyperparams_dir, exist_ok=True)
-    
+
     # Copy YAML file to home directory
-    home_hyperparams_path = os.path.join(home_hyperparams_dir, os.path.basename(hyperparams_path))
+    home_hyperparams_path = os.path.join(
+        home_hyperparams_dir, os.path.basename(hyperparams_path))
     shutil.copy(hyperparams_path, home_hyperparams_path)
     print(f"Hyperparameters file copied to {home_hyperparams_path}")
 
@@ -292,7 +293,6 @@ if __name__ == "__main__":
     best_model.save(model_save_path)
     print(f"Best model saved at: {model_save_path}")
 
-
     # Make predictions
     n = len(series_test_scaled)
     forecast = best_model.predict(
@@ -309,7 +309,8 @@ if __name__ == "__main__":
     )
 
     # Save best hyperparameters and copy to home directory
-    save_best_hyperparameters(best_params, OPTUNA_TRIALS, BEST_MODEL_EPOCHS, lag_suffix)
+    save_best_hyperparameters(
+        best_params, OPTUNA_TRIALS, BEST_MODEL_EPOCHS, lag_suffix)
 
     if platform.system() == "Darwin":
         # If on macOS, copy files directly to the home directory
@@ -337,4 +338,3 @@ if __name__ == "__main__":
     print('Best hyperparameters:')
     for key, value in best_params.items():
         print(f'  {key}: {value}')
-
