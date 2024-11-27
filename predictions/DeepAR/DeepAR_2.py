@@ -112,7 +112,7 @@ def objective(trial, series_train_scaled, future_covariates_train_scaled, series
     dropout = trial.suggest_float('dropout', 0.0, 0.5) if n_layers > 1 else 0.0
     input_chunk_length = trial.suggest_int('input_chunk_length', 10, 120)
     hidden_dim = trial.suggest_int('hidden_dim', 60, 120)
-    learning_rate = trial.suggest_float('learning_rate', 1e-7, 1e-3, log=True)
+    learning_rate = trial.suggest_float('learning_rate', 1e-6, 1e-3, log=True)
     batch_size = trial.suggest_categorical('batch_size', [16, 32, 64])
 
     # Ensure training_length is larger than input_chunk_length but never larger than 500
