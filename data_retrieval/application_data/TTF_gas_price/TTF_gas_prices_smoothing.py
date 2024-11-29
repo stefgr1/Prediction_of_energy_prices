@@ -101,8 +101,6 @@ def fill_missing_data_with_average(data, date_col='Date', value_col='CLOSE'):
         elif pd.notnull(next_value):  # If there's only a next value available
             data.at[date, value_col] = data.at[next_value, value_col]
 
-    # Reset the index to move 'Date' back to a column
-    # data.reset_index(inplace=True)
     return data
 
 
