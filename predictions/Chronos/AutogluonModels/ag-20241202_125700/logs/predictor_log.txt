@@ -74,3 +74,7 @@ AutoGluon will gauge predictive performance using evaluation metric: 'RMSE'
 Starting training. Start time is 2024-12-02 13:57:01
 Models that will be trained: ['ChronosZeroShot[bolt_tiny]', 'ChronosWithRegressor[bolt_tiny]']
 Training timeseries model ChronosZeroShot[bolt_tiny]. Training for up to 500.0s of the 1000.0s of remaining time.
+Warning: No models were trained during fit. Resulting leaderboard will be empty.
+Additional data provided, testing on additional data. Resulting leaderboard will be sorted according to test score (`score_test`).
+Warning: No models were trained during fit. Resulting leaderboard will be empty.
+Additional data provided, testing on additional data. Resulting leaderboard will be sorted according to test score (`score_test`).

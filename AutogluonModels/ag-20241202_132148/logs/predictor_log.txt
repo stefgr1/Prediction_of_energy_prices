@@ -1,0 +1,57 @@
+Beginning AutoGluon training... Time limit = 10s
+AutoGluon will save models to '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/AutogluonModels/ag-20241202_132148'
+=================== System Info ===================
+AutoGluon Version:  1.2
+Python Version:     3.10.13
+Operating System:   Darwin
+Platform Machine:   arm64
+Platform Version:   Darwin Kernel Version 24.1.0: Thu Oct 10 21:05:14 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T8103
+CPU Count:          8
+GPU Count:          0
+Memory Avail:       4.58 GB / 16.00 GB (28.6%)
+Disk Space Avail:   61.32 GB / 460.43 GB (13.3%)
+===================================================
+
+Fitting with arguments:
+{'enable_ensemble': False,
+ 'eval_metric': RMSE,
+ 'hyperparameters': {'Chronos': [{'ag_args': {'name_suffix': 'ZeroShot'},
+                                  'fine_tune': True,
+                                  'model_path': 'bolt_tiny'},
+                                 {'ag_args': {'name_suffix': 'WithRegressor'},
+                                  'covariate_regressor': 'CAT',
+                                  'fine_tune': True,
+                                  'model_path': 'bolt_tiny',
+                                  'target_scaler': 'mean_abs'}]},
+ 'known_covariates_names': ['Solar_radiation (W/m2)',
+                            'Wind_speed (m/s)',
+                            'Temperature (°C)',
+                            'Biomass (GWh)',
+                            'Hard_coal (GWh)',
+                            'Hydro (GWh)',
+                            'Lignite (GWh)',
+                            'Natural_gas (GWh)',
+                            'Other (GWh)',
+                            'Pumped_storage_generation (GWh)',
+                            'Solar_energy (GWh)',
+                            'Wind_offshore (GWh)',
+                            'Wind_onshore (GWh)',
+                            'Net_total_export_import (GWh)',
+                            'BEV_vehicles',
+                            'Oil_price (EUR)',
+                            'TTF_gas_price_EUR_MWh',
+                            'Nuclear_energy (GWh)',
+                            'Day_of_week'],
+ 'num_val_windows': 1,
+ 'prediction_length': 758,
+ 'quantile_levels': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+ 'random_seed': 123,
+ 'refit_every_n_windows': 1,
+ 'refit_full': False,
+ 'skip_model_selection': False,
+ 'target': 'target',
+ 'time_limit': 10,
+ 'verbosity': 2}
+
+Inferred time series frequency: 'D'
+Provided train_data has 3827 rows, 1 time series. Median time series length is 3827 (min=3827, max=3827). 

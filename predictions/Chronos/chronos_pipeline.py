@@ -27,7 +27,6 @@ def load_and_prepare_data(file_path):
     """
     df = pd.read_csv(file_path)
     df.sort_values('Date', inplace=True)
-    df.set_index('Date', inplace=True)
     return df
 
 # Prepare the data
@@ -37,15 +36,19 @@ def prepare_data(df):
     """
     Prepare the data by renaming columns and adding item_id.
     """
-    df = df.rename(columns={'Date': 'timestamp'})
+    df = df.rename(columns={
+        'Date': 'timestamp',
+        'Day_ahead_price (€/MWh)': 'target',
+        'TTF_gas_price (€/MWh)': 'TTF_gas_price_EUR_MWh'
+    })
     df['item_id'] = '1'  # Single time series ID
     return df
 
 
 # Paths to data files
-train_data_path = '../../data/Final_data/train_df_no_lags.csv'
-test_data_path = '../../data/Final_data/test_df_no_lags.csv'
-full_data_path = '../../data/Final_data/final_data_no_lags.csv'
+train_data_path = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/Final_data/train_df_no_lags.csv'
+test_data_path = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/Final_data/test_df_no_lags.csv'
+full_data_path = '/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/data/Final_data/final_data_no_lags.csv'
 
 # Load and preprocess data
 train_df = prepare_data(load_and_prepare_data(train_data_path))
@@ -58,6 +61,8 @@ test_data = TimeSeriesDataFrame.from_data_frame(
     test_df, id_column="item_id", timestamp_column="timestamp")
 data = TimeSeriesDataFrame.from_data_frame(
     df, id_column="item_id", timestamp_column="timestamp")
+
+print(train_data.columns)  # Confirm 'TTF_gas_price_EUR_MWh' is present
 
 # Set prediction length
 prediction_length = len(test_data)
@@ -74,19 +79,18 @@ predictor = TimeSeriesPredictor(
                             'Solar_energy (GWh)', 'Wind_offshore (GWh)', 'Wind_onshore (GWh)',
                             'Net_total_export_import (GWh)', 'BEV_vehicles', 'Oil_price (EUR)',
                             'TTF_gas_price_EUR_MWh', 'Nuclear_energy (GWh)', 'Day_of_week'],
-    device=device
 ).fit(
     train_data,
     hyperparameters={
         "Chronos": [
             {
-                "fine_tune": True,
+                "fine_tune": False,
                 "model_path": f"bolt_{SIZE}",
                 "ag_args": {"name_suffix": "ZeroShot"},
             },
             {
                 "model_path": f"bolt_{SIZE}",
-                "fine_tune": True,
+                "fine_tune": False,
                 "covariate_regressor": "CAT",
                 "target_scaler": "mean_abs",
                 "ag_args": {"name_suffix": "WithRegressor"},
@@ -94,22 +98,57 @@ predictor = TimeSeriesPredictor(
         ],
     },
     enable_ensemble=False,
-    time_limit=1000,
+    time_limit=10,
 )
 
-# Evaluate the predictor
-print(predictor.leaderboard(test_data))
+# Function to select the best model and predict
 
-# Predict and plot results
+
+def select_best_model_and_predict(leaderboard, predictor, train_data, future_known_covariates, full_data, prediction_length):
+    """
+    Selects the model with the highest score_test from the leaderboard and uses it for prediction.
+
+    Parameters:
+    leaderboard (pd.DataFrame): Leaderboard containing model scores.
+    predictor (TimeSeriesPredictor): Trained AutoGluon predictor.
+    train_data (TimeSeriesDataFrame): Training data used for prediction.
+    future_known_covariates (TimeSeriesDataFrame): Future covariates for prediction.
+    full_data (TimeSeriesDataFrame): Full data for plotting.
+    prediction_length (int): Prediction length for visualization.
+
+    Returns:
+    pd.DataFrame: Predictions from the best model.
+    """
+    best_model = leaderboard.sort_values(
+        by="score_test", ascending=False).iloc[0]["model"]
+    print(f"Selected best model: {best_model}")
+
+    predictions = predictor.predict(
+        train_data,
+        known_covariates=future_known_covariates,
+        model=best_model
+    )
+
+    predictor.plot(
+        data=full_data,
+        predictions=predictions,
+        item_ids=full_data.item_ids[:2],
+        max_history_length=prediction_length - 1,
+    )
+
+    return predictions
+
+
+# Use the best model for prediction
+leaderboard = predictor.leaderboard(test_data)
 future_known_covariates = test_data.drop(columns=["target"])
-predictions = predictor.predict(
-    train_data, known_covariates=future_known_covariates, model=f"ChronosWithRegressor[bolt_{SIZE}]")
-
-predictor.plot(
-    data=data,
-    predictions=predictions,
-    item_ids=data.item_ids[:2],
-    max_history_length=len(test_data) - 1,
+predictions = select_best_model_and_predict(
+    leaderboard=leaderboard,
+    predictor=predictor,
+    train_data=train_data,
+    future_known_covariates=future_known_covariates,
+    full_data=data,
+    prediction_length=prediction_length
 )
 
 # Compute error metrics
@@ -157,7 +196,7 @@ metrics = pd.DataFrame({
 }).round(2)
 
 metrics.to_csv(
-    f'../../predictions/Chronos/autogluon_metrics_{SIZE}.csv', index=False)
+    f'/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/Chronos/autogluon_metrics_{SIZE}.csv', index=False)
 
 predictions_df = pd.DataFrame(predictions).reset_index()
 predictions_df = predictions_df.drop(
@@ -166,6 +205,6 @@ predictions_df = predictions_df.rename(
     columns={'mean': 'Day_ahead_price (€/MWh)', 'timestamp': 'Date'})
 predictions_df.set_index('Date', inplace=True)
 predictions_df.to_csv(
-    f'../../predictions/Chronos/autogluon_predictions_{SIZE}.csv')
+    f'/Users/skyfano/Documents/Masterarbeit/Prediction_of_energy_prices/predictions/Chronos/autogluon_predictions_{SIZE}.csv')
 
 print("Script execution complete.")
