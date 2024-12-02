@@ -59,10 +59,12 @@ def main():
     if platform.system() == "Darwin":  # macOS
         base_path = os.path.expanduser(
             "~/Documents/Masterarbeit/Prediction_of_energy_prices/")
+        log_dir = os.path.join(os.path.dirname(__file__), "logs")
     else:  # Assuming Linux for the cluster
         base_path = os.getenv('HOME') + '/Prediction_of_energy_prices/'
+        log_dir = os.getenv('TMPDIR', '/tmp')  # Temporary directory for Linux
 
-    tmp_dir = os.path.join(os.getenv('TMPDIR'), 'predictions/XGBoost')
+    tmp_dir = os.path.join(log_dir, 'predictions/XGBoost')
     home_results_dir = os.path.join(base_path, 'predictions/XGBoost/')
     if os.path.exists(tmp_dir):
         shutil.rmtree(tmp_dir)
@@ -91,7 +93,6 @@ def main():
     series_train_scaled, series_test_scaled, future_covariates_train_scaled, future_covariates_test_scaled, scaler_series = utils.scale_data(
         series_train, series_test, future_covariates_train, future_covariates_test)
 
-    # Your original code continues here
     def objective(trial):
         tb_logger = pl_loggers.TensorBoardLogger(
             save_dir=os.path.join(tmp_dir, f"XGBoost_Optuna_{trial.number}")
@@ -154,7 +155,7 @@ def main():
 
     # Create a new logger for the final model training with best parameters
     final_tb_logger = pl_loggers.TensorBoardLogger(
-        save_dir=tmp_dir, name="XGBoost_Best_Model")
+        save_dir=log_dir, name="XGBoost_Best_Model")
 
     # Train model with best hyperparameters and TensorBoard logging
     best_model = XGBModel(
@@ -188,13 +189,12 @@ def main():
         forecast, series_test_scaled, scaler_series, fig, optuna_epochs=config["optuna_epochs"], optuna_trials=config["optuna_trials"], output_path=home_results_dir, lag_suffix=lag_suffix, model_name="XGBoost")
 
     # Copy results to the home directory, including TensorBoard logs
-    final_tb_log_dir = final_tb_logger.log_dir
     tmp_files = [forecast_plot_path, forecast_csv_path,
                  metrics_csv_path, best_params_path]
-    if os.path.exists(final_tb_log_dir):
-        tmp_files.append(final_tb_log_dir)
 
-    utils.copy_results_to_home(tmp_files, home_results_dir)
+    # Copy logs to the desired directory
+    if platform.system() == "Linux":
+        utils.copy_results_to_home([final_tb_logger.log_dir], home_results_dir)
 
     print(f"Results copied to {home_results_dir}")
 

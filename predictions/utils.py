@@ -107,18 +107,29 @@ def scale_data(series_train, series_test, future_covariates_train, future_covari
 
 
 def create_logger(trial_number=None, best_model=False, model_name='Model'):
+    """
+    Create a logger for TensorBoard based on the operating system.
+    For macOS, logs are saved directly in a 'logs' folder in the script directory.
+    For Linux, logs are saved in TMPDIR and copied to the home directory later.
+    """
     timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
 
-    # Use TMPDIR if available, else fallback to a default temporary directory
-    base_log_dir = os.getenv('TMPDIR', '/tmp')
+    if platform.system() == "Darwin":  # macOS
+        # Save logs in a 'logs' folder in the script directory
+        base_log_dir = os.path.join(os.path.dirname(__file__), 'logs')
+    else:  # Linux
+        # Save logs in TMPDIR
+        base_log_dir = os.getenv('TMPDIR', '/tmp')
 
-    # If training the best model, create a separate directory
+    # Separate directory for best model logs
     if best_model:
-        log_dir = f'{base_log_dir}/best_model/{timestamp}_best_model_{random.randint(0, 1000)}'
+        log_dir = os.path.join(
+            base_log_dir, f'{timestamp}_best_model_{random.randint(0, 1000)}')
     else:
-        log_dir = f'{base_log_dir}/{timestamp}_trial_{trial_number}_{random.randint(0, 1000)}'
+        log_dir = os.path.join(
+            base_log_dir, f'{timestamp}_trial_{trial_number}_{random.randint(0, 1000)}')
 
-    # Ensure the directory is created
+    # Ensure the log directory exists
     os.makedirs(log_dir, exist_ok=True)
 
     return pl_loggers.TensorBoardLogger(save_dir=log_dir, name=model_name, default_hp_metric=False)

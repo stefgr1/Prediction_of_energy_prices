@@ -29,7 +29,7 @@ file_path = os.path.join(data_path, file_name)
 data = import_data(file_path)
 print(data.head())
 # %%
-# COunt number of NAs
+# Count number of NAs
 print(data.isna().sum())
 # SHow the missing data
 print(data[data['CLOSE'].isna()])
@@ -101,8 +101,6 @@ def fill_missing_data_with_average(data, date_col='Date', value_col='CLOSE'):
         elif pd.notnull(next_value):  # If there's only a next value available
             data.at[date, value_col] = data.at[next_value, value_col]
 
-    # Reset the index to move 'Date' back to a column
-    # data.reset_index(inplace=True)
     return data
 
 
@@ -158,8 +156,8 @@ fig.update_layout(
     xaxis_title_font=dict(size=18, family='Helvetica, bold', color='darkblue'),
     yaxis_title_font=dict(size=18, family='Helvetica, bold', color='darkblue'),
     font=dict(size=14, color='black'),
-    plot_bgcolor='white',  # White background
-    margin=dict(l=0, r=0, t=60, b=60)  # Adjust margins
+    plot_bgcolor='white',
+    margin=dict(l=0, r=0, t=60, b=60)
 )
 
 # Show the plot

@@ -1,0 +1,2 @@
+model,rmse,mse,mae,mape,smape
+AutoARIMA,41.13,1691.55,25.97,119.76,23.56

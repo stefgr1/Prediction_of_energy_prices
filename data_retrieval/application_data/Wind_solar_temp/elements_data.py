@@ -6,14 +6,14 @@ from pathlib import Path
 
 # %%
 
-# Get the current working directory (where your script is running from)
+# Get the current working directory
 current_dir = Path.cwd()
 
 # %%
 # Navigate two directories up
 up_three_steps = current_dir.parents[2]
 
-# Navigate two directories down, assuming the names 'subdir1' and 'subdir2' are the target directories
+# Navigate two directories down
 down_three_steps = up_three_steps / 'data' / 'Application_data' / 'Elements'
 
 # Print the final path to confirm
@@ -140,7 +140,7 @@ def combine_data(solar_data, wind_data, temp_data):
     Returns:
     - DataFrame containing combined data with solar radiation, wind speed, and temperature.
     """
-    # Ensure all data frames are aligned on the same date index
+    # Check if any of the input DataFrames are empty
     if solar_data.empty or wind_data.empty or temp_data.empty:
         print("Warning: One or more data frames are empty. Check data loading process.")
         # Return an empty DataFrame if any of the input DataFrames are empty.
@@ -163,7 +163,7 @@ def combine_data(solar_data, wind_data, temp_data):
     return resulting_df
 
 
-# Assuming you have already loaded and processed the data as shown in previous examples
+# Load and process data for solar, wind, and temperature
 directory = down_three_steps
 solar_data = load_and_process_data(directory, 'Solar', 3, 7, 2024)
 wind_data = load_and_process_data(directory, 'Wind', 3, 7, 2024)
@@ -179,7 +179,6 @@ aggregated_temp_data = aggregate_data(temp_data, 'date', 'Lufttemperatur (°C)')
 combined_data = combine_data(
     aggregated_solar_data, aggregated_wind_data, aggregated_temp_data)
 
-# Print combined data
 print(combined_data)
 
 # Save the combined data to a CSV file
