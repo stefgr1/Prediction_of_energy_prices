@@ -4,7 +4,6 @@ import numpy as np
 import os
 
 # %%
-# Navigate one directory up from the current working directory and then into the 'data' directory
 path = os.path.join(os.getcwd(
 ), '..', '..', '..', 'data/Application_data/Energy_production/', 'energy_production_march_july.csv')
 
@@ -16,7 +15,7 @@ data_new = pd.read_csv(absolute_path)
 # Convert the 'date_id' columns to datetime
 data_new['date_id'] = pd.to_datetime(data_new['date_id'])
 
-# Drop the duplicate 'date_id.1' column if i identical to 'date_id'
+# Drop the duplicate 'date_id.1' column
 data_new.drop(columns=['date_id.1'], inplace=True)
 
 # Set 'date_id' as the index of the DataFrame

@@ -41,8 +41,8 @@ df = load_and_prepare_data(
 
 # Extract target column
 target_column = "Day_ahead_price (€/MWh)"
-data = df[target_column]  # Keep only the target column
-data = data.squeeze()  # Convert to series if not already
+data = df[target_column]
+data = data.squeeze()
 
 # Set the prediction start date to the day after the last date in the data
 # data.index[-1] + pd.Timedelta(days=1)
